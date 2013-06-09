@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block content %}
+    {% if user and g.user %}
+        {% if user.name == g.user.name %}
+            <a href="{{ url_for('photos.upload') }}">Upload new Photos</a>
+        {% else %}
+            {% if g.user.isUserInContactList(user) %}
+                <p>{{ user.name }} is a Contact.
+                <form method="POST" action="" class="form">
+                    <input type="hidden" value="{{ user.name }}" id="username" name="username">
+                    <input type="submit" value="Send {{ user.name }} a private message">
+                </form>
+            {% else %}
+                <form method="POST" action="{{ url_for('users.addContact') }}" class="form">
+                    <input type="hidden" value="{{ user.name }}" id="username" name="username">
+                    <input type="submit" value="Add {{ user.name }} as a Contact">
+                </form>
+            {% endif %}
+        {% endif %}
+    {% endif %}
+    {% if user %}
+        <p>This is your ({{ user.name }}'s) photo stream
+        {% for photo in photos %}
+            <a href="{{ url_for('photos.photo', username = user.name, photoID = photo.id) }}">
+                <p><img width="200" src="/binaries/{{ user.name }}/{{ photo.binary_url }}">
+            </a>
+        {% endfor %}
+    {% else %}
+        <p>This is the photo view when no user is selected.
+        {% if users %}
+            <p>A list of all registered users:
+            <ul>
+            {% for user in users.query.all() %}
+                <li><a href="{{ url_for('photos.stream', username = user.name) }}">{{ user.name }}</a></li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+{% block title %}Index{% endblock %}
+{% block content %}
+  <div class="jumbo">
+    <h2>Welcome to brickr<h2>
+    {% if session['user_id'] and g.user %}
+        <h3>{{ g.user.name }} - This is your personalized brickr landing page</h3>
+    {% else %}
+        <h3>This is the home page for brickr<h3>
+    {% endif %}
+  </div>
+{% endblock %}

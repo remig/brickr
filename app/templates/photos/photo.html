@@ -1,0 +1,64 @@
+{% extends "layout.html" %}
+{% block content %}
+    <p><img width="200" src="/binaries/{{ photo.user.name }}/{{ photo.binary_url }}">
+    <h4>{{ photo.title }}
+    <p><div>{{ photo.description }}</div>
+    <p><div>{{ photo.views }} Views</div>
+    <p><div>Taken on {{ photo.creation_time }}</div>
+    {% if photo.comments and photo.comments.count() %}
+    <p><div>Comments:
+        <ul>
+            {% for comment in photo.comments %}
+            <li><a href="{{ url_for('photos.stream', username = comment.user.name) }}">{{comment.user.name}}</a> - {{ comment.comment }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% else %}
+    <p>No Comments
+    {% endif %}
+    {% if photo.favorites and photo.favorites.count() %}
+    <p><div>Favorited by:
+        <ul>
+            {% for favorite in photo.favorites %}
+            <li><a href="{{ url_for('photos.stream', username = favorite.user.name) }}">{{favorite.user.name}}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% else %}
+    <p>No Favorites
+    {% endif %}
+    
+    {% if photo.tags %}
+    <p><div>Tags:
+        <ul>
+            {% for tag in photo.tags %}
+            <li>{{tag.description}}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if session['user_id'] %}
+    <p><div>Add a comment:
+        <form method = "POST" action = "{{ url_for('photos.addComment') }}" class = "form">
+            <textarea id = "comment" name = "comment">
+            </textarea>
+            <input type = "hidden" value = "{{ photo.id }}" id = "photoID" name = "photoID">
+            <input type = "submit" value = "Submit">
+        </form>
+    </div>
+    <p><div>
+        <form method = "POST" action = "{{ url_for('photos.addFavorite') }}" class = "form">
+            <input type = "hidden" value = "{{ photo.id }}" id = "photoID" name = "photoID">
+            <input type = "submit" value = "Add To Favorites">
+        </form>
+    </div>
+    <p><div>Add a tag:
+        <form method = "POST" action = "{{ url_for('photos.addTag') }}" class = "form">
+            <textarea id = "tag" name = "tag">
+            </textarea>
+            <input type = "hidden" value = "{{ photo.id }}" id = "photoID" name = "photoID">
+            <input type = "submit" value = "Submit">
+        </form>
+    </div>        
+   {% endif %}
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block content %}
+    <p>Welcome {{ g.user.name }}, user #{{ session['user_id'] }}
+    <p>Your Contacts:
+    <div>
+        <ul>
+            {% for contact in user.contacts %}
+            <li>
+                <a href="{{ url_for('photos.stream', username = contact.getTargetUser().name) }}">{{contact.getTargetUser().name}}</a>
+                - Added on {{ contact.creation_time }}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <p>Your favorite Photos:
+    <div>
+        {% for fav in user.favorites %}
+            <a href="{{ url_for('photos.photo', username = fav.photo.user.name, photoID = fav.photo.id) }}">
+                <p><img width="200" src="/binaries/{{ fav.photo.user.name }}/{{ fav.photo.binary_url }}">
+            </a>
+        {% endfor %}
+    </div>
+{% endblock %}
