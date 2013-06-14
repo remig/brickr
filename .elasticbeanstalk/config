@@ -1,0 +1,13 @@
+[global]
+ApplicationName=brickr
+ApplicationVersionName=git-b482629fb6943851347db7fe092adcfc1b75adef-1370812767263
+AwsCredentialFile=C:\Users\remi\.elasticbeanstalk\aws_credential_file
+DevToolsEndpoint=git.elasticbeanstalk.us-west-1.amazonaws.com
+EnvironmentName=brickr-env
+InstanceProfileName=aws-elasticbeanstalk-ec2-role
+OptionSettingFile=C:\Users\remi\brickr\.elasticbeanstalk\optionsettings.brickr-env
+RdsEnabled=No
+Region=us-west-1
+ServiceEndpoint=https://elasticbeanstalk.us-west-1.amazonaws.com
+SolutionStack=32bit Amazon Linux running Python
+
