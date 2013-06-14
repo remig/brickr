@@ -11,7 +11,7 @@ app = Flask(__name__)
 app.config.from_object('config')
 
 app.wsgi_app = SharedDataMiddleware(app.wsgi_app, {
-    '/static': os.path.join(os.path.dirname(__file__), 'static')
+    '/static': os.path.join(os.path.dirname(__file__), '../static')
 })
 
 db = SQLAlchemy(app)

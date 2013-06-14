@@ -1,64 +1,140 @@
 {% extends "layout.html" %}
+
+{% block title %}{{ photo.title }} by {{ photo.user.name }} | brickr{% endblock %}
+
 {% block content %}
-    <p><img width="200" src="/binaries/{{ photo.user.name }}/{{ photo.binary_url }}">
-    <h4>{{ photo.title }}
-    <p><div>{{ photo.description }}</div>
-    <p><div>{{ photo.views }} Views</div>
-    <p><div>Taken on {{ photo.creation_time }}</div>
-    {% if photo.comments and photo.comments.count() %}
-    <p><div>Comments:
+<div id="content-main">
+    <div id="single-photo">
+        <div id="single-photo-actions">
+            <ul>
+                <li><a href="" id="photo-fave" title="Add to Favorites">Favorite</a></li>
+                <!--
+                <form method = "POST" action = "{{ url_for('photos.addFavorite') }}" class = "form">
+                    <input type = "hidden" value = "{{ photo.id }}" id = "photoID" name = "photoID">
+                    <input type = "submit" value = "Add To Favorites">
+                </form>
+                -->
+                <li><a href="" id="photo-share" title="Share photo">Share</a></li>
+                <li><a href="" id="photo-download" title="Download photo">Download</a></li>
+            </ul>
+        </div>
+
+        <img src="/binaries/{{ photo.user.name }}/{{ photo.binary_url }}">
+        
+        <div id="single-photo-info">
+            <h2>{{ photo.title }}</h2>
+            <p><div>{{ photo.description }}</div>
+        </div>
+    </div>
+</div>
+
+<div id="content-sidebar">
+
+    <div id="single-photo-profile" class="sidebar-box">
+        <img src="/static/img/avatar.jpg" alt="" title="" border="0" width="100" height="100">
+        <div id="single-photo-meta">
+            <h3>{{ photo.user.name }}</h3>
+            <ul>
+                <li>{{ photo.views }} Views</li>
+                <li>Taken {{ photo.creation_time }}</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="quick-photostream" class="sidebar-box">
+        <h3>{{ photo.user.name }}'s photosteam <span class="small">({{ photo.user.photos.count()}})</span></h3>
+        <div class="slider-stream">
+            <img src="/static/img/avatar.jpg" alt="" title="" border="0" height="55" width="55">
+            <img src="/static/img/avatar.jpg" alt="" title="" border="0" height="55" width="55">
+            <img src="/static/img/avatar.jpg" alt="" title="" border="0" height="55" width="55">
+            <img src="/static/img/avatar.jpg" alt="" title="" border="0" height="55" width="55">
+        </div>
+    </div>
+
+    <div id="single-groups" class="sidebar-box">
+        <h3>Also in</h3>
         <ul>
-            {% for comment in photo.comments %}
-            <li><a href="{{ url_for('photos.stream', username = comment.user.name) }}">{{comment.user.name}}</a> - {{ comment.comment }}</li>
-            {% endfor %}
+            <li><a href="">LEGO</a></li>
+            <li><a href="">Space</a></li>
         </ul>
     </div>
-    {% else %}
-    <p>No Comments
-    {% endif %}
-    {% if photo.favorites and photo.favorites.count() %}
-    <p><div>Favorited by:
-        <ul>
-            {% for favorite in photo.favorites %}
-            <li><a href="{{ url_for('photos.stream', username = favorite.user.name) }}">{{favorite.user.name}}</a></li>
-            {% endfor %}
-        </ul>
-    </div>
-    {% else %}
-    <p>No Favorites
-    {% endif %}
-    
-    {% if photo.tags %}
-    <p><div>Tags:
+
+    <div id="tags" class="sidebar-box">
+        <h3>Tags <span class="small">(<a href="">add a tag</a>)</span></h3> 
+        <!-- <div>Add a tag:
+            <form method = "POST" action = "{{ url_for('photos.addTag') }}" class = "form">
+                <textarea id = "tag" name = "tag">
+                </textarea>
+                <input type = "hidden" value = "{{ photo.id }}" id = "photoID" name = "photoID">
+                <input type = "submit" value = "Submit">
+            </form>
+        </div> -->
         <ul>
             {% for tag in photo.tags %}
-            <li>{{tag.description}}</li>
+            <li><a href="">{{tag.description}}</a></li>
             {% endfor %}
         </ul>
+    </div>
+
+    <footer>
+        <div id="footer">
+            <p>Any rights info. Copyright etc. All rights reserved.</p>
+            <nav>
+                <ul>
+                    <li><a href="/photos/">Terms of Use</a></li>
+                    <li><a href="/">Privacy Policy</a></li>
+                    <li><a href="/about">Copyright/IP Policy</a></li>
+                </ul>
+            </nav>
+        </div>
+    </footer>
+    
+</div>
+
+<div id="content-interact">
+
+    {% if photo.favorites and photo.favorites.count() %}
+    <div id="photo-favorites">
+        <div class="hr"></div>
+        <p><a href="/photos/doom/">doom</a> added this photo to their favorites.</p>
+        <div class="hr"></div>
+        {% for favorite in photo.favorites %}
+        <a href="{{ url_for('photos.stream', username = favorite.user.name) }}">{{favorite.user.name}}</a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if photo.comments and photo.comments.count() %}
+    <div id="photo-comments">
+        <h3>Comments:</h3>
+        <ul>
+            {% for comment in photo.comments %}
+            <li>
+                <div class="comments-avatar">
+                    <a href="{{ url_for('photos.stream', username = comment.user.name) }}">
+                        <img src="/static/img/avatar.jpg" alt="" title="" border="0" height="36" width="36">
+                    </a>
+                </div>
+                <div class="comments-body">
+                    <div class="comments-author"><a href="{{ url_for('photos.stream', username = comment.user.name)}}">{{comment.user.name}}</a><span class="small comments-date">{{ comment.creation_time }}</span></div>
+                    <div class="comment-text">{{ comment.comment }}</div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
     {% endif %}
 
     {% if session['user_id'] %}
-    <p><div>Add a comment:
+    <div id="photo-add-comment">
+        <div class="hr"></div>
+        <h3>Add a Comment</h3>
         <form method = "POST" action = "{{ url_for('photos.addComment') }}" class = "form">
-            <textarea id = "comment" name = "comment">
+            <textarea id="comment" name="comment" placeholder="Add a comment" aria-label="Add a comment">
             </textarea>
-            <input type = "hidden" value = "{{ photo.id }}" id = "photoID" name = "photoID">
-            <input type = "submit" value = "Submit">
+            <input type="hidden" value="{{ photo.id }}" id="photoID" name="photoID">
+            <input type="submit" value="Submit" class="button">
         </form>
     </div>
-    <p><div>
-        <form method = "POST" action = "{{ url_for('photos.addFavorite') }}" class = "form">
-            <input type = "hidden" value = "{{ photo.id }}" id = "photoID" name = "photoID">
-            <input type = "submit" value = "Add To Favorites">
-        </form>
-    </div>
-    <p><div>Add a tag:
-        <form method = "POST" action = "{{ url_for('photos.addTag') }}" class = "form">
-            <textarea id = "tag" name = "tag">
-            </textarea>
-            <input type = "hidden" value = "{{ photo.id }}" id = "photoID" name = "photoID">
-            <input type = "submit" value = "Submit">
-        </form>
-    </div>        
    {% endif %}
 {% endblock %}
