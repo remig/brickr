@@ -1,6 +1,7 @@
 sqlite/
-app/binaries/
 Thumbs.db
 ehthumbs.db
 Desktop.ini
 *.py[co]
+*.hello
+.elasticbeanstalk/
