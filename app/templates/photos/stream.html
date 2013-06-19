@@ -1,29 +1,23 @@
-{% extends "layout.html" %}
+{% extends "nav.html" %}
 {% block content %}
     {% if user and g.user %}
         {% if user.name == g.user.name %}
             <a href="{{ url_for('photos.upload') }}">Upload new Photos</a>
         {% else %}
-            {% if g.user.isUserInContactList(user) %}
-                <!--<p>{{ user.name }} is a Contact.
-                <form method="POST" action="" class="form">
-                    <input type="hidden" value="{{ user.name }}" id="username" name="username">
-                    <input type="submit" value="Send {{ user.name }} a private message">
-                </form>
-                -->
-            {% else %}
-                <form method="POST" action="{{ url_for('users.addContact') }}" class="form">
-                    <input type="hidden" value="{{ user.name }}" id="username" name="username">
-                    <input type="submit" value="Add {{ user.name }} as a Contact">
-                </form>
-            {% endif %}
+            <div id="contact-form">
+                {% if g.user.isUserInContactList(user) %}
+                    {{ user.name }} is a Contact. <input type="submit" value="Remove" onclick="removeContact({{ user.id }}, '{{ user.name }}');" id="remove-contact"></input>
+                {% else %}
+                    <input type="submit" onclick="addContact({{ user.id }}, '{{ user.name }}');" id="add-contact" value="Add {{ user.name }} as a Contact"></input>
+                {% endif %}
+            </div>
         {% endif %}
     {% endif %}
     {% if user %}
         <p>{{ user.name }}'s photo stream
         {% for photo in photos %}
             <a href="{{ url_for('photos.photo', username = user.name, photoID = photo.id) }}">
-                <p><img width="200" src="/binaries/{{ user.name }}/{{ photo.binary_url }}">
+                <p><img width="200" src="{{ url_for('binary_photo', filename = photo.filename()) }}">
             </a>
         {% endfor %}
     {% else %}

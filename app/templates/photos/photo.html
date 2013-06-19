@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "nav.html" %}
 
 {% block title %}{{ photo.title }} by {{ photo.user.name }} | brickr{% endblock %}
 
@@ -7,19 +7,19 @@
     <div id="single-photo">
         <div id="single-photo-actions">
             <ul>
-                <li><a href="" id="photo-fave" title="Add to Favorites">Favorite</a></li>
+                <li><a href="" id="photo-fave" {% if g.user and g.user.isFavorited(photo) %}class="isFavorited" onclick="return false;"{% else %}onclick="addFavorite({{ photo.id }});"{% endif %} title="Add to Favorites">Favorite</a></li>
                 <!--
                 <form method = "POST" action = "{{ url_for('photos.addFavorite') }}" class = "form">
                     <input type = "hidden" value = "{{ photo.id }}" id = "photoID" name = "photoID">
                     <input type = "submit" value = "Add To Favorites">
                 </form>
                 -->
-                <li><a href="" id="photo-share" title="Share photo">Share</a></li>
-                <li><a href="" id="photo-download" title="Download photo">Download</a></li>
+                <li><a href="" id="photo-share" title="Share photo (NYI)">Share</a></li>
+                <li><a href="" id="photo-download" title="Download photo (NYI)">Download</a></li>
             </ul>
         </div>
 
-        <img src="/binaries/{{ photo.user.name }}/{{ photo.binary_url }}">
+        <img src="{{ url_for('binary_photo', filename = photo.filename()) }}">
         
         <div id="single-photo-info">
             <h2>{{ photo.title }}</h2>
@@ -52,7 +52,7 @@
     </div>
 
     <div id="single-groups" class="sidebar-box">
-        <h3>Also in</h3>
+        <h3>Also in (NYI)</h3>
         <ul>
             <li><a href="">LEGO</a></li>
             <li><a href="">Space</a></li>
@@ -60,7 +60,7 @@
     </div>
 
     <div id="tags" class="sidebar-box">
-        <h3>Tags <span class="small">(<a href="">add a tag</a>)</span></h3> 
+        <h3>Tags <span class="small">(<a href="">add a tag</a>) (NYI)</span></h3> 
         <!-- <div>Add a tag:
             <form method = "POST" action = "{{ url_for('photos.addTag') }}" class = "form">
                 <textarea id = "tag" name = "tag">
@@ -96,11 +96,20 @@
     {% if photo.favorites and photo.favorites.count() %}
     <div id="photo-favorites">
         <div class="hr"></div>
-        <p><a href="/photos/doom/">doom</a> added this photo to their favorites.</p>
-        <div class="hr"></div>
-        {% for favorite in photo.favorites %}
-        <a href="{{ url_for('photos.stream', username = favorite.user.name) }}">{{favorite.user.name}}</a>
+        <p>
+        {% for favorite in photo.favorites.slice(0, 5) %}
+            {% if loop.last and loop.index0 >= 5 %}
+            and {{ photo.favorites.count() - 5 }} others
+            {% elif loop.last and loop.index0 > 0 %}
+            and
+            {% endif %}
+            <a href="{{ url_for('photos.stream', username = favorite.user.name) }}">{{favorite.user.name}}</a>
+            {% if loop.revindex0 > 0 %}
+            ,
+            {% endif %}
         {% endfor %}
+        added this photo to their favorites.</p>
+        <div class="hr"></div>
     </div>
     {% endif %}
 

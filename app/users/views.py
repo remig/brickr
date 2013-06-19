@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for
+from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for, jsonify
 from werkzeug import check_password_hash, generate_password_hash
 
 from app import db, breakpoint
@@ -65,17 +65,29 @@ def register():
         # redirect user to the 'home' method of the user module.
         return redirect(url_for('users.home'))
     return render_template('users/register.html', form = form)
-    
-@mod.route('/addContact/', methods = ['POST'])
+
+@mod.route('/_addContact/', methods = ['POST'])
 @requires_login
 def addContact():
     if request.method == 'POST':
-        username = request.form.get('username')
-        user = User.query.filter_by(name = username).first()
-        if user and Contact.query.filter_by(user_id = g.user.id, target_user_id = user.id).count() < 1:
+        userID = request.form.get('userID')
+        user = User.query.get(userID)
+        if user and Contact.query.filter_by(user_id = g.user.id, target_user_id = userID).count() < 1:
             contact = Contact(g.user, user)
             db.session.add(contact)
             db.session.commit()
-            flash('Successfully added %s as a contact' % user.name)
-        return redirect(url_for('photos.stream', username = user.name))
+            return jsonify(result = True)
+    return jsonify(result = False)
 
+@mod.route('/_removeContact/', methods = ['POST'])
+@requires_login
+def removeContact():
+    if request.method == 'POST':
+        userID = request.form.get('userID')
+        user = User.query.get(userID)
+        contact = Contact.query.filter_by(user_id = g.user.id, target_user_id = userID)
+        if user and contact.count() > 0:
+            db.session.delete(contact.first())
+            db.session.commit()
+            return jsonify(result = True)
+    return jsonify(result = False)

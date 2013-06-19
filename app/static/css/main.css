@@ -208,6 +208,11 @@ textarea {
   background-size: 85%;
 }
 
+#photo-fave.isFavorited {
+  background: url(../img/icon_favorited.png) 3px 2px no-repeat;
+  background-size: 85%;
+}
+
 #photo-share {
   background: url(../img/icon_share.png) 3px 2px no-repeat;
   background-size: 85%;

@@ -31,5 +31,8 @@ class User(db.Model):
         count = self.contacts.filter_by(target_user_id = user.id).count()
         return count > 0
         
+    def isFavorited(self, photo):
+        return photo in [x.photo for x in self.favorites]
+        
     def __repr__(self):
         return '<User %r>' % (self.name)

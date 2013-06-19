@@ -1,5 +1,5 @@
 from datetime import datetime
-from app import db
+from app import db, breakpoint
 from tag import tag_list
 
 class Photo(db.Model):
@@ -18,7 +18,7 @@ class Photo(db.Model):
     tags = db.relationship('Tag', secondary = tag_list, backref = db.backref('photos', lazy = 'dynamic'))
     
     def __init__(self, filename, user, title, description):
-        self.binary_url = filename
+        self.binary_url =  '.' + filename.split('.')[-1]
         self.user_id = user.id
         self.title = title
         self.description = description
@@ -28,6 +28,9 @@ class Photo(db.Model):
     def __repr__(self):
         return '<Photo %d>' % (self.id)
         
+    def filename(self):
+        return str(self.id) + self.binary_url
+
     # Get the photo previous to this photo from the user's stream, or None if
     # this is the first photo in the stream
     def prevPhoto(self):

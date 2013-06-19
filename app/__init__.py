@@ -28,16 +28,19 @@ def before_request():
 
 @app.route('/')
 def index():
+    if g.user:
+        photos = g.user.photos
+        return render_template('photos/stream.html', user = g.user, photos = photos)
     return render_template('index.html')
     
 @app.route('/about')
 def about():
     return render_template('about.html')
     
-@app.route('/binaries/<username>/<filename>')
-def uploaded_file(username, filename):
-    return send_file(os.path.join('binaries', username, filename))
-    
+@app.route('/binaries/<filename>')
+def binary_photo(filename):
+    return send_file(os.path.join('binaries', filename))
+
 from app.users.views import mod as usersModule
 app.register_blueprint(usersModule)
 

@@ -53,23 +53,19 @@ def upload():
     if flask.request.method == 'POST':
         file = flask.request.files['file']
         if file and allowed_file(file.filename):
-            username = flask.g.user.name
-            pathname = os.path.join(app.config['BINARY_UPLOAD_PATH'], username)
             
-            if not os.path.exists(pathname):
-                os.makedirs(pathname)
-                
-            imagename = secure_filename(file.filename)
-            filename = os.path.join(pathname, imagename);
-            file.save(filename)
-            
-            photo = Photo(imagename, flask.g.user, imagename, "Description text goes here")
+            photo = Photo(file.filename, flask.g.user, file.filename, "Description text goes here")
             
             db.session.add(photo)
             db.session.commit()
 
-            flask.flash(u'Image upload success! - File: %s saved, user: %s' % (filename, flask.g.user.name))
-            return flask.redirect(flask.url_for('photos.stream', username = flask.g.user.name))
+            username = flask.g.user.name
+            pathname = app.config['BINARY_UPLOAD_PATH']            
+            imagename = secure_filename(photo.filename())
+            filename = os.path.join(pathname, imagename);
+            file.save(filename)
+            flask.flash(u'Image upload success! - File: %s saved, user: %s' % (filename, username))
+            return flask.redirect(flask.url_for('photos.stream', username = username))
     return flask.render_template('photos/upload.html')
 
 @mod.route('/addComment/', methods = ['POST'])
@@ -84,7 +80,7 @@ def addComment():
             db.session.commit()
         return flask.redirect(flask.url_for('photos.photo', username = photo.user.name, photoID = photo.id))
     
-@mod.route('/addFavorite/', methods = ['POST'])
+@mod.route('/_addFavorite/', methods = ['POST'])
 @requires_login
 def addFavorite():
     if flask.request.method == 'POST':

@@ -4,7 +4,7 @@ MaxSize=4
 MinSize=1
 
 [aws:autoscaling:launchconfiguration]
-EC2KeyName=
+EC2KeyName=brickr-env-key
 InstanceType=t1.micro
 
 [aws:ec2:vpc]
@@ -27,12 +27,12 @@ PARAM5=
 [aws:elasticbeanstalk:container:python]
 NumProcesses=1
 NumThreads=15
-StaticFiles=/static/=app/static/,/favicon.ico=app/static/favicon.ico
+StaticFiles=/static/=app/static/,/favicon.ico=app/static/img/favicon.ico
 WSGIPath=application.py
 
 [aws:elasticbeanstalk:container:python:staticfiles]
 /static/=app/static/
-/favicon.ico=app/static/favicon.ico
+/favicon.ico=app/static/img/favicon.ico
 
 [aws:elasticbeanstalk:hostmanager]
 LogPublicationControl=false
