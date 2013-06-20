@@ -69,20 +69,14 @@
     </div>
 
     <div id="tags" class="sidebar-box">
-        <h3>Tags <span class="small">(<a href="">add a tag</a>) (NYI)</span></h3> 
-        <!-- <div>Add a tag:
-            <form method = "POST" action = "{{ url_for('photos.addTag') }}" class = "form">
-                <textarea id = "tag" name = "tag">
-                </textarea>
-                <input type = "hidden" value = "{{ photo.id }}" id = "photoID" name = "photoID">
-                <input type = "submit" value = "Submit">
-            </form>
-        </div> -->
-        <ul>
+        <h3>Tags <span class="small" id="addTagLink">(<a href="javascript:$('input#tagBox').show();$('span#addTagLink').hide();">add a tag</a>)</span></h3> 
+        <ul id="tagList">
             {% for tag in photo.tags %}
             <li><a href="">{{tag.description}}</a></li>
             {% endfor %}
         </ul>
+        <br /><br />
+        <input type="text" id="tagBox" style="display: none" onkeypress="tagKeyPress(this, event, {{ photo.id }});">
     </div>
 
     <footer>

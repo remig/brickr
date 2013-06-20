@@ -34,3 +34,23 @@ function removeContact(userID, username) {
 	});
 	return false;
 }
+
+function tagKeyPress(el, e, photoID) {
+	if (e.charCode !== 13) {
+		return;
+	}
+	$.post($SCRIPT_ROOT + '/photos/_addTag/', 
+		{photoID: photoID, tag: el.value},
+		function(data) {
+			if (data.result && data.tags) {
+				for (var i = 0; i < data.tags.length; i++) {
+					$('ul#tagList').append('<li><a href="">' + data.tags[i] + '</a></li>');
+				}
+				el.value = '';
+			} else {
+				console.log('Add tag failed because I suck');
+			}
+		}
+	);
+	return false;
+}

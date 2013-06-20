@@ -1,4 +1,4 @@
-import os
+import os, re, shlex
 import flask
 from sqlalchemy import func
 from werkzeug import secure_filename
@@ -89,20 +89,30 @@ def addFavorite():
             db.session.commit()
         return flask.redirect(flask.url_for('photos.photo', username = photo.user.name, photoID = photo.id))
 
-@mod.route('/addTag/', methods = ['POST'])
+pattern = re.compile('[^A-Za-z0-9 _!$]+')
+def strip(text):
+    return pattern.sub('', text)
+
+@mod.route('/_addTag/', methods = ['POST'])
 @requires_login
 def addTag():
     if flask.request.method == 'POST':
         photoID = flask.request.form.get('photoID')
         photo = Photo.query.get(photoID)
-        tag_text = flask.request.form.get('tag').strip()
-        if photo:
-            if tag_text not in [x.description for x in photo.tags]:
-                tag = Tag(tag_text)
-                photo.tags.extend([tag])
-                db.session.add(tag)
-                db.session.commit()
-                flask.flash(u'Tag %s added successfully' % tag_text)
-            else:
-                flask.flash(u'Tag %s already exists for this photo' % tag_text)
-        return flask.redirect(flask.url_for('photos.photo', username = photo.user.name, photoID = photo.id))
+        if not photo:
+            return flask.jsonify(result = False)
+
+        existing_tags = [x.description.lower() for x in photo.tags]
+        tag_list = shlex.split(flask.request.form.get('tag').strip())
+        tag_list = [strip(x) for x in tag_list]
+        tag_list = [x for x in tag_list if x.lower() not in existing_tags]
+        if not tag_list:
+            return flask.jsonify(result = False)
+            
+        for tag_text in tag_list:
+            tag = Tag(tag_text)
+            photo.tags.extend([tag])
+            db.session.add(tag)
+        db.session.commit()
+        return flask.jsonify(result = True, tags = tag_list)
+    return flask.jsonify(result = False)
