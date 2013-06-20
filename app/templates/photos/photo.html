@@ -69,7 +69,10 @@
     </div>
 
     <div id="tags" class="sidebar-box">
-        <h3>Tags <span class="small" id="addTagLink">(<a href="javascript:$('input#tagBox').show();$('span#addTagLink').hide();">add a tag</a>)</span></h3> 
+        <h3>Tags
+        {% if g.user and photo.user.id == g.user.id %}
+            <span class="small" id="addTagLink">(<a href="javascript:$('input#tagBox').show();$('span#addTagLink').hide();">add a tag</a>)</span></h3>
+        {% endif %} 
         <ul id="tagList">
             {% for tag in photo.tags %}
             <li><a href="">{{tag.description}}</a></li>
