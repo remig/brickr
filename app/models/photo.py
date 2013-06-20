@@ -55,11 +55,13 @@ class Photo(db.Model):
         
     # Return a list of the previous two and next two photos adjacent to this
     # photo in this users photo stream.  This will always return exactly 'count'
-    # items.  If there aren't enough photos, empty spots will be padded with None
+    # items.  If there aren't enough photos, empty spots are padded with None
     def getAdjacentPhotoStream(self, count):
-        side = count // 2
-        pID = self.id
-        idList =  range(pID - count, pID) + [pID] + range(pID + 1, pID + 1 + count)
-        photoList = self.user.photos
-        return [10, 20, 30]
+        photoStream = [self]
+        for i in range(count // 2):
+            photoStream.insert(0, photoStream[0].prevPhoto() if photoStream[0] else None)
+            photoStream.append(photoStream[-1].nextPhoto() if photoStream[-1] else None)
+        if not count % 2:
+            photoStream.pop(0)  # If we need an even number of photos, remove first one
+        return photoStream
     

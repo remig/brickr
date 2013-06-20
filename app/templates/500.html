@@ -1,0 +1,7 @@
+{% extends "nav.html" %}
+{% block title %}Server Error | brickr{% endblock %}
+{% block content %}
+    <h1>An error on the server has occured.</h1>
+    <p>I'll fix that.</p>
+    <p><a href="{{ url_for('index') }}">Back to index</a>
+{% endblock %}

@@ -10,6 +10,7 @@ class User(db.Model):
     password = db.Column(db.String(20))
     role = db.Column(db.SmallInteger, default = USER.USER)
     status = db.Column(db.SmallInteger, default = USER.NEW)
+    creation_time = db.Column(db.DateTime)
     photos = db.relationship('Photo', backref = 'user', lazy = 'dynamic')
     comments = db.relationship('Comment', backref = 'user', lazy = 'dynamic')
     favorites = db.relationship('Favorite', backref = 'user', lazy = 'dynamic')
@@ -20,6 +21,7 @@ class User(db.Model):
         self.name = name
         self.email = email
         self.password = password
+        self.creation_time = datetime.utcnow()
         
     def getStatus(self):
         return USER.STATUS[self.status]

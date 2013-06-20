@@ -30,10 +30,7 @@ def stream(username):
     return flask.render_template('photos/stream.html', user = user, photos = photos)
     
 @mod.route('/<username>/<photoID>/')
-def photo(username, photoID):
-    user = User.query.filter(func.lower(User.name) == func.lower(username)).first()
-    if user is None:
-        flask.abort(404)
+def photo(photoID, username = None):
     photo = Photo.query.get(photoID)
     if photo is None:
         flask.abort(404)
