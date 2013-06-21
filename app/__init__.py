@@ -1,10 +1,14 @@
-import os.path
+import os.path, re
 from flask import Flask, render_template, g, session, send_file
 from flask.ext.sqlalchemy import SQLAlchemy
 
 def breakpoint():
     import pdb
     pdb.set_trace()
+
+pattern = re.compile('[^A-Za-z0-9 _!$]+')
+def strip(text):
+    return pattern.sub('', text)
 
 app = Flask(__name__)
 app.config.from_object('config')
@@ -50,6 +54,9 @@ app.register_blueprint(usersModule)
 
 from app.photos.views import mod as photoModule
 app.register_blueprint(photoModule)
+
+from app.mail.views import mod as mailModule
+app.register_blueprint(mailModule)
 
 if not app.debug:
     import logging

@@ -8,6 +8,7 @@
             <li><a href="{{ url_for('about') }}">About</a></li>
             {% if g.user %}
             <li><a href="{{ url_for('users.home') }}">Profile</a></li>
+            <li><a href="{{ url_for('mail.inbox') }}">Mail</a></li>
             <li><a href="{{ url_for('users.logout') }}">Logout {{ g.user.name }}</a></li>
             {% else %}
             <li><a href="{{ url_for('users.login') }}">Login</a></li>

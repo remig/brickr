@@ -1,0 +1,20 @@
+{% extends "nav.html" %}
+
+{% block script %}
+{% include "fix_time.html" %}
+{% endblock %}
+
+{% block content %}
+    <h3>Your Private Messages</h3>
+    <a href="{{ url_for('mail.compose') }}">Send a new Message</a>
+    <h4><span>From</span> | <span>Title</span> | <span>Date</span></h4>
+    <ul>
+        {% for message in messages %}
+        <li>
+            <span><a href="{{ url_for('photos.stream', username = message.sender.name) }}">{{ message.sender.name }}</a></span> -
+            <span><a href="{{ url_for('mail.message', messageID = message.id) }}">{{ message.title }}</a></span> - 
+            <span class="convert-time">{{ message.creation_time }},LL</span>
+        </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

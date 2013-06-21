@@ -4,6 +4,7 @@
 
 {% block script %}
 {% include "fix_time.html" %}
+{% include "photos/add_note.html" %}
 {% endblock %}
 
 {% block content %}
@@ -12,23 +13,28 @@
         <div id="single-photo-actions">
             <ul>
                 <li><a href="" id="photo-fave" {% if g.user and g.user.isFavorited(photo) %}class="isFavorited" onclick="return false;"{% else %}onclick="addFavorite({{ photo.id }});"{% endif %} title="Add to Favorites">Favorite</a></li>
-                <!--
-                <form method = "POST" action = "{{ url_for('photos.addFavorite') }}" class = "form">
-                    <input type = "hidden" value = "{{ photo.id }}" id = "photoID" name = "photoID">
-                    <input type = "submit" value = "Add To Favorites">
-                </form>
-                -->
                 <li><a href="" id="photo-share" title="Share photo (NYI)">Share</a></li>
                 <li><a href="" id="photo-download" title="Download photo (NYI)">Download</a></li>
             </ul>
         </div>
 
-        <img src="{{ url_for('binary_photo', filename = photo.filename()) }}">
-        
+        <span id="photo-holder">
+            <img id="actual-photo" src="{{ url_for('binary_photo', filename = photo.filename()) }}">
+        </span>
+
+        <!--
+        <ul id="note-list">
+            <li style="left: 10px; top: 10px; width: 10px; height: 10px">
+                <span style="border: 1px black"></span>
+            </li>
+        </ul>
+        -->
+
         <div id="single-photo-info">
             <h2>{{ photo.title }}</h2>
             <p><div>{{ photo.description }}</div>
         </div>
+
     </div>
 </div>
 
@@ -144,7 +150,7 @@
     <div id="photo-add-comment">
         <div class="hr"></div>
         <h3>Add a Comment</h3>
-        <form method = "POST" action = "{{ url_for('photos.addComment') }}" class = "form">
+        <form method="POST" action="{{ url_for('photos.addComment') }}" class="form">
             <textarea id="comment" name="comment" placeholder="Add a comment" aria-label="Add a comment">
             </textarea>
             <input type="hidden" value="{{ photo.id }}" id="photoID" name="photoID">

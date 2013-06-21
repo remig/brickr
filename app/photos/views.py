@@ -1,9 +1,9 @@
-import os, re, shlex
+import os, shlex
 import flask
 from sqlalchemy import func
 from werkzeug import secure_filename
 
-from app import app, db, breakpoint
+from app import app, db, breakpoint, strip
 from app.models import *
 
 from app.users.decorators import requires_login
@@ -88,10 +88,6 @@ def addFavorite():
             db.session.add(favorite)
             db.session.commit()
         return flask.redirect(flask.url_for('photos.photo', username = photo.user.name, photoID = photo.id))
-
-pattern = re.compile('[^A-Za-z0-9 _!$]+')
-def strip(text):
-    return pattern.sub('', text)
 
 @mod.route('/_addTag/', methods = ['POST'])
 @requires_login

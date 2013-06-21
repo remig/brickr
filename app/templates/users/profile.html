@@ -12,6 +12,7 @@
             {% endfor %}
         </ul>
     </div>
+    <p><a href="{{ url_for('mail.inbox') }}">Your Private Messages</a>
     <p>Your favorite Photos:
     <div>
         {% for fav in user.favorites %}

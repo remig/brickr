@@ -31,7 +31,7 @@
             <p>A list of all registered users:
             <ul>
             {% for user in users.query.all() %}
-                <li><a href="{{ url_for('photos.stream', username = user.name) }}">{{ user.name }}</a> - Joined on <span class="convert-time">{{ user.creation_time }},LL</span></li>
+                <li><a href="{{ url_for('photos.stream', username = user.name) }}">{{ user.name }}</a> - User ID: {{ user.id }} - Joined on <span class="convert-time">{{ user.creation_time }},LL</span></li>
             {% endfor %}
             </ul>
         {% endif %}

@@ -1,0 +1,17 @@
+{% extends "nav.html" %}
+
+{% block script %}
+{% include "fix_time.html" %}
+{% endblock %}
+
+{% block content %}
+    <h2>Write a new Message</h2>
+    <form method="POST" action="{{ url_for('mail.sendMessage') }}" class="form">
+        <p><label>From:</label> {{ g.user.name }}
+        <p><label for="recipient">To:</label> <input id="recipient" name="recipient" type="text" value="screen name or email"></input>
+        <p><label for="subject">Subject:</label> <input id="subject" name="subject" type="text"></input>
+        <p><textarea id="text" name="text"></textarea>
+        <input type="submit" value="Send" />
+    </form>
+    <a href="{{ url_for('mail.inbox') }}">Back to Inbox</a>
+{% endblock %}

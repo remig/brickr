@@ -1,0 +1,30 @@
+<script type="text/javascript">
+
+(function() {
+    
+    var isTracking = false;
+    function onMouseDown(e) {
+        e.preventDefault();
+        isTracking = true;
+        console.log('down');
+    }
+
+    function onMouseMove(e) {
+        if (!isTracking) {
+            return;
+        }
+        e.preventDefault();
+        console.log('moooooooovvvvvvveeeeee');
+    }
+
+    function onMouseUp(e) {
+        e.preventDefault();
+        isTracking = false;
+        console.log('up');
+    }
+
+    $(function() {
+        $('span#photo-holder').mousedown(onMouseDown).mousemove(onMouseMove).mouseup(onMouseUp);
+    });
+}());
+</script>
