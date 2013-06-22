@@ -5,6 +5,7 @@
 {% endblock %}
 
 {% block content %}
+<div class="container">
     {% if user and g.user %}
         {% if user.name == g.user.name %}
             <a href="{{ url_for('photos.upload') }}">Upload new Photos</a>
@@ -18,13 +19,31 @@
             </div>
         {% endif %}
     {% endif %}
-    {% if user %}
-        <p>{{ user.name }}'s photo stream
+    {% if user %}    
+    <div id="content-main">
         {% for photo in photos %}
             <a href="{{ url_for('photos.photo', username = user.name, photoID = photo.id) }}">
                 <p><img width="200" src="{{ url_for('binary_photo', filename = photo.filename()) }}">
             </a>
         {% endfor %}
+    </div>
+    
+    <div id="content-sidebar">
+        <div id="profile" class="sidebar-box">
+            <img src="{{ url_for('static', filename = 'img/avatar.jpg') }}" alt="" title="" border="0" width="100" height="100">
+            <div id="profile-meta">
+                <h3>{{ user.name }}</h3>
+                <ul>
+                    <li>Member since <span class="convert-time">{{ user.creation_time }},LL</span></li>
+                    <li># of photos</li>
+                    <li>location</li>
+                    <li>facebook/twitter/web</li>
+                    <li>more...</li>
+                </ul>            
+            </div>
+        </div>
+    </div>
+    
     {% else %}
         <p>This is the photo view when no user is selected.
         {% if users %}
@@ -36,4 +55,5 @@
             </ul>
         {% endif %}
     {% endif %}
+</div>
 {% endblock %}

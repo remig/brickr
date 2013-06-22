@@ -4,9 +4,8 @@
         <title>{% block title %}{% endblock %}</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width">
-        {% block css %}
-        <link rel = "stylesheet" href = "{{ url_for('static', filename = 'css/reset.css') }}" />
         <link rel = "stylesheet" href = "{{ url_for('static', filename = 'css/main.css') }}" />
+        {% block css %}
         {% endblock %}
         <script type="text/javascript">
             $SCRIPT_ROOT = {{ request.script_root | tojson | safe }};
@@ -30,9 +29,15 @@
                 {% endfor %}
             </div>
         </div>
+        
         <div id = "content">
         {% block content %}{% endblock %}
         </div>
-        <div id = "footer">{% block footer %}{% endblock %}</div>
+        
+        <footer>
+            <div id = "footer">
+            {% block footer %}{% endblock %}
+            </div>
+        </footer>
     </body>
 </html>
