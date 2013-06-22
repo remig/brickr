@@ -1,6 +1,7 @@
 import os.path, re
 from flask import Flask, render_template, g, session, send_file
 from flask.ext.sqlalchemy import SQLAlchemy
+from flask.ext.openid import OpenID
 
 def breakpoint():
     import pdb
@@ -14,6 +15,8 @@ app = Flask(__name__)
 app.config.from_object('config')
 
 db = SQLAlchemy(app)
+
+oid = OpenID(app)
 
 from app.models.user import User
 
@@ -31,7 +34,9 @@ def internal_error(error):
 @app.before_request
 def before_request():
     g.user = None
-    if 'user_id' in session:
+    if 'openid' in session:
+        g.user = User.query.filter_by(openid = session['openid']).first()
+    elif 'user_id' in session:
         g.user = User.query.get(session['user_id'])
 
 @app.route('/')

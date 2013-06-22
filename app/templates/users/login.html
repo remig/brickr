@@ -3,18 +3,31 @@
 {% block title %}log on | brickr{% endblock %}
 
 {% block content %}
-    <div id="create-account">No account? <a href="{{ url_for('users.register') }}">Sign up</a></div>
     {% from "forms/macros.html" import render_field %}
-    <form method = "POST" action = "." class = "form">
+    <form method="POST" action="" class="form" id="openid_form">
         <fieldset>
-            <legend>Log On</legend>
+            <legend>Log in or create an account with OpenID</legend>
+            <br />
+            <div class="oid-login" onclick="$('input#openid_auto_url').val('https://www.google.com/accounts/o8/id'); $('form#openid_form').submit();" style="width: 250px; height: 30px; border: 1px solid grey; cursor: pointer">
+                <span class="oid-icon"><img src="{{ url_for('static', filename = 'img/openid/google_16x16.png') }}"></span> Log in using Google
+            </div>
+            <br />
+            <div class="oid-login" onclick="$('input#openid_auto_url').val('http://yahoo.com/'); $('form#openid_form').submit();" style="width: 250px; height: 30px; border: 1px solid grey; cursor: pointer">
+                <span class="oid-icon"><img src="{{ url_for('static', filename = 'img/openid/yahoo_16x16.png') }}"></span> Log in using Yahoo
+            </div>
+            <!--
+            <input type="text" name="openid" size="30">
+            -->
+            <input type="hidden" id="openid_auto_url" name="openid_auto_url" value="">
+            <br />
+            <legend>Or a Brickr account:</legend>
+            <br />
             {{ form.csrf_token }}
             {{ render_field(form.email, class = "input text") }}
             {{ render_field(form.password, class = "input text") }}
-            {% if nextURL %}
-                <input type = "hidden" value = "{{ nextURL }}" id = "nextURL" name = "nextURL">
-            {% endif %}
-            <input type = "submit" value = "Login" class = "button green">
+            <input type="hidden" name="next" value="{{ next }}">
+            <br />
+            <input type="submit" value="Login" class="button green">
             <div id="logon-help">
                 <p><a href="">Forgot your password?</a></p>
             </div>

@@ -7,6 +7,7 @@ class User(db.Model):
 
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key = True)
+    openid = db.Column(db.String(200), unique = True)
     name = db.Column(db.String(50), unique = True)
     email = db.Column(db.String(120), unique = True)
     password = db.Column(db.String(20))
@@ -20,7 +21,7 @@ class User(db.Model):
     contacts = db.relationship('Contact', backref = 'user', lazy = 'dynamic')
     groups = db.relationship('Group', secondary = group_member_list, backref = db.backref('members', lazy = 'dynamic'))
 
-    def __init__(self, name = None, email = None, password = None):
+    def __init__(self, name, email, password = None, openid = None):
         self.name = name
         self.email = email
         self.password = password

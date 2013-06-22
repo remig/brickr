@@ -35,7 +35,7 @@
                 <h3>{{ user.name }}</h3>
                 <ul>
                     <li>Member since <span class="convert-time">{{ user.creation_time }},LL</span></li>
-                    <li># of photos</li>
+                    <li>{{ user.photos.count() }} photos</li>
                     <li>location</li>
                     <li>facebook/twitter/web</li>
                     <li>more...</li>

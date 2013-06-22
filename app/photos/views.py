@@ -10,12 +10,6 @@ from app.users.decorators import requires_login
 
 mod = flask.Blueprint('photos', __name__, url_prefix = '/photos')
 
-@mod.before_request
-def before_request():
-    flask.g.user = None
-    if 'user_id' in flask.session:
-        flask.g.user = User.query.get(flask.session['user_id'])
-
 @mod.route('/')
 def root():
     return flask.render_template('photos/stream.html', user = None, users = User)

@@ -4,15 +4,15 @@
         <title>{% block title %}{% endblock %}</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width">
-        <link rel = "stylesheet" href = "{{ url_for('static', filename = 'css/main.css') }}" />
+        <link rel="stylesheet" href="{{ url_for('static', filename = 'css/main.css') }}" />
         {% block css %}
         {% endblock %}
         <script type="text/javascript">
             $SCRIPT_ROOT = {{ request.script_root | tojson | safe }};
         </script>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
-        <script src = "{{ url_for('static', filename = 'js/main.js') }}" type = "text/javascript"></script>
-        <script src = "{{ url_for('static', filename = 'js/moment-min.js') }}" type = "text/javascript"></script>
+        <script src="{{ url_for('static', filename = 'js/main.js') }}" type="text/javascript"></script>
+        <script src="{{ url_for('static', filename = 'js/moment-min.js') }}" type="text/javascript"></script>
         {% block script %}
         {% endblock %}
     </head>
@@ -22,20 +22,20 @@
             {% block header %}{% endblock %}
             </div>
         </header>
-        <div id = "messages-wrap">
-            <div id = "messages">
+        <div id="messages-wrap">
+            <div id="messages">
                 {% for category, msg in get_flashed_messages(with_categories = true) %}
-                    <p class = "message flash-{{ category }}">{{ msg }}</p>
+                    <p class="message flash-{{ category }}">{{ msg }}</p>
                 {% endfor %}
             </div>
         </div>
         
-        <div id = "content">
+        <div id="content">
         {% block content %}{% endblock %}
         </div>
         
         <footer>
-            <div id = "footer">
+            <div id="footer">
             {% block footer %}{% endblock %}
             </div>
         </footer>
