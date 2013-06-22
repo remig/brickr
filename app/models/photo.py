@@ -1,6 +1,7 @@
 from datetime import datetime
 from app import db, breakpoint
 from tag import tag_list
+from group import group_photo_list
 
 class Photo(db.Model):
 
@@ -16,7 +17,8 @@ class Photo(db.Model):
     favorites = db.relationship('Favorite', backref = 'photo', lazy = 'dynamic')
     notes = db.relationship('Note', backref = 'photo', lazy = 'dynamic')
     tags = db.relationship('Tag', secondary = tag_list, backref = db.backref('photos', lazy = 'dynamic'))
-    
+    groups = db.relationship('Group', secondary = group_photo_list, backref = db.backref('photos', lazy = 'dynamic'))
+
     def __init__(self, filename, user, title, description):
         self.binary_url =  '.' + filename.split('.')[-1]
         self.user_id = user.id

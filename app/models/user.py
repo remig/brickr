@@ -1,6 +1,7 @@
 from datetime import datetime
 from app import db
 from app.users import constants as USER
+from group import group_member_list
 
 class User(db.Model):
 
@@ -17,6 +18,7 @@ class User(db.Model):
     favorites = db.relationship('Favorite', backref = 'user', lazy = 'dynamic')
     notes = db.relationship('Note', backref = 'user', lazy = 'dynamic')
     contacts = db.relationship('Contact', backref = 'user', lazy = 'dynamic')
+    groups = db.relationship('Group', secondary = group_member_list, backref = db.backref('members', lazy = 'dynamic'))
 
     def __init__(self, name = None, email = None, password = None):
         self.name = name

@@ -58,6 +58,9 @@ app.register_blueprint(photoModule)
 from app.mail.views import mod as mailModule
 app.register_blueprint(mailModule)
 
+from app.groups.views import mod as groupModule
+app.register_blueprint(groupModule)
+
 if not app.debug:
     import logging
     from logging.handlers import RotatingFileHandler
