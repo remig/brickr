@@ -140,6 +140,51 @@ h5 {
 	}
 }
 
+/* Multi Photo View */
+
+#stream-nav {
+  margin: 0px;
+  padding: 0px;
+  list-style: none;
+  font-size: 1.1em;
+}
+
+#stream-nav li {
+  float: left;
+  padding: 0 .2em 2em .2em;
+}
+
+#stream-nav li:after {
+  content: " | ";
+}
+
+#stream-nav li:last-child:after {
+  content: " ";
+}
+
+#photo-stream {
+  clear: both;
+  margin: 0px;
+  padding: 0px;
+  list-style: none;
+}
+
+#photo-stream li {
+  float: left;
+  padding: .2em .2em;
+}
+
+.thumb {
+  padding: .2em;
+}
+
+.thumb img {
+  padding: 0;
+  margin: 0;
+  width: 75px;
+  height: 75px;
+}
+
 /* Single Photo View */
 #single-photo {
   margin: 0px;
@@ -421,6 +466,7 @@ fieldset {
   border: none;
   margin: 8px 20px;
 }
+
 legend {
   font-size: 1.6em;
   font-weight: bold;

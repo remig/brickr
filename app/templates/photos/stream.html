@@ -6,26 +6,24 @@
 
 {% block content %}
 <div class="container">
-    {% if user and g.user %}
-        {% if user.name == g.user.name %}
-            <a href="{{ url_for('photos.upload') }}">Upload new Photos</a>
-        {% else %}
-            <div id="contact-form">
-                {% if g.user.isUserInContactList(user) %}
-                    {{ user.name }} is a Contact. <input type="submit" value="Remove" onclick="removeContact({{ user.id }}, '{{ user.name }}');" id="remove-contact"></input>
-                {% else %}
-                    <input type="submit" onclick="addContact({{ user.id }}, '{{ user.name }}');" id="add-contact" value="Add {{ user.name }} as a Contact"></input>
-                {% endif %}
-            </div>
-        {% endif %}
-    {% endif %}
     {% if user %}    
     <div id="content-main">
+        <h2>{{ user.name }}'s photos</h2>
+        <ul id="stream-nav">
+            <li><a href="">Sets</a></li>
+            <li><a href="">Collections</a></li>
+            <li><a href="">Archive</a></li>
+            <li><a href="">Profile</a></li>
+        </ul>
+        <ul id="photo-stream">
         {% for photo in photos %}
-            <a href="{{ url_for('photos.photo', username = user.name, photoID = photo.id) }}">
-                <p><img width="200" src="{{ url_for('binary_photo', filename = photo.filename()) }}">
-            </a>
+            <li>
+                <div class="thumb"><a href="{{ url_for('photos.photo', username = user.name, photoID = photo.id) }}">
+                    <img width="200" src="{{ url_for('binary_photo', filename = photo.filename()) }}" alt="{{ photo.filename }}">
+                </a></div>
+            </li>
         {% endfor %}
+        </ul>
     </div>
     
     <div id="content-sidebar">
@@ -33,6 +31,7 @@
             <img src="{{ url_for('static', filename = 'img/avatar.jpg') }}" alt="" title="" border="0" width="100" height="100">
             <div id="profile-meta">
                 <h3>{{ user.name }}</h3>
+                
                 <ul>
                     <li>Member since <span class="convert-time">{{ user.creation_time }},LL</span></li>
                     <li>{{ user.photos.count() }} photos</li>
@@ -42,6 +41,21 @@
                 </ul>            
             </div>
         </div>
+        
+        {% if user and g.user %}
+            <div id="actions">
+            {% if user.name == g.user.name %}
+                <a href="{{ url_for('photos.upload') }}">Upload new Photos</a>
+            {% else %}
+                <p>{% if g.user.isUserInContactList(user) %}
+                    {{ user.name }} is a Contact. <input type="submit" value="Remove" onclick="removeContact({{ user.id }}, '{{ user.name }}');" id="remove-contact"></input>
+                {% else %}
+                    <input class="button" type="submit" onclick="addContact({{ user.id }}, '{{ user.name }}');" id="add-contact" value="Add {{ user.name }} as a Contact"></input>
+                {% endif %}</p>
+            {% endif %}
+            </div>
+        {% endif %}
+                
     </div>
     
     {% else %}
