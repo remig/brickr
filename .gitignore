@@ -1,7 +1,13 @@
-sqlite/
 Thumbs.db
 ehthumbs.db
+app.db
+app - Copy.db
 Desktop.ini
 *.py[co]
-*.hello
-.elasticbeanstalk/
+*.hello
+.coverage
+
+.elasticbeanstalk/*
+htmlcov/*
+sqlite/*
+snippets/*

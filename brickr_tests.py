@@ -8,10 +8,10 @@ _basedir = os.path.abspath(os.path.dirname(__file__))
 class BrickrTestCase(unittest.TestCase):
 
     def setUp(self):
-        app.config['TESTING'] = True
-        app.config['CSRF_ENABLED'] = False
         self.db_filename = os.path.join(_basedir, 'unittest.db')
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + self.db_filename
+        app.config['TESTING'] = True
+        app.config['CSRF_ENABLED'] = False
         self.app = app.test_client()
         db.create_all()
         
