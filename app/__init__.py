@@ -3,7 +3,7 @@ from flask import Flask, render_template, g, session, send_file
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.openid import OpenID
 
-def breakpoint():
+def breakpoint(): # pragma: no cover
     import pdb
     pdb.set_trace()
 
