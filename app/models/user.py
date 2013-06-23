@@ -2,6 +2,7 @@ from datetime import datetime
 from app import db
 from app.users import constants as USER
 from group import group_member_list
+from werkzeug import generate_password_hash
 
 class User(db.Model):
 
@@ -24,9 +25,14 @@ class User(db.Model):
     def __init__(self, name, email, password = None, openid = None):
         self.name = name
         self.email = email
-        self.password = password
+        self.openid = openid
         self.creation_time = datetime.utcnow()
-        
+        if password is not None:
+            if password.startswith('sha1$'):
+                self.password = password
+            else:  # If we somehow got passed in a raw password, hash it
+                self.password = generate_password_hash(password)
+
     def getStatus(self):
         return USER.STATUS[self.status]
         
