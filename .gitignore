@@ -7,7 +7,7 @@ Desktop.ini
 *.hello
 .coverage
 
-.elasticbeanstalk/*
-htmlcov/*
-sqlite/*
-snippets/*
+.elasticbeanstalk
+htmlcov
+sqlite
+snippets
