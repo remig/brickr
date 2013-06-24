@@ -2,6 +2,10 @@ import sys, os.path
 from app import app, db, breakpoint
 from app.models import *
 
+if 'RDS_HOSTNAME' in os.environ:
+    print "This init script is only useful for local sqlite databases, not RDS!"
+    sys.exit()
+
 if os.path.exists(app.config['DATABASE_FILENAME']):
     s = raw_input("Database already exisits - replace it? (y/n):")
     if s.lower()[0] == 'y':
