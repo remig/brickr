@@ -59,12 +59,15 @@
     </div>
     
     {% else %}
-        <p>This is the photo view when no user is selected.
-        {% if users %}
-            <p>A list of all registered users:
-            <ul>
-            {% for user in users.query.all() %}
-                <li><a href="{{ url_for('photos.stream', username = user.name) }}">{{ user.name }}</a> - User ID: {{ user.id }} - Joined on <span class="convert-time">{{ user.creation_time }},LL</span></li>
+        {% if photos %}
+            <h3>Some recently posted photos:</h3>
+            <ul id="photo-stream">
+            {% for photo in photos.query.order_by('id desc')[:5] %}
+                <li>
+                    <div class="thumb"><a href="{{ url_for('photos.photo', username = photo.user.name, photoID = photo.id) }}">
+                        <img width="200" src="{{ url_for('binary_photo', filename = photo.filename()) }}" alt="{{ photo.filename }}">
+                    </a></div>
+                </li>
             {% endfor %}
             </ul>
         {% endif %}

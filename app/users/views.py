@@ -8,6 +8,10 @@ from app.users.decorators import requires_login
 
 mod = Blueprint('users', __name__, url_prefix = '/users')
 
+@mod.route('/')
+def root():
+    return render_template('users/user_index.html', users = User)
+
 @mod.route('/me/')
 @requires_login
 def home():

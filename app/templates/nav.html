@@ -4,7 +4,8 @@
     <h1 class="logo"><a href="{{ url_for('index') }}">brickr</a></h1>
     <nav>
         <ul class="menu">
-            <li><a href="{{ url_for('photos.root') }}">Users</a></li>
+            <li><a href="{{ url_for('users.root') }}">Users</a></li>
+            <li><a href="{{ url_for('photos.root') }}">Photos</a></li>
             <li><a href="{{ url_for('groups.root') }}">Groups</a></li>
             <li><a href="{{ url_for('about') }}">About</a></li>
             {% if session['openid'] or session['user_id'] and g.user %}
