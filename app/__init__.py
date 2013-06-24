@@ -15,11 +15,11 @@ app = Flask(__name__)
 app.config.from_object('config')
 
 db = SQLAlchemy(app)
-db.create_all()
 
 oid = OpenID(app)
 
-from app.models.user import User
+from app.models import *
+db.create_all()
 
 app.jinja_env.trim_blocks = True
 
