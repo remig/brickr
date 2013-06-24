@@ -10,10 +10,23 @@
 <div id="content-main">
     <h2>{{ group.name }}</h2>
     <p>Created on <span class="convert-time">{{ group.creation_time }},LL</span></p>
-    <h4>About {{ group.name }}</h4>
+    <h4>About {{ group.name }}:</h4>
     <p>{{ group.description }}</p>
-    <h4>Rules</h4>
+    <h4>Rules:</h4>
     <p>{{ group.rules }}</p>
     <a href="{{ url_for('groups.root') }}">Back to Group Index</a>
+    <h4>Members:</h4>
+    <ul>
+    {% for member in group.members %}
+        <li><a href="{{ url_for('photos.stream', username = member.name) }}">{{ member.name }}</a></li>
+    {% endfor %}
+    </ul>
+    {% if g.user %}
+        {% if g.user in group.members %}
+            <a href="javascript:leaveOrJoinGroup('leave', '{{ group.name }}', {{ group.id }}, {{ g.user.id }});">Leave this Group</a>
+        {% else %}
+            <a href="javascript:leaveOrJoinGroup('join', '{{ group.name }}', {{ group.id }}, {{ g.user.id }});">Join this Group</a>
+        {% endif %}
+    {% endif %}
 </div>
 {% endblock %}

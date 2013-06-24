@@ -54,3 +54,18 @@ function tagKeyPress(el, e, photoID) {
 	);
 	return false;
 }
+
+function leaveOrJoinGroup(action, groupName, groupID, userID) {
+	if (confirm('Do you really want to ' + action + ' the group "' + groupName + '"?')) {
+		$.post($SCRIPT_ROOT + '/groups/_leaveOrJoinGroup/', 
+			{userID: userID, groupID: groupID, action: action},
+			function(data) {
+				if (data.result) {
+					window.location.reload();  // fuck me that's nasty; need better way to refresh member list and 'join / abandon' link
+				} else {
+					alert('Something went terribly wrong in the group ' + action + ' process...')
+				}
+			}
+		);
+	}
+}

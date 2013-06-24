@@ -49,7 +49,7 @@ def create_or_login(resp):
                                  name = resp.fullname or resp.nickname,
                                  email = resp.email))  # Send new user to profile creation page
 
-    # User successfully logged - cache user object then redirect to wherever they came from
+    # User successfully logged out - cache user object then redirect to wherever they came from
     g.user = user
     return redirect(oid.get_next_url())
     
@@ -60,7 +60,7 @@ def logout():
     if 'openid' in session:
         session.pop('openid')
     flash('You were logged out')
-    return redirect(url_for('index'))
+    return redirect(oid.get_next_url())
     
 @mod.route('/register/', methods = ['GET', 'POST'])
 def register():
