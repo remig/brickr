@@ -45,6 +45,10 @@ class User(db.Model):
         
     def isFavorited(self, photo):
         return photo in [x.photo for x in self.favorites]
+
+    def unread_pm_count(self):
+        from private_message import PrivateMessage  # fuck me, really?
+        return PrivateMessage.query.filter_by(recipient_id = 1).filter_by(isRead = False).count()
         
     def __repr__(self):
         return '<User %r>' % (self.name)

@@ -10,11 +10,12 @@
     <h4><span>From</span> | <span>Title</span> | <span>Date</span></h4>
     <ul>
         {% for message in messages %}
-        <li>
+        <span class="{% if message.isRead %}read{% else %}unread{% endif %}"><li>
             <span><a href="{{ url_for('photos.stream', username = message.sender.name) }}">{{ message.sender.name }}</a></span> -
             <span><a href="{{ url_for('mail.message', messageID = message.id) }}">{{ message.title }}</a></span> - 
             <span class="convert-time">{{ message.creation_time }},LL</span>
-        </li>
+            {% if not message.isRead %}<span> | Unread </span>{% endif %}
+        </li></span>
         {% endfor %}
     </ul>
 {% endblock %}

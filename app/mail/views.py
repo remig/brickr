@@ -15,6 +15,8 @@ def inbox():
 @requires_login
 def message(messageID):
     message = PrivateMessage.query.get(messageID)
+    message.isRead = True
+    db.session.commit()
     return render_template('mail/message.html', message = message)
 
 @mod.route('/compose/')
