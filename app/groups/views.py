@@ -22,7 +22,7 @@ def add_photos(groupURL):
     if request.method == 'POST' and group:
         doAdd = request.form.get('action') == 'add'
         for photo in [Photo.query.get(p) for p in request.form.keys() if p != 'action']:
-            if doAdd and photo not in group.photos:
+            if photo and doAdd and photo not in group.photos:
                 group.photos.append(photo)
             elif not doAdd and photo in group.photos:
                 group.photos.remove(photo)
