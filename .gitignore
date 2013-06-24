@@ -6,8 +6,7 @@ Desktop.ini
 *.py[co]
 *.hello
 .coverage
-
 .elasticbeanstalk
 htmlcov
 sqlite
-snippets
+snippets

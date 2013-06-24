@@ -28,5 +28,21 @@
             <a href="javascript:leaveOrJoinGroup('join', '{{ group.name }}', {{ group.id }}, {{ g.user.id }});">Join this Group</a>
         {% endif %}
     {% endif %}
+    <div>
+        <h4>Photos</h4>
+        <ul id="photo-stream">
+        {% for photo in group.photos %}
+            <li>
+                <div class="thumb"><a href="{{ url_for('photos.photo', username = photo.user.name, photoID = photo.id) }}">
+                    <img width="200" src="{{ url_for('binary_photo', filename = photo.filename()) }}" alt="{{ photo.filename }}">
+                </a></div>
+            </li>
+        {% endfor %}
+        </ul>
+    </div>
+    <br /><br /><br /><br /><br /><br /><br />
+    {% if g.user in group.members %}
+        <a href="{{ url_for('groups.add_photos', groupURL = group.url_name) }}">Add and remove photos to this group</a>
+    {% endif %}
 </div>
 {% endblock %}

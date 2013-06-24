@@ -66,13 +66,16 @@
             </div>
         </div>
 
+        {% if photo.groups %}
         <div id="single-groups" class="sidebar-box">
-            <h3>Also in (NYI)</h3>
+            <h3>Also in</h3>
             <ul>
-                <li><a href="">LEGO</a></li>
-                <li><a href="">Space</a></li>
+                {% for group in photo.groups %}
+                <li><a href="{{ url_for('groups.group', groupURL = group.url_name) }}">{{ group.name }}</a></li>
+                {% endfor %}
             </ul>
         </div>
+        {% endif %}
 
         <div id="tags" class="sidebar-box">
             <h3>Tags

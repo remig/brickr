@@ -45,7 +45,7 @@
         {% if user and g.user %}
             <div id="actions">
             {% if user.name == g.user.name %}
-                <a href="{{ url_for('photos.upload') }}">Upload new Photos</a>
+                <a href="{{ url_for('photos.upload') }}"><input type="submit" value="Upload new Photos" class="button green" /></a>
             {% else %}
                 <p>{% if g.user.isUserInContactList(user) %}
                     {{ user.name }} is a Contact. <input type="submit" value="Remove" onclick="removeContact({{ user.id }}, '{{ user.name }}');" id="remove-contact"></input>
