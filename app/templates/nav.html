@@ -10,7 +10,7 @@
             <li><a href="{{ url_for('about') }}">About</a></li>
             {% if session['openid'] or session['user_id'] and g.user %}
             <li><a href="{{ url_for('users.home') }}">Profile</a></li>
-            <li><a href="{{ url_for('mail.inbox') }}">Mail {% if g.user.unread_pm_count() %}({{ g.user.unread_pm_count() }}){% endif %}</a></li>
+            <li><a href="{{ url_for('mail.inbox') }}">Mail {% if g.user and g.user.unread_pm_count() %}({{ g.user.unread_pm_count() }}){% endif %}</a></li>
             <li><a href="{{ url_for('users.logout') }}">Logout {{ g.user.name }}</a></li>
             {% else %}
             <li><a href="{{ url_for('users.login') }}">Login</a></li>

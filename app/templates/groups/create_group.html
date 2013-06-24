@@ -1,0 +1,23 @@
+{% extends "nav.html" %}
+
+{% block title %}Create Group | brickr{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <form method="POST" action="" class="form" id="create_group_form">
+        <br /><label for="name">Group Name: (required)</label>
+        <br /><input id="name" name="name" type="text" size="55" value="{{ name }}"/>
+        <br />
+        <br /><label for="url_name">Group Short Name: (required)</label>
+        <br /><input id="url_name" name="url_name" type="text" size="55" value="{{ url_name }}"/>
+        <br />letters, numbers and underscore only
+        <br /><br /><label for="description">Description: (optional)</label>
+        <textarea id="description" name="description" size="55" rows="8">{{ description }}</textarea>
+        <br /><br /><label for="rules">Rules: (optional)</label>
+        <textarea id="rules" name="rules" size="55" rows="4">{{ rules }}</textarea>
+        <br /><input type="hidden" name="action" value="add">
+        <br /><input type="submit" value="Create group" class="button green">
+    </form>
+    <a href="{{ url_for('groups.root') }}">Back to Group Index</a>
+</div>
+{% endblock %}

@@ -60,7 +60,7 @@
     
     {% else %}
         {% if photos %}
-            <h3>Some recently posted photos:</h3>
+            <h3>Some recently uploaded photos:</h3>
             <ul id="photo-stream">
             {% for photo in photos.query.order_by('id desc')[:5] %}
                 <li>
