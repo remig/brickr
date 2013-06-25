@@ -1,7 +1,10 @@
+import os.path
+from uuid import uuid4
 from datetime import datetime
-from app import db, breakpoint
+from app import app, db, breakpoint
 from tag import tag_list
 from group import group_photo_list
+from werkzeug import secure_filename
 
 class Photo(db.Model):
 
@@ -20,7 +23,8 @@ class Photo(db.Model):
     groups = db.relationship('Group', secondary = group_photo_list, backref = db.backref('photos', lazy = 'dynamic'))
 
     def __init__(self, filename, user, title, description):
-        self.binary_url =  '.' + filename.split('.')[-1]
+        filename = secure_filename(filename)
+        self.binary_url =  uuid4().hex + os.path.splitext(filename)[1]
         self.user_id = user.id
         self.title = title
         self.description = description
@@ -31,8 +35,31 @@ class Photo(db.Model):
         return '<Photo %d>' % (self.id)
         
     def filename(self):
+        if len(self.binary_url) > 5:
+            return '/'.join(['img', self.url_path(), self.binary_url])  # yuck
         return str(self.id) + self.binary_url
 
+    # source_file is an instance of FileStorage, with 'save' and 'readlines' properties
+    # return true if save successful, false otherwise
+    def save_file(self, source_file):
+        try:
+            path = os.path.join(app.config['BINARY_PATH'], self.os_path())
+            if not os.path.exists(path):
+                os.makedirs(path)
+            fn = os.path.join(path, self.binary_url)
+            source_file.save(fn)
+            return True
+        except:  # need to log this, or something
+            return False
+        
+    def url_path(self):
+        u = self.binary_url
+        return '/'.join([u[0], u[1], u[2]])
+        
+    def os_path(self):
+        u = self.binary_url
+        return os.path.join(u[0], u[1], u[2])
+    
     # Get the photo previous to this photo from the user's stream, or None if
     # this is the first photo in the stream
     def prevPhoto(self):

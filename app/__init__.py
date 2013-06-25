@@ -51,7 +51,7 @@ def index():
 def about():
     return render_template('about.html')
     
-@app.route('/binaries/<filename>')
+@app.route('/binaries/<path:filename>/')
 def binary_photo(filename):
     return send_file(os.path.join('binaries', filename))
 

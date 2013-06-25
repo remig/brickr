@@ -1,7 +1,6 @@
 import os, shlex
 from flask import *
 from sqlalchemy import func
-from werkzeug import secure_filename
 
 from app import app, db, breakpoint, strip
 from app.models import *
@@ -34,9 +33,9 @@ def photo(photoID, username = None):
 
     return render_template('photos/photo.html', photo = photo)
 
-ALLOWED_EXTENSIONS = set(['jpg', 'jpeg', 'gif', 'png'])
+ALLOWED_EXTENSIONS = set(['.jpg', '.jpeg', '.gif', '.png'])
 def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+    return os.path.splitext(filename)[1] in ALLOWED_EXTENSIONS
 
 @mod.route('/upload/', methods = ['GET', 'POST'])
 @requires_login
@@ -44,19 +43,17 @@ def upload():
     if request.method == 'POST':
         file = request.files['file']
         if file and allowed_file(file.filename):
-            
+            breakpoint()
             photo = Photo(file.filename, g.user, file.filename, "Description text goes here")
-            
-            db.session.add(photo)
-            db.session.commit()
-
-            username = g.user.name
-            pathname = app.config['BINARY_UPLOAD_PATH']            
-            imagename = secure_filename(photo.filename())
-            filename = os.path.join(pathname, imagename);
-            file.save(filename)
-            flash(u'Image upload success! - File: %s saved, user: %s' % (filename, username))
-            return redirect(url_for('photos.stream', username = username))
+            if photo.save_file(file):
+                db.session.add(photo)
+                db.session.commit()
+                flash(u'Image upload success!')
+            else:
+                flash(u'Something went horribly wrong while uploading.  Sharks, maybe.')
+            return redirect(url_for('photos.stream', username = g.user.name))
+        else:
+            flash(u'This type of file cannot be uploaded.')
     return render_template('photos/upload.html')
 
 @mod.route('/addComment/', methods = ['POST'])
