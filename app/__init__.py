@@ -6,8 +6,9 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.openid import OpenID
 
 def breakpoint(): # pragma: no cover
-    import pdb
-    pdb.set_trace()
+    if app.debug:
+        import pdb
+        pdb.set_trace()
 
 pattern = re.compile('[^A-Za-z0-9 _!$]+')
 def strip(text):

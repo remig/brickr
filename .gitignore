@@ -10,5 +10,5 @@ Desktop.ini
 htmlcov
 sqlite
 snippets
-
+logs
 .elasticbeanstalk/

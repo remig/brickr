@@ -1,10 +1,12 @@
-import os.path
+import os, boto, mimetypes
 from uuid import uuid4
 from datetime import datetime
 from app import app, db, breakpoint
 from tag import tag_list
 from group import group_photo_list
 from werkzeug import secure_filename
+
+mimetypes.init([])  # Don't use platform's mimetype mapping, which is broken on Windows (http://bugs.python.org/issue10551)
 
 class Photo(db.Model):
 
@@ -41,15 +43,41 @@ class Photo(db.Model):
 
     # source_file is an instance of FileStorage, with 'save' and 'readlines' properties
     # return true if save successful, false otherwise
+    # Saves to a local path in dev, to S3 in prod
     def save_file(self, source_file):
         try:
-            path = os.path.join(app.config['BINARY_PATH'], self.os_path())
-            if not os.path.exists(path):
-                os.makedirs(path)
-            fn = os.path.join(path, self.binary_url)
-            source_file.save(fn)
+            if 0 and app.config['PRODUCTION']:  # Upload photo file to AWS S3 - NYI for now
+
+                content_type = mimetypes.guess_type(self.binary_url)
+                conn = boto.connect_s3(app.config["S3_KEY"], app.config["S3_SECRET"])
+                bucket = conn.get_bucket(app.config["S3_BUCKET"])
+                sml = bucket.new_key("/".join([app.config["S3_UPLOAD_DIRECTORY"], self.url_path(), self.binary_url]))
+                sml.set_contents_from_file(source_file, headers = {'Content-Type': content_type})
+                sml.set_acl('public-read')
+
+            else:  # Running locally - store photo in local folder
+                path = os.path.join(app.config['BINARY_PATH'], self.os_path())
+                if not os.path.exists(path):
+                    os.makedirs(path)
+                fn = os.path.join(path, self.binary_url)
+                source_file.save(fn)
             return True
         except:  # need to log this, or something
+            return False
+            
+    # Delete the file associated with this photo, either on the local disk or S3
+    def delete_file(self):
+        try:
+            if 0 and app.config['PRODUCTION']:  # Delete photo file from AWS S3 - NYI for now
+                pass
+            else:
+                if len(self.binary_url) > 5:
+                    fn = os.path.join(app.config['BINARY_PATH'], self.os_path(), self.binary_url)
+                else:
+                    fn = os.path.join(app.config['BINARY_UPLOAD_PATH'], str(self.id) + self.binary_url)
+                os.unlink(fn)
+            return True
+        except:  # need to log this too, damn it
             return False
         
     def url_path(self):

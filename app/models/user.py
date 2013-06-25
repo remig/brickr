@@ -1,5 +1,5 @@
 from datetime import datetime
-from app import db
+from app import db, breakpoint
 from app.users import constants as USER
 from group import group_member_list
 from werkzeug import generate_password_hash
@@ -48,7 +48,7 @@ class User(db.Model):
 
     def unread_pm_count(self):
         from private_message import PrivateMessage  # fuck me, really?
-        return PrivateMessage.query.filter_by(recipient_id = 1).filter_by(isRead = False).count()
+        return PrivateMessage.query.filter_by(recipient_id = self.id).filter_by(isRead = False).count()
         
     def __repr__(self):
         return '<User %r>' % (self.name)

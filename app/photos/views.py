@@ -102,3 +102,17 @@ def addTag():
         db.session.commit()
         return jsonify(result = True, tags = tag_list)
     return jsonify(result = False)
+
+@mod.route('/delete/<photoID>/', methods = ['GET', 'POST'])
+@requires_login
+def delete(photoID):
+    photo = Photo.query.get(photoID)
+    if g.user.id != photo.user.id:
+        flash(u"You don't have permission to delete this photo.")
+        return redirect(url_for('photos.photo', username = photo.user.name, photoID = photoID))
+    if photo.delete_file():
+        db.session.delete(photo)
+        db.session.commit()
+        return redirect(url_for('photos.stream', username = g.user.name))
+    flash(u'Something went horribly wrong while deleting your photo. It\'s still here...')
+    return redirect(url_for('photos.photo', username = photo.user.name, photoID = photoID))

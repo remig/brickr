@@ -3,3 +3,4 @@ MySQL-python
 flask-sqlalchemy
 flask-wtf
 flask-openid
+boto
