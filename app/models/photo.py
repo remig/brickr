@@ -37,16 +37,17 @@ class Photo(db.Model):
         return '<Photo %d>' % (self.id)
         
     def filename(self):
-        if len(self.binary_url) > 5:
+        if app.config['PRODUCTION']:
             return '/'.join(['img', self.url_path(), self.binary_url])  # yuck
-        return str(self.id) + self.binary_url
+        else:
+            return '/'.join([app.config['IMG_PATH'], self.url_path(), self.binary_url])  # yuck
 
     # source_file is an instance of FileStorage, with 'save' and 'readlines' properties
     # return true if save successful, false otherwise
     # Saves to a local path in dev, to S3 in prod
     def save_file(self, source_file):
         try:
-            if 0 and app.config['PRODUCTION']:  # Upload photo file to AWS S3 - NYI for now
+            if app.config['PRODUCTION']:  # Upload photo file to AWS S3
 
                 content_type = mimetypes.guess_type(self.binary_url)
                 conn = boto.connect_s3(app.config["S3_KEY"], app.config["S3_SECRET"])
@@ -68,13 +69,10 @@ class Photo(db.Model):
     # Delete the file associated with this photo, either on the local disk or S3
     def delete_file(self):
         try:
-            if 0 and app.config['PRODUCTION']:  # Delete photo file from AWS S3 - NYI for now
+            if app.config['PRODUCTION']:  # Delete photo file from AWS S3 - NYI
                 pass
             else:
-                if len(self.binary_url) > 5:
-                    fn = os.path.join(app.config['BINARY_PATH'], self.os_path(), self.binary_url)
-                else:
-                    fn = os.path.join(app.config['BINARY_UPLOAD_PATH'], str(self.id) + self.binary_url)
+                fn = os.path.join(app.config['BINARY_PATH'], self.os_path(), self.binary_url)
                 os.unlink(fn)
             return True
         except:  # need to log this too, damn it

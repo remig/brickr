@@ -33,7 +33,7 @@
         {% for photo in group.photos %}
             <li>
                 <div class="thumb"><a href="{{ url_for('photos.photo', username = photo.user.name, photoID = photo.id) }}">
-                    <img width="200" src="{{ url_for('binary_photo', filename = photo.filename()) }}" alt="{{ photo.filename }}">
+                    <img width="200" src="{{ photo.filename() }}" alt="{{ photo.title }}" title="{{ photo.title }}">
                 </a></div>
             </li>
         {% endfor %}

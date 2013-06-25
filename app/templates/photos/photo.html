@@ -28,7 +28,7 @@
                     </ul>
                     -->
                 </div>
-                <img src="{{ url_for('binary_photo', filename = photo.filename()) }}">
+                <img src="{{ photo.filename() }}" alt="{{ photo.title }}" title="{{ photo.title }}">
             </div>
             
             <div id="single-photo-info">
@@ -57,7 +57,7 @@
                 {% for p in photo.getAdjacentPhotoStream(4) %}
                     {% if p %}
                         <a href="{{ url_for('photos.photo', username = p.user.name, photoID = p.id) }}">
-                            <img src="{{ url_for('binary_photo', filename = p.filename()) }}" alt="" title="" border="0" height="55" width="55" />
+                            <img src="{{ p.filename() }}" alt="{{ p.title }}" title="{{ p.title }}" border="0" height="55" width="55" />
                         </a>
                     {% else %}
                         <img src="{{ url_for('static', filename = 'img/avatar.jpg') }}" alt="" title="" border="0" height="55" width="55" />

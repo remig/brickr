@@ -1,3 +1,4 @@
+app/binaries/
 Thumbs.db
 ehthumbs.db
 app.db
@@ -10,5 +11,4 @@ Desktop.ini
 htmlcov
 sqlite
 snippets
-logs
-.elasticbeanstalk/
+logs.elasticbeanstalk/
