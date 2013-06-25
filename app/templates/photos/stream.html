@@ -47,11 +47,12 @@
             {% if user.name == g.user.name %}
                 <a href="{{ url_for('photos.upload') }}"><input type="submit" value="Upload new Photos" class="button green" /></a>
             {% else %}
-                <p>{% if g.user.isUserInContactList(user) %}
-                    {{ user.name }} is a Contact. <input type="submit" value="Remove" onclick="removeContact({{ user.id }}, '{{ user.name }}');" id="remove-contact"></input>
-                {% else %}
-                    <input class="button" type="submit" onclick="addContact({{ user.id }}, '{{ user.name }}');" id="add-contact" value="Add {{ user.name }} as a Contact"></input>
-                {% endif %}</p>
+                <span id="remove_contact" style="visibility:{% if g.user.isUserInContactList(user) %}inline{% else %}hidden{% endif %};">
+                    {{ user.name }} is a Contact. <input class="button" type="submit" value="Remove" onclick="removeContact({{ user.id }}, '{{ user.name }}');" id="remove-contact" />
+                </span>
+                <span id="add_contact" style="visibility:{% if not g.user.isUserInContactList(user) %}inline{% else %}hidden{% endif %};">
+                    <input class="button" type="submit" onclick="addContact({{ user.id }}, '{{ user.name }}');" id="add-contact" value="Add {{ user.name }} as a Contact" />
+                </span>
             {% endif %}
             </div>
         {% endif %}

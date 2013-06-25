@@ -15,7 +15,8 @@ function addContact(userID, username) {
 		type: 'POST',
 		success: function(data) {
 			if (data.result) {
-				$('div#contact-form').html(username + ' is a Contact. <input type="submit" value="Remove" onclick="removeContact(' + userID + ', \'' + username + '\');" id="remove-contact"></input>');
+				$('span#add_contact').css('visibility', 'hidden');
+				$('span#remove_contact').css('visibility', '');
 			}
 		}
 	});
@@ -28,7 +29,8 @@ function removeContact(userID, username) {
 		type: 'POST',
 		success: function(data) {
 			if (data.result) {
-				$('div#contact-form').html('<input type="submit" onclick="addContact(' + userID + ', \'' + username + '\');" id="add-contact" value="Add ' + username + ' as a Contact"></input>');
+				$('span#add_contact').css('visibility', '');
+				$('span#remove_contact').css('visibility', 'hidden');
 			}
 		}
 	});
