@@ -76,8 +76,11 @@ app.register_blueprint(groupModule)
 
 if not app.debug:
     import logging
+    path = 'logs'
+    if not os.path.exists(path):
+        os.makedirs(path)
     from logging.handlers import RotatingFileHandler
-    file_handler = RotatingFileHandler(os.path.join('logs', 'brickr_errors.log'), 'a', 1 * 1024 * 1024, 10)
+    file_handler = RotatingFileHandler(os.path.join(path, 'brickr_errors.log'), 'a', 1 * 1024 * 1024, 10)
     file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
     app.logger.setLevel(logging.INFO)
     file_handler.setLevel(logging.INFO)
