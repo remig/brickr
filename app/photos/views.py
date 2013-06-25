@@ -43,7 +43,6 @@ def upload():
     if request.method == 'POST':
         file = request.files['file']
         if file and allowed_file(file.filename):
-            breakpoint()
             photo = Photo(file.filename, g.user, file.filename, "Description text goes here")
             if photo.save_file(file):
                 db.session.add(photo)

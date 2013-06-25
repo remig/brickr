@@ -18,6 +18,7 @@ if PRODUCTION:
     app.config.from_object('config.ProductionConfig')
 else:
     app.config.from_object('config.DevelopmentConfig')
+app.config['PRODUCTION'] = PRODUCTION
 
 db = SQLAlchemy(app)
 
