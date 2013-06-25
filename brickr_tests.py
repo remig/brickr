@@ -3,12 +3,10 @@ import flask
 from app import app, db
 from app.models import *
 
-_basedir = os.path.abspath(os.path.dirname(__file__))
-
 class BrickrTestCase(unittest.TestCase):
 
     def setUp(self):
-        self.db_filename = os.path.join(_basedir, 'unittest.db')
+        self.db_filename = os.path.join(app.config['BASEDIR'], 'unittest.db')
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + self.db_filename
         app.config['TESTING'] = True
         app.config['CSRF_ENABLED'] = False
@@ -51,7 +49,7 @@ class BrickrTestCase(unittest.TestCase):
     def test_about(self):
         rv = self.app.get('about')
         assert 'About' in rv.data
-        assert 'Need stuff here' in rv.data
+        assert 'This is a quick prototype of what brickr will eventually become' in rv.data
         
     def test_login_logout(self):
         self.create_user('Remi', 'remigagne@gmail.com', 'abc')

@@ -1,3 +1,5 @@
+PRODUCTION = True  # change this to False when developing locally
+
 import os.path, re
 from flask import Flask, render_template, g, session, send_file
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -12,7 +14,10 @@ def strip(text):
     return pattern.sub('', text)
 
 app = Flask(__name__)
-app.config.from_object('config')
+if PRODUCTION:
+    app.config.from_object('config.ProductionConfig')
+else:
+    app.config.from_object('config.DevelopmentConfig')
 
 db = SQLAlchemy(app)
 
@@ -70,9 +75,9 @@ app.register_blueprint(groupModule)
 if not app.debug:
     import logging
     from logging.handlers import RotatingFileHandler
-    file_handler = RotatingFileHandler(os.path.join('logs', 'microblog.log'), 'a', 1 * 1024 * 1024, 10)
+    file_handler = RotatingFileHandler(os.path.join('logs', 'brickr_errors.log'), 'a', 1 * 1024 * 1024, 10)
     file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
     app.logger.setLevel(logging.INFO)
     file_handler.setLevel(logging.INFO)
     app.logger.addHandler(file_handler)
-    app.logger.info('microblog startup')
+    app.logger.info('brickr startup')
