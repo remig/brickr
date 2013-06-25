@@ -6,7 +6,8 @@
 
 {% block content %}
     <h2>Your Private Messages</h2>
-    <h3>From: {{ message.sender.name }}</h3>
+    <h3>From: {% if g.user and g.user.id == message.sender.id %}You{% else %}{{ message.sender.name }}{% endif %}</h3>
+    <h3>To: {% if g.user and g.user.id == message.recipient.id %}You{% else %}{{ message.recipient.name }}{% endif %}</h3>
     <h3>Subject: {{ message.title }}</h3>
     <p>{{ message.text }}</p>
     <a href="{{ url_for('mail.inbox') }}">Back to Inbox</a>

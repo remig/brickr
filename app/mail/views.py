@@ -9,7 +9,8 @@ mod = Blueprint('mail', __name__, url_prefix = '/mail')
 @requires_login
 def inbox():
     messages = PrivateMessage.query.filter_by(recipient_id = g.user.id)
-    return render_template('mail/inbox.html', user = g.user, messages = messages)
+    sent_messages = PrivateMessage.query.filter_by(sender_id = g.user.id)
+    return render_template('mail/inbox.html', user = g.user, messages = messages, sent_messages = sent_messages)
 
 @mod.route('/<messageID>')
 @requires_login
