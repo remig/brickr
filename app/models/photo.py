@@ -37,10 +37,11 @@ class Photo(db.Model):
         return '<Photo %d>' % (self.id)
         
     def filename(self):
-        if app.config['PRODUCTION']:
-            return '/'.join(['img', self.url_path(), self.binary_url])  # yuck
+        c = app.config
+        if c['PRODUCTION']:
+            return '/'.join([c['S3_LOCATION'], c['S3_BUCKET'], c['S3_UPLOAD_DIRECTORY'], self.url_path(), self.binary_url])
         else:
-            return '/'.join([app.config['IMG_PATH'], self.url_path(), self.binary_url])  # yuck
+            return '/'.join([c['IMG_PATH'], self.url_path(), self.binary_url])
 
     # source_file is an instance of FileStorage, with 'save' and 'readlines' properties
     # return true if save successful, false otherwise
