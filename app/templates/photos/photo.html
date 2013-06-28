@@ -28,7 +28,7 @@
                     </ul>
                     -->
                 </div>
-                <img src="{{ photo.filename() }}" alt="{{ photo.title }}" title="{{ photo.title }}">
+                <img src="{{ photo.url() }}" alt="{{ photo.title }}" title="{{ photo.title }}">
             </div>
             
             <div id="single-photo-info">
@@ -54,10 +54,10 @@
         <div id="quick-photostream" class="sidebar-box">
             <h3>{{ photo.user.name }}'s photosteam <span class="small">({{ photo.user.photos.count()}})</span></h3>
             <div class="slider-stream">
-                {% for p in photo.getAdjacentPhotoStream(4) %}
+                {% for p in photo.getAdjacentPhotoStream(5) %}
                     {% if p %}
                         <a href="{{ url_for('photos.photo', username = p.user.name, photoID = p.id) }}">
-                            <img src="{{ p.filename() }}" alt="{{ p.title }}" title="{{ p.title }}" border="0" height="55" width="55" />
+                            <img src="{{ p.url_thumb(75) }}" alt="{{ p.title }}" title="{{ p.title }}" border="0" height="55" width="55" />
                         </a>
                     {% else %}
                         <img src="{{ url_for('static', filename = 'img/avatar.jpg') }}" alt="" title="" border="0" height="55" width="55" />
@@ -153,7 +153,7 @@
         </div>
         {% endif %}
 
-        {% if session['user_id'] %}
+        {% if g.user %}
         <div id="photo-add-comment">
             <div class="hr"></div>
             <h3>Add a Comment</h3>

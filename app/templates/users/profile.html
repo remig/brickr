@@ -17,7 +17,7 @@
     <div>
         {% for fav in user.favorites %}
             <a href="{{ url_for('photos.photo', username = fav.photo.user.name, photoID = fav.photo.id) }}">
-                <p><img width="200" src="{{ fav.photo.filename() }}" alt="{{ photo.title }}" title="{{ photo.title }}">
+                <p><img width="200" src="{{ fav.photo.url_thumb(75) }}" alt="{{ fav.photo.title }}" title="{{ fav.photo.title }}">
             </a>
         {% endfor %}
     </div>
