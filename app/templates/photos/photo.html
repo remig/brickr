@@ -162,8 +162,7 @@
             <div class="hr"></div>
             <h3>Add a Comment</h3>
             <form method="POST" action="{{ url_for('photos.addComment') }}" class="form">
-                <textarea id="comment" name="comment" placeholder="Add a comment" aria-label="Add a comment">
-                </textarea>
+                <textarea id="comment" name="comment" rows="6" placeholder="Add a comment" aria-label="Add a comment"></textarea>
                 <input type="hidden" value="{{ photo.id }}" id="photoID" name="photoID">
                 <input type="submit" value="Submit" class="button">
             </form>
