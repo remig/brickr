@@ -4,4 +4,4 @@ flask-sqlalchemy
 flask-wtf
 flask-openid
 boto
-PIL
+pil
