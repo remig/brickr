@@ -94,9 +94,11 @@ def addTag():
         tag_list = [x for x in tag_list if x.lower() not in existing_tags]
         if not tag_list:
             return jsonify(result = False)
-            
+
         for tag_text in tag_list:
-            tag = Tag(tag_text)
+            tag = Tag.query.filter_by(description = tag_text).first()
+            if tag is None:
+                tag = Tag(tag_text)
             photo.tags.extend([tag])
             db.session.add(tag)
         db.session.commit()
