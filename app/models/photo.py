@@ -74,75 +74,69 @@ class Photo(db.Model):
             return '/'.join(['/binaries', folder, self.url_path(), self.binary_url])
 
     def generate_thumb(self, source_file, size = 75, bucket = None):  # for now, all thumbnails are assumed squares of width & height = size
-        try:
-            if isinstance(source_file, FileStorage):
-                source_file.seek(0)
-                img = Image.open(StringIO(source_file.read()))
-            else:
-                img = Image.open(source_file)
-                
-            folder = 'thumb_%d' % (size)
-            i_w, i_h = img.size
-            if i_w < i_h:
-                offset = (i_h - i_w) // 2
-                img = img.crop((0, offset, i_w, i_h - offset))  # l, t, r, b
-            else:
-                offset = (i_w - i_h) // 2
-                img = img.crop((offset, 0, i_w - offset, i_h))  # l, t, r, b
-            img.thumbnail((size, size), Image.ANTIALIAS)
+        if isinstance(source_file, FileStorage):
+            source_file.seek(0)
+            img = Image.open(StringIO(source_file.read()))
+        else:
+            img = Image.open(source_file)
             
-            if app.config['PRODUCTION']:
-                if bucket is None:
-                    return False  # gah - really?
-                content_type = mimetypes.guess_type(self.binary_url)
-                img_fh = StringIO()
-                img.save(img_fh, 'JPEG')
-                img_fh.seek(0)
-                sml = bucket.new_key("/".join([app.config["S3_UPLOAD_DIRECTORY"], folder, self.url_path(), self.binary_url]))
-                sml.set_contents_from_file(img_fh, headers = {'Content-Type': content_type})
-                sml.set_acl('public-read')
-            else:
-                path = os.path.join(app.config['BINARY_PATH'], folder, self.os_path())
-                if not os.path.exists(path):
-                    os.makedirs(path)
-                img.save(os.path.join(path, self.binary_url), 'JPEG')
-            return True
-        except:
-            return False
+        folder = 'thumb_%d' % (size)
+        i_w, i_h = img.size
+        if i_w < i_h:
+            offset = (i_h - i_w) // 2
+            img = img.crop((0, offset, i_w, i_h - offset))  # l, t, r, b
+        else:
+            offset = (i_w - i_h) // 2
+            img = img.crop((offset, 0, i_w - offset, i_h))  # l, t, r, b
+        img.thumbnail((size, size), Image.ANTIALIAS)
+        
+        if app.config['PRODUCTION']:
+            if bucket is None:
+                return False  # gah - really?
+            content_type = mimetypes.guess_type(self.binary_url)
+            img_fh = StringIO()
+            img.save(img_fh, 'JPEG')
+            img_fh.seek(0)
+            sml = bucket.new_key("/".join([app.config["S3_UPLOAD_DIRECTORY"], folder, self.url_path(), self.binary_url]))
+            sml.set_contents_from_file(img_fh, headers = {'Content-Type': content_type})
+            sml.set_acl('public-read')
+        else:
+            path = os.path.join(app.config['BINARY_PATH'], folder, self.os_path())
+            if not os.path.exists(path):
+                os.makedirs(path)
+            img.save(os.path.join(path, self.binary_url), 'JPEG')
+        return True
             
     # source_file is an instance of werkzeug.FileStorage
     # return True if save successful, False otherwise
     # Saves to a local path in dev, to S3 in prod
     def save_file(self, source_file):
-        try:
-            if app.config['PRODUCTION']:  # Upload photo file to AWS S3
+        if app.config['PRODUCTION']:  # Upload photo file to AWS S3
 
-                content_type = mimetypes.guess_type(self.binary_url)
-                conn = boto.connect_s3(app.config["S3_KEY"], app.config["S3_SECRET"])
-                bucket = conn.get_bucket(app.config["S3_BUCKET"])
-                key_name = '/'.join([app.config["S3_UPLOAD_DIRECTORY"], 'img', self.url_path(), self.binary_url])
-                k = bucket.new_key(key_name)
-                k.set_contents_from_file(source_file, headers = {'Content-Type': content_type})
-                k.set_acl('public-read')
+            content_type = mimetypes.guess_type(self.binary_url)
+            conn = boto.connect_s3(app.config["S3_KEY"], app.config["S3_SECRET"])
+            bucket = conn.get_bucket(app.config["S3_BUCKET"])
+            key_name = '/'.join([app.config["S3_UPLOAD_DIRECTORY"], 'img', self.url_path(), self.binary_url])
+            k = bucket.new_key(key_name)
+            k.set_contents_from_file(source_file, headers = {'Content-Type': content_type})
+            k.set_acl('public-read')
 
-                if not self.generate_thumb(source_file, 75, bucket):
-                    # So, we saved the photo to S3 just fine, but failed to generate 
-                    # a thumbnail. This puts us in an inconsistent state.  Drastic 
-                    # measures: delete photo and signal fail on the entire upload process.
-                    bucket.delete_key(key_name)
-                    return False
+            if not self.generate_thumb(source_file, 75, bucket):
+                # So, we saved the photo to S3 just fine, but failed to generate 
+                # a thumbnail. This puts us in an inconsistent state.  Drastic 
+                # measures: delete photo and signal fail on the entire upload process.
+                bucket.delete_key(key_name)
+                return False
 
-            else:  # Running locally - store photo in local folder
-                path = os.path.join(app.config['BINARY_PATH'], 'img', self.os_path())
-                if not os.path.exists(path):
-                    os.makedirs(path)
-                fn = os.path.join(path, self.binary_url)
-                source_file.save(fn)
-                
-                return self.generate_thumb(source_file, 75)  # Don't care about leaving stray photos locally - delete them yerself
-            return True
-        except:  # need to log this, or something
-            return False
+        else:  # Running locally - store photo in local folder
+            path = os.path.join(app.config['BINARY_PATH'], 'img', self.os_path())
+            if not os.path.exists(path):
+                os.makedirs(path)
+            fn = os.path.join(path, self.binary_url)
+            source_file.save(fn)
+            
+            return self.generate_thumb(source_file, 75)  # Don't care about leaving stray photos locally - delete them yerself
+        return True
             
     # Delete the file associated with this photo, either on the local disk or S3
     def delete_file(self):
