@@ -20,6 +20,7 @@ class Group(db.Model):
     description = db.Column(db.Text)
     rules = db.Column(db.Text)
     creation_time = db.Column(db.DateTime)
+    discussions = db.relationship('Discussion', backref = 'group', lazy = 'dynamic')
 
     def __init__(self, name, url_name, description = None, rules = None):
         self.name = name

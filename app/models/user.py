@@ -21,6 +21,7 @@ class User(db.Model):
     notes = db.relationship('Note', backref = 'user', lazy = 'dynamic')
     contacts = db.relationship('Contact', backref = 'user', lazy = 'dynamic')
     groups = db.relationship('Group', secondary = group_member_list, backref = db.backref('members', lazy = 'dynamic'))
+    posts = db.relationship('DiscussionPost', backref = 'user', lazy = 'dynamic')
 
     def __init__(self, name, email, password = None, openid = None):
         self.name = name

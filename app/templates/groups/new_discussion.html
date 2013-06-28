@@ -1,0 +1,23 @@
+{% extends "nav.html" %}
+
+{% block title %}New Topic | brickr{% endblock %}
+
+{% block script %}
+{% include "fix_time.html" %}
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <h2>{{ group.name }} | Post a new Topic</h2>
+    <form method="POST" action="" class="form" id="add_topic_form">
+        <br /><label for="title">Title:</label>
+        <br /><input id="title" name="title" type="text" size="55" value="{{ title }}"/>
+        <br /><br />
+        <label for="post_text">Your Post:</label>
+        <textarea id="post_text" name="post_text" size="55" rows="8">{{ post_text }}</textarea>
+        <br /><input type="hidden" name="action" value="add">
+        <br /><input type="submit" value="Post topic" class="button green">
+    </form>
+    Back to <a href="{{ url_for('groups.group', groupURL = group.url_name) }}">"{{ group.name }}"</a>
+</div>
+{% endblock %}

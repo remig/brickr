@@ -1,0 +1,44 @@
+{% extends "nav.html" %}
+
+{% block title %}{{ group.name }} | brickr{% endblock %}
+
+{% block script %}
+{% include "fix_time.html" %}
+{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <h2>{{ group.name }} | Discuss</h2>
+    <h3>{{ discussion.title }}</h3>
+    {% for post in discussion.posts %}
+    <div class="discussion-post">
+        <div class="post-avatar">
+            <a href="{{ url_for('photos.stream', username = post.user.name) }}">
+                <img src="{{ url_for('static', filename = 'img/avatar.jpg') }}" alt="" title="" border="0" height="36" width="36">
+            </a>
+        </div>
+        <div class="post-username">
+            <a href="{{ url_for('photos.stream', username = post.user.name) }}">{{ post.user.name }}</a> says:
+        </div>
+        <div class="post-text">
+            {{ post.post }}
+        </div>
+        <div class="comments-date">
+            Posted <span class="convert-time">{{ post.creation_time }},fromNow</span>
+        </div>
+    </div>
+    {% endfor %}
+    {% if g.user and g.user in group.members %}
+        <div id="discussion-add-post">
+            <div class="hr"></div>
+            <h3>Post a reply</h3>
+            <form method="POST" action="{{ url_for('groups.addDiscussuionPost') }}" class="form">
+                <textarea id="post_text" name="post_text" rows="6" placeholder="New Post" aria-label="New Post"></textarea>
+                <input type="hidden" value="{{ discussion.id }}" id="discussionID" name="discussionID">
+                <input type="submit" value="Submit" class="button">
+            </form>
+        </div>
+    {% endif %}
+    Back to <a href="{{ url_for('groups.group', groupURL = group.url_name) }}">"{{ group.name }}"</a>
+</div>
+{% endblock %}

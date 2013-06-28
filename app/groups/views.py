@@ -45,7 +45,7 @@ def create_group():
 @requires_login
 def delete_group(groupURL):  # NYI
     return redirect(url_for('groups.group', groupURL = groupURL))
-    
+
 @mod.route('/<groupURL>/add_photos/', methods = ['GET', 'POST'])
 @requires_login
 def add_photos(groupURL):
@@ -76,3 +76,39 @@ def leaveOrJoinGroup():
             db.session.commit()
         return jsonify(result = True)
     return jsonify(result = False)
+
+@mod.route('/<groupURL>/discussion/<discussionID>')
+def discussion(groupURL, discussionID):
+    group = Group.query.filter_by(url_name = groupURL).first()
+    discussion = Discussion.query.get(discussionID)
+    return render_template('groups/discussion.html', group = group, discussion = discussion)
+
+@mod.route('/<groupURL>/new_topic/', methods = ['GET', 'POST'])
+@requires_login
+def createDiscussion(groupURL):
+    group = Group.query.filter_by(url_name = groupURL).first()
+    if request.method == 'POST':
+
+        title = strip(request.form.get('title'))
+        post_text = request.form.get('post_text')
+
+        discussion = Discussion(group, title)
+        post = DiscussionPost(discussion, g.user, post_text)
+        db.session.add(discussion)
+        db.session.add(post)
+        db.session.commit()
+        return redirect(url_for('groups.group', groupURL = group.url_name))
+    return render_template('groups/new_discussion.html', group = group)
+
+@mod.route('/_addPost/', methods = ['POST'])
+@requires_login
+def addDiscussuionPost():
+    if request.method == 'POST':
+        post_text = request.form.get('post_text')
+        discussionID = request.form.get('discussionID')
+        discussion = Discussion.query.get(discussionID)
+        if discussion and post_text:
+            post = DiscussionPost(discussion, g.user, post_text)
+            db.session.add(post)
+            db.session.commit()
+        return redirect(url_for('groups.discussion', groupURL = discussion.group.url_name, discussionID = discussion.id))
