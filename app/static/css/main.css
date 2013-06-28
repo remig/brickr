@@ -193,11 +193,12 @@ h5 {
 }
 
 #single-photo-img {
-  position: relative;
+  float: left;
+  width: 90%;
 }
 
 #single-photo-img img {
-  width: 50%;
+  width: 100%;
   z-index: 0;
 }
 
@@ -232,20 +233,28 @@ h5 {
   border: 1px dashed #FFF;
 }
 
+#single-photo-info {
+  float: bottom;
+}
+
 #single-photo-info h2 {
   margin-top: 15px;
   letter-spacing: -1px;
 }
 
-#single-photo-actions  ul {
+#single-photo-actions {
   float: left;
+  width: 40px;
+  height: 100px;
+}
+
+#single-photo-actions  ul {
   margin: 0;
   padding: 0;
   list-style-type: none;
 }
 
 #single-photo-actions li {
-  display: block;
   border: 1px solid #fdfdfd;
   border-bottom: none;
   padding: 4px 6px;

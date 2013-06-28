@@ -80,11 +80,12 @@
         <div id="tags" class="sidebar-box">
             <h3>Tags
             {% if g.user and photo.user.id == g.user.id %}
-                <span class="small" id="addTagLink">(<a href="javascript:$('input#tagBox').show();$('span#addTagLink').hide();">add a tag</a>)</span></h3>
-            {% endif %} 
+                <span class="small" id="addTagLink">(<a href="javascript:$('input#tagBox').show();$('span#addTagLink').hide();">add a tag</a>)</span>
+            {% endif %}
+            </h3>
             <ul id="tagList">
                 {% for tag in photo.tags %}
-                <li><a href="">{{tag.description}}</a></li>
+                <li><a href="">{{ tag.description }}</a></li>
                 {% endfor %}
             </ul>
             <br /><br />
@@ -144,7 +145,10 @@
                         </a>
                     </div>
                     <div class="comments-body">
-                        <div class="comments-author"><a href="{{ url_for('photos.stream', username = comment.user.name)}}">{{comment.user.name}}</a><span class="small comments-date"><span class="convert-time">{{ comment.creation_time }},fromNow</span></span></div>
+                        <div class="comments-author">
+                            <a href="{{ url_for('photos.stream', username = comment.user.name)}}">{{comment.user.name}}</a>
+                            <span class="small comments-date"><span class="convert-time">{{ comment.creation_time }},fromNow</span></span>
+                        </div>
                         <div class="comment-text">{{ comment.comment }}</div>
                     </div>
                 </li>
@@ -165,5 +169,6 @@
             </form>
         </div>
        {% endif %}
+    </div>
 </div>
 {% endblock %}
