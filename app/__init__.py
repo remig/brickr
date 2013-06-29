@@ -26,7 +26,6 @@ db = SQLAlchemy(app)
 oid = OpenID(app)
 
 from app.models import *
-db.create_all()
 
 app.jinja_env.trim_blocks = True
 

@@ -5,3 +5,4 @@ flask-wtf
 flask-openid
 boto
 pil
+sqlalchemy-migrate
