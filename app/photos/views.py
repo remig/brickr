@@ -105,6 +105,26 @@ def addTag():
         return jsonify(result = True, tags = tag_list)
     return jsonify(result = False)
 
+@mod.route('/_addNote/', methods = ['POST'])
+@requires_login
+def addNote():
+    if request.method == 'POST':
+        photoID = request.form.get('photoID')
+        photo = Photo.query.get(photoID)
+        if not photo:
+            return jsonify(result = False)
+
+        x = int(request.form.get('x'))
+        y = int(request.form.get('y'))
+        w = int(request.form.get('w'))
+        h = int(request.form.get('h'))
+
+        note = Note(g.user, photo, "", x, y, w, h)
+        db.session.add(note)
+        db.session.commit()
+        return jsonify(result = True)
+    return jsonify(result = False)
+
 @mod.route('/delete/<photoID>/', methods = ['GET', 'POST'])
 @requires_login
 def delete(photoID):

@@ -198,43 +198,27 @@ h5 {
 }
 
 #single-photo-img img {
+  float: left;
   width: 100%;
-  z-index: 0;
+  height: 100%;
 }
 
 #note-list {
+  display: none;
   position: absolute;
-  width: 100%;
 }
 
-#note-list ul {
-  list-style: none;
+#note-eventer {
+  position: relative;
 }
 
-.note-box1 {
-  margin-left: 40px;
-  width: 20px;
-  height: 20px;
+.note-box {
   position: absolute;
-  top: 0px;
-  left: 0px;
-  z-index: 1;
-  border: 1px dashed #FFF;
-}
-
-.note-box2 {
-  margin-left: 40px;
-  width: 100px;
-  height: 100px;
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  z-index: 1;
   border: 1px dashed #FFF;
 }
 
 #single-photo-info {
-  float: bottom;
+  float: left;
 }
 
 #single-photo-info h2 {

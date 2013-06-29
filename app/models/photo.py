@@ -7,6 +7,7 @@ from app import app, db, breakpoint
 from tag import tag_list
 from group import group_photo_list
 from werkzeug import secure_filename, FileStorage
+from app.models.note import Note
 
 mimetypes.init([])  # Don't use platform's mimetype mapping, which is broken on Windows (http://bugs.python.org/issue10551)
 
@@ -203,4 +204,6 @@ class Photo(db.Model):
         if not count % 2:
             photoStream.pop(0)  # If we need an even number of photos, remove first one
         return photoStream
-    
+        
+    def getNotesInZOrder(self): # returns this a list of this photo's notes sorted largest to smallest
+        return sorted(self.notes.all(), key = Note.area, reverse = True)
