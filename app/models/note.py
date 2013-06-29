@@ -29,7 +29,7 @@ class Note(db.Model):
         return '<Note %d, user: %d, photo: %d, pos: (%d, %d, %d, %d)>' % (self.id, self.user_id, self.photo_id, self.x, self.y, self.w, self.h)
 
     def coords(self):
-        return 'note_%d_%d_%d_%d' % (self.x, self.y, self.w, self.h)
+        return '%d_%d_%d_%d' % (self.x, self.y, self.w, self.h)
         
     def area(self):
         return self.w * self.h

@@ -1,6 +1,6 @@
 (function() {
 
-    var img_w, img_h, note_list, latest_note, mouse_pos;
+    var img_w, img_h, note_list, latest_note, mouse_pos, over_owner_note = false;
     
     function mousePos(e, target) {
         return {
@@ -12,13 +12,23 @@
     function mouseDown(e) {
         e.preventDefault();
         mouse_pos = mousePos(e, this);
-        latest_note = $('<div/>', {
-            class: 'note-box',
-            css: {
-                left: mouse_pos.x + 'px',
-                top: mouse_pos.y + 'px'
-            }
-        }).appendTo(note_list);
+        if (over_owner_note) {
+            e.target.originalLeft = parseInt(e.target.style.left);
+            e.target.originalTop = parseInt(e.target.style.top);
+            latest_note = $(e.target);
+        } else {
+            latest_note = $('<div/>', {
+                class: 'note-box',
+                css: {
+                    left: mouse_pos.x + 'px',
+                    top: mouse_pos.y + 'px'
+                }
+            }).appendTo(note_list);
+        }
+    }
+
+    function bound(t, min, max) {
+        return Math.min(max, Math.max(min, t));
     }
 
     function mouseMove(e) {
@@ -29,15 +39,22 @@
         cur_pos = mousePos(e, this);
         var dx = cur_pos.x - mouse_pos.x;
         var dy = cur_pos.y - mouse_pos.y;
-        if (dx < 0) {
-            latest_note.css('left', cur_pos.x + 'px').css('width', (-dx) + 'px');
-        } else {
-            latest_note.css('width', dx + 'px')
-        }
-        if (dy < 0) {
-            latest_note.css('top', cur_pos.y + 'px').css('height', (-dy) + 'px');
-        } else {
-            latest_note.css('height', dy + 'px');
+        if (over_owner_note) {  // Move an existing note
+            var newX = bound(latest_note[0].originalLeft + dx, 0, img_w - latest_note.width());
+            var newY = bound(latest_note[0].originalTop + dy, 0, img_h - latest_note.height());
+            latest_note.css('left', newX + 'px');
+            latest_note.css('top', newY + 'px');
+        } else {  // Change size of a note that's being created now
+            if (dx < 0) {
+                latest_note.css('left', cur_pos.x + 'px').css('width', (-dx) + 'px');
+            } else {
+                latest_note.css('width', dx + 'px')
+            }
+            if (dy < 0) {
+                latest_note.css('top', cur_pos.y + 'px').css('height', (-dy) + 'px');
+            } else {
+                latest_note.css('height', dy + 'px');
+            }
         }
     }
     
@@ -48,16 +65,19 @@
     function mouseUp(e) {
         e.preventDefault();
         mouse_pos = null;
-        var x = cssProp('left', img_w);
-        var y = cssProp('top', img_h);
-        var w = cssProp('width', img_w);
-        var h = cssProp('height', img_h);
-        if (w > 3 && h > 3) {
-            latest_note[0].id = ['note', x, y, w, h].join('_');
-            latest_note[0].title = latest_note[0].id;
-            pushNoteToServer(x, y, w, h);
+        if (over_owner_note) {
         } else {
-            latest_note.remove();  // Ignore really small notes
+            var x = cssProp('left', img_w);
+            var y = cssProp('top', img_h);
+            var w = cssProp('width', img_w);
+            var h = cssProp('height', img_h);
+            if (w > 3 && h > 3) {
+                latest_note[0].id = ['note', x, y, w, h].join('_');
+                latest_note[0].title = latest_note[0].id;
+                pushNoteToServer(x, y, w, h);
+            } else {
+                latest_note.remove();  // Ignore really small notes
+            }
         }
     }
     
@@ -68,31 +88,46 @@
                 x: x, y: y, w: w, h: h
             },
             function(data) {
-                if (data.result && data.tags) {
-                    for (var i = 0; i < data.tags.length; i++) {
-                        $('ul#tagList').append('<li><a href="">' + data.tags[i] + '</a></li>');
-                    }
-                    el.value = '';
+                if (data.result) {
                 } else {
-                    console.log('Add tag failed because I suck');
+                    console.log('Add note failed because I suck');
                 }
             }
         );
     }
 
+    function isDescendant(node, parentID) {  // Return true if node is a descendent of parent
+        return $(node).parents('#' + parentID).length == 1;
+    }
+    
     function hoverIn(e) {
+        if (isDescendant(e.target, this.id) || isDescendant(e.relatedTarget, this.id)) {
+            return;
+        }
+
         note_list.show();
     }
 
     function hoverOut(e) {
+        if (isDescendant(e.target, this.id) || isDescendant(e.relatedTarget, this.id)) {
+            return;
+        }
+
         note_list.hide();
+        mouse_pos = null;
     }
-    
+
     function noteIn(e) {
-        //console.log('set up some kind of tooltip here...');
+        if (mouse_pos == null && this.dataset.brickrUserid === window.__userID) {
+            this.style.cursor = 'move';
+            over_owner_note = true;
+        } else {
+            //console.log('set up some kind of tooltip here...');
+        }
     }
     
     function noteOut(e) {
+        over_owner_note = false;
         //console.log('... and hide tooltip here');
     }
 
@@ -102,7 +137,7 @@
         img_h = d.height();
         $('#note-eventer').css('width', img_w + 'px').css('height', img_h + 'px');
         $('.note-box').each(function(i, v) {
-            var coords = v.id.split('_').slice(1).map(function(el){return parseInt(el) / 100;});
+            var coords = v.dataset.brickrCoords.split('_').map(function(el){return parseInt(el) / 100;});
             v = $(v);
             v.css('left',   (img_w * coords[0]) + 'px');
             v.css('top',    (img_h * coords[1]) + 'px');
@@ -115,7 +150,7 @@
     $(window).resize(recalcNotes);
     
     $(function() {
-        note_list = $('#note-list');
+        note_list = $('#note-list').data('userID', 7);
         $('#note-eventer')
             .mouseover(hoverIn)
             .mouseout(hoverOut)

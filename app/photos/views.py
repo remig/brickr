@@ -119,9 +119,9 @@ def addNote():
         w = int(request.form.get('w'))
         h = int(request.form.get('h'))
 
-        note = Note(g.user, photo, "", x, y, w, h)
-        db.session.add(note)
-        db.session.commit()
+        #note = Note(g.user, photo, "", x, y, w, h)
+        #db.session.add(note)
+        #db.session.commit()
         return jsonify(result = True)
     return jsonify(result = False)
 

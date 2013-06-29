@@ -217,6 +217,13 @@ h5 {
   border: 1px dashed #FFF;
 }
 
+.note-comment{
+  position: absolute;
+  background: red;
+  border-radius: 5px;
+  padding: 5px;
+}
+
 #single-photo-info {
   float: left;
 }

@@ -7,6 +7,7 @@
 {% include "fix_time.html" %}
 <script type="text/javascript">
     window.__photoID = {{ photo.id }};
+    window.__userID = "{{ g.user.id or 0 }}";
 </script>
 {% endblock %}
 
@@ -27,7 +28,9 @@
                 <div id="note-eventer">
                     <div id="note-list">
                         {% for note in photo.getNotesInZOrder() %}
-                        <div id="{{ note.coords() }}" class="note-box" title="{{ note.comment }}"></div>
+                        <div class="note-box" data-brickr-userid="{{ note.user_id }}" data-brickr-coords="{{ note.coords() }}">
+                            <div class="note-comment">{{ note.comment }}</div>
+                        </div>
                         {% endfor %}
                     </div>
                 </div>
