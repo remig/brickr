@@ -1,4 +1,4 @@
-__all__ = ['User', 'Photo', 'Comment', 'Favorite', 'Note', 'Contact', 'Tag', 'PrivateMessage', 'Group']
+__all__ = ['User', 'Photo', 'Comment', 'Favorite', 'Note', 'Contact', 'Tag', 'PrivateMessage', 'Group', 'Discussion', 'DiscussionPost']
 
 from user import User
 from photo import Photo
@@ -9,3 +9,5 @@ from contact import Contact
 from tag import Tag
 from private_message import PrivateMessage
 from group import Group
+from discussion import Discussion
+from discussion_post import DiscussionPost
