@@ -89,15 +89,18 @@ def createDiscussion(groupURL):
     group = Group.query.filter_by(url_name = groupURL).first()
     if request.method == 'POST':
 
-        title = strip(request.form.get('title'))
+        title = request.form.get('title')
         post_text = request.form.get('post_text')
 
         discussion = Discussion(group, title)
-        post = DiscussionPost(discussion, g.user, post_text)
         db.session.add(discussion)
+        db.session.commit()  # must commit discussion before creating post, so that discussion has valid ID
+
+        post = DiscussionPost(discussion, g.user, post_text)
         db.session.add(post)
         db.session.commit()
-        return redirect(url_for('groups.group', groupURL = group.url_name))
+
+        return redirect(url_for('groups.discussion', groupURL = group.url_name, discussionID = discussion.id))
     return render_template('groups/new_discussion.html', group = group)
 
 @mod.route('/_addPost/', methods = ['POST'])
