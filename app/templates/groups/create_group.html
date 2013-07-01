@@ -3,7 +3,6 @@
 {% block title %}Create Group | brickr{% endblock %}
 
 {% block content %}
-<div id="content-main">
     <h2>Create a new Group</h2>
     <form method="POST" action="" class="form" id="create_group_form">
         <br /><label for="name">Group Name: (required)</label>
@@ -20,5 +19,4 @@
         <br /><input type="submit" value="Create group" class="button green">
     </form>
     <a href="{{ url_for('groups.root') }}">Back to Group Index</a>
-</div>
 {% endblock %}

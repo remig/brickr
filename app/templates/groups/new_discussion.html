@@ -7,7 +7,6 @@
 {% endblock %}
 
 {% block content %}
-<div id="content-main">
     <h2>{{ group.name }} | Post a new Topic</h2>
     <form method="POST" action="" class="form" id="add_topic_form">
         <br /><label for="title">Title:</label>
@@ -19,5 +18,4 @@
         <br /><input type="submit" value="Post topic" class="button green">
     </form>
     Back to <a href="{{ url_for('groups.group', groupURL = group.url_name) }}">"{{ group.name }}"</a>
-</div>
 {% endblock %}

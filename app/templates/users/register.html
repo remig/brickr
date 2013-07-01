@@ -5,23 +5,25 @@
 {% block content %}
     {% from "forms/macros.html" import render_field %}
     <form method = "POST" action = "." class = "form">
-        <legend>Create a new Brickr Account</legend>
-        <br />
-        {{ form.csrf_token }}
-        {{ render_field(form.name, class="input text", value=request.values.name) }}
-        <br />
-        {{ render_field(form.email, class="input text", value=request.values.email) }}
-        <br />
-        {% if 'openid' not in session %}
-        {{ render_field(form.password, class="input text") }}
-        <br />
-        {{ render_field(form.confirm, class="input text") }}
-        <br />
-        {% endif %}
-        {{ render_field(form.accept_tos, class="input checkbox") }}
-        <br />
-        <input type="hidden" name="next" value="{{ next }}">
-        <input type = "submit" value = "Register" class = "button green">
+        <fieldset>
+            <legend>Create a new Brickr Account</legend>
+            <br />
+            {{ form.csrf_token }}
+            {{ render_field(form.name, class="input text", value=request.values.name) }}
+            <br />
+            {{ render_field(form.email, class="input text", value=request.values.email) }}
+            <br />
+            {% if 'openid' not in session %}
+            {{ render_field(form.password, class="input text") }}
+            <br />
+            {{ render_field(form.confirm, class="input text") }}
+            <br />
+            {% endif %}
+            {{ render_field(form.accept_tos, class="input checkbox") }}
+            <br />
+            <input type="hidden" name="next" value="{{ next }}">
+            <input type = "submit" value = "Register" class = "button green">
+        </fieldset>
     </form>
     If you don't want to create an account, <a href="{{ url_for('users.logout') }}">Log out</a>
     <br /><a href = "{{ url_for('users.login') }}">Back to Login page</a>
