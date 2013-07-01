@@ -37,22 +37,43 @@
         positionNoteContent(edit_note);
     }
     
-    function endNoteEdit(doSave) {
-        if (edit_note != null) {
-            if (doSave) {
-                pushNoteToServer(edit_note);
-            }
-            edit_note.find('.note-text').hide();
-            edit_note.find('.note-buttons').hide();
-            positionNoteContent(edit_note);
-
-            edit_note[0].dataset.brickrCoords = getNoteCoords(edit_note).join('_');
-
-            is_editing = false;
-            edit_note = newest_note = null;
+    function endNoteEdit(doSave, doDelete) {
+        if (edit_note == null) {
+            return;  // Can't end an edit that doesn't exist
         }
+        if (doSave || doDelete) {
+            pushNoteToServer(edit_note, doDelete);
+        }
+        edit_note.find('.note-text').hide();
+        edit_note.find('.note-buttons').hide();
+        positionNoteContent(edit_note);
+
+        edit_note[0].dataset.brickrCoords = getNoteCoords(edit_note).join('_');
+
+        is_editing = false;
+        edit_note = newest_note = hovered_note = null;
     }
     
+    function pushNoteToServer(note, doDelete) {
+
+        var coords = getNoteCoords(note);
+
+        $.post($SCRIPT_ROOT + '/photos/_updateNote/',
+            {
+                photoID: window.__photoID,  // TODO: Need a clean way to pass template state into JS files without running JS through template engine
+                noteID: note.attr('id') || 0,
+                note_text: note.find('.note-text').text(),
+                doDelete: doDelete,
+                x: coords[0], y: coords[1], w: coords[2], h: coords[3]
+            },
+            function(data) {
+                if (!data.result) {
+                    alert('Add note failed because I suck');
+                }
+            }
+        );
+    }
+
     function moveNote(note_box, dx, dy) {
         var h = note_box.height();
         var newX = bound(parseInt(note_box[0].dataset.currentLeft, 10) + dx, 0, img_w - note_box.width());
@@ -143,25 +164,6 @@
         }
     }
     
-    function pushNoteToServer(note) {
-
-        var coords = getNoteCoords(note);
-
-        $.post($SCRIPT_ROOT + '/photos/_updateNote/',
-            {
-                photoID: window.__photoID,  // TODO: Need a clean way to pass template state into JS files without running JS through template engine
-                noteID: note.attr('id') || 0,
-                note_text: note.find('.note-text').text(),
-                x: coords[0], y: coords[1], w: coords[2], h: coords[3]
-            },
-            function(data) {
-                if (!data.result) {
-                    alert('Add note failed because I suck');
-                }
-            }
-        );
-    }
-
     function isDescendant(node, parentID) {  // Return true if node is a descendent of parent
         return $(node).parents('#' + parentID).length === 1;
     }
@@ -263,14 +265,13 @@
         $('.note-box').mouseover(noteIn).mouseout(noteOut);
         
         $('.save-button').click(function() {
-            endNoteEdit(true);
+            endNoteEdit(true);  // TODO: need to populate note ID, so that create -> save -> move -> save works
         });
         
         $('.cancel-button').click(function() {
             if (newest_note) {
-                endNoteEdit(false);
                 newest_note.remove();  // Cancel new note creation
-                newest_note = hovered_note = null;
+                endNoteEdit(false);
             } else {
                 var d = edit_note[0].dataset;  // Move note back to its original spot
                 edit_note.css('left', d.originalLeft);
@@ -280,7 +281,13 @@
         });
         
         $('.delete-button').click(function() {
-            alert("This doesn't do anything... YET");
+            if (newest_note) {
+                newest_note.remove();  // Cancel new note creation
+                endNoteEdit(false);
+            } else if (confirm('Do you really want to delete this note?')) {
+                endNoteEdit(true, true);
+                $(this).parents('.note-box').remove();
+            }
         });
     });
 }());

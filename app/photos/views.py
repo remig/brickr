@@ -114,13 +114,14 @@ def updateNote():
         if not photo:
             return jsonify(result = False)
 
-        x = int(request.form.get('x'))
-        y = int(request.form.get('y'))
-        w = int(request.form.get('w'))
-        h = int(request.form.get('h'))
+        x = request.form.get('x', type = int)
+        y = request.form.get('y', type = int)
+        w = request.form.get('w', type = int)
+        h = request.form.get('h', type = int)
         
-        noteID = int(request.form.get('noteID'))
+        noteID = request.form.get('noteID', type = int)
         note_text = request.form.get('note_text')
+        doDelete = request.form.get('doDelete', type = bool)
 
         if noteID > 0:
             note = Note.query.get(noteID)  # note exists - update it
@@ -129,7 +130,10 @@ def updateNote():
         else:
             note = Note(g.user, photo, note_text, x, y, w, h)
 
-        db.session.add(note)
+        if doDelete:
+            db.session.delete(note)
+        else:
+            db.session.add(note)
         db.session.commit()
         return jsonify(result = True)
     return jsonify(result = False)
