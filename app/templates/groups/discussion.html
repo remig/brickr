@@ -7,7 +7,6 @@
 {% endblock %}
 
 {% block content %}
-<div id="content-main">
     <h2>{{ group.name }} | Discuss</h2>
     <h3>{{ discussion.title }}</h3>
     {% for post in discussion.posts %}
@@ -40,5 +39,4 @@
         </div>
     {% endif %}
     Back to <a href="{{ url_for('groups.group', groupURL = group.url_name) }}">"{{ group.name }}"</a>
-</div>
 {% endblock %}

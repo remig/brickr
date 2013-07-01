@@ -12,7 +12,6 @@
 {% endblock %}
 
 {% block content %}
-<div class="container">
     <div id="content-main">
         <div id="single-photo">
             <div id="single-photo-actions">
@@ -66,7 +65,7 @@
         <div id="quick-photostream" class="sidebar-box">
             <h3>{{ photo.user.name }}'s photosteam <span class="small">({{ photo.user.photos.count()}})</span></h3>
             <div class="slider-stream">
-                {% for p in photo.getAdjacentPhotoStream(5) %}
+                {% for p in photo.getAdjacentPhotoStream(4) %}
                     {% if p %}
                         <a href="{{ url_for('photos.photo', username = p.user.name, photoID = p.id) }}">
                             <img src="{{ p.url_thumb(75) }}" alt="{{ p.title }}" title="{{ p.title }}" border="0" height="55" width="55" />
@@ -106,21 +105,7 @@
         
         {% if g.user and photo.user.id == g.user.id %}
             <a href="{{ url_for('photos.delete', photoID = photo.id) }}" onclick="return confirm('Do you really want to delete this photo?');">Delete this Photo</a>
-        {% endif %}
-
-        <footer>
-            <div id="footer">
-                <p>Any rights info. Copyright etc. All rights reserved.</p>
-                <nav>
-                    <ul>
-                        <li><a href="/photos/">Terms of Use</a></li>
-                        <li><a href="/">Privacy Policy</a></li>
-                        <li><a href="/about">Copyright/IP Policy</a></li>
-                    </ul>
-                </nav>
-            </div>
-        </footer>
-        
+        {% endif %}        
     </div>
 
     <div id="content-interact">
@@ -181,5 +166,4 @@
         </div>
        {% endif %}
     </div>
-</div>
 {% endblock %}

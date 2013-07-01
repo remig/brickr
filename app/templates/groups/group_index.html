@@ -7,7 +7,6 @@
 {% endblock %}
 
 {% block content %}
-<div id="content-main">
     {% if g.user %}
     <h3>Groups you belong to:</h3>
     <ul>
@@ -23,5 +22,4 @@
     {% if g.user %}
         <a href="{{ url_for('groups.create_group') }}"><input type="submit" value="Create new Group" class="button green" /></a>
     {% endif %}
-</div>
 {% endblock %}

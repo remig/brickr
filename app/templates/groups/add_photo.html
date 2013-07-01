@@ -7,7 +7,6 @@
 {% endblock %}
 
 {% block content %}
-<div id="content-main">
     <h2>{{ group.name }} | Add &amp; Remove Photos</h2>
     <h4>Select photos you want to add to the group</h4>
     <h5>Yes, this page is asstastic - Alyse hasn't gotten here yet.</h5>
@@ -48,5 +47,4 @@
         <input type="submit" value="Remove from group" class="button green">
     </form>
     <a href="{{ url_for('groups.group', groupURL = group.url_name) }}">Back to {{ group.name }}</a>
-</div>
 {% endblock %}
