@@ -217,11 +217,35 @@ h5 {
   border: 1px dashed #FFF;
 }
 
-.note-comment{
-  position: absolute;
-  background: red;
-  border-radius: 5px;
+.note-text {
+  display: none;
+  background: #ffffd3;
+  border-radius: 4px;
   padding: 5px;
+  margin: 6px 3px 6px -2px;
+  width: auto;
+  width: -webkit-fit-content;
+}
+
+.note-buttons {
+  display: none;
+}
+
+.note-content {
+  width: 200px;
+  position: absolute;
+  cursor: default;
+  margin: 0px;
+}
+
+.small-button {
+  font-size: 10px;
+  color: white;
+  background: #0063dc;
+  border-radius: 4px;
+  border: 0;
+  margin: 0px 3px 6px -2px;
+  cursor: pointer;
 }
 
 #single-photo-info {

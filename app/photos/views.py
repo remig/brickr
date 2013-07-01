@@ -105,9 +105,9 @@ def addTag():
         return jsonify(result = True, tags = tag_list)
     return jsonify(result = False)
 
-@mod.route('/_addNote/', methods = ['POST'])
+@mod.route('/_updateNote/', methods = ['POST'])
 @requires_login
-def addNote():
+def updateNote():
     if request.method == 'POST':
         photoID = request.form.get('photoID')
         photo = Photo.query.get(photoID)
@@ -118,10 +118,19 @@ def addNote():
         y = int(request.form.get('y'))
         w = int(request.form.get('w'))
         h = int(request.form.get('h'))
+        
+        noteID = int(request.form.get('noteID'))
+        note_text = request.form.get('note_text')
 
-        #note = Note(g.user, photo, "", x, y, w, h)
-        #db.session.add(note)
-        #db.session.commit()
+        if noteID > 0:
+            note = Note.query.get(noteID)  # note exists - update it
+            note.set_coords(x, y, w, h)
+            note.comment = note_text
+        else:
+            note = Note(g.user, photo, note_text, x, y, w, h)
+
+        db.session.add(note)
+        db.session.commit()
         return jsonify(result = True)
     return jsonify(result = False)
 

@@ -28,8 +28,15 @@
                 <div id="note-eventer">
                     <div id="note-list">
                         {% for note in photo.getNotesInZOrder() %}
-                        <div class="note-box" data-brickr-userid="{{ note.user_id }}" data-brickr-coords="{{ note.coords() }}">
-                            <div class="note-comment">{{ note.comment }}</div>
+                        <div id="{{ note.id }}" class="note-box" data-brickr-userid="{{ note.user_id }}" data-brickr-coords="{{ note.coords() }}">
+                            <div class="note-content">
+                                <div class="note-text">{{ note.comment }}</div>
+                                <div class="note-buttons">
+                                    <input type="button" class="save-button small-button" value = "SAVE" />
+                                    <input type="button" class="cancel-button small-button" value = "CANCEL" />
+                                    <input type="button" class="delete-button small-button" value = "DELETE" />
+                                </div>
+                            </div>
                         </div>
                         {% endfor %}
                     </div>

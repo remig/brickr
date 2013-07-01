@@ -19,10 +19,7 @@ class Note(db.Model):
         self.user_id = user.id
         self.photo_id = photo.id
         self.comment = comment
-        self.x = x
-        self.y = y
-        self.w = w
-        self.h = h
+        self.set_coords(x, y, w, h)
         self.creation_time = datetime.utcnow()
 
     def __repr__(self):
@@ -30,6 +27,12 @@ class Note(db.Model):
 
     def coords(self):
         return '%d_%d_%d_%d' % (self.x, self.y, self.w, self.h)
+        
+    def set_coords(self, x, y, w, h):
+        self.x = x
+        self.y = y
+        self.w = w
+        self.h = h
         
     def area(self):
         return self.w * self.h
