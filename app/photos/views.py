@@ -105,6 +105,20 @@ def addTag():
         return jsonify(result = True, tags = tag_list)
     return jsonify(result = False)
 
+@mod.route('/_updatePhoto/', methods = ['POST'])
+@requires_login
+def updatePhoto():
+    photoID = request.form.get('photoID')
+    photo = Photo.query.get(photoID)
+    if not photo:
+        return jsonify(result = False)
+
+    photo.title = request.form.get('title')
+    photo.description = request.form.get('desc')
+    db.session.add(photo)
+    db.session.commit()
+    return jsonify(result = True)
+
 @mod.route('/_updateNote/', methods = ['POST'])
 @requires_login
 def updateNote():

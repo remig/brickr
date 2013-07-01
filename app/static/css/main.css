@@ -239,7 +239,7 @@ h5 {
   border: 0px;
 }
 
-.note-buttons {
+.note-buttons, .photo-text-buttons {
   display: none;
 }
 
@@ -260,13 +260,39 @@ h5 {
   cursor: pointer;
 }
 
-#single-photo-info {
-  float: left;
+.single-photo-title-edit, .single-photo-desc-edit {
+  display: none;
+  background: #ffffd3;
+  width: 400px;
+  border-radius: 0px;
+  border: 1px solid #A6A445;
+  margin-bottom: 10px;
 }
 
-#single-photo-info h2 {
+.single-photo-title-edit {
+  height: 30px;
+  font-size: 2em;
+  font-weight: bold;
+}
+
+.single-photo-desc-edit {
+  margin-top: 10px;
+  height: 100px;
+}
+
+#single-photo-info {
+  float: left;
+  margin-bottom: 20px;
+}
+
+#single-photo-info h2, input {
+  cursor: default;
   margin-top: 15px;
   letter-spacing: -1px;
+}
+
+.single-photo-title:hover , .single-photo-desc:hover {
+  background: #ffffd3;
 }
 
 #single-photo-actions {

@@ -32,9 +32,9 @@
                                 <div class="note-text">{{ note.comment }}</div>
                                 <textarea class="note-edit-text" rows="5" placeholder="New Note" aria-label="New Note">{{ note.comment }}</textarea>
                                 <div class="note-buttons">
-                                    <input type="button" class="save-button small-button" value = "SAVE" />
-                                    <input type="button" class="cancel-button small-button" value = "CANCEL" />
-                                    <input type="button" class="delete-button small-button" value = "DELETE" />
+                                    <input type="button" class="note-save-button small-button" value = "SAVE" />
+                                    <input type="button" class="note-cancel-button small-button" value = "CANCEL" />
+                                    <input type="button" class="note-delete-button small-button" value = "DELETE" />
                                 </div>
                             </div>
                         </div>
@@ -47,17 +47,28 @@
                         <div class="note-text"></div>
                         <textarea class="note-edit-text"></textarea>
                         <div class="note-buttons">
-                            <input type="button" class="save-button small-button" value = "SAVE" />
-                            <input type="button" class="cancel-button small-button" value = "CANCEL" />
-                            <input type="button" class="delete-button small-button" value = "DELETE" />
+                            <input type="button" class="note-save-button small-button" value="SAVE" />
+                            <input type="button" class="note-cancel-button small-button" value="CANCEL" />
+                            <input type="button" class="note-delete-button small-button" value="DELETE" />
                         </div>
                     </div>
                 </div>
             </div>
             
             <div id="single-photo-info">
-                <h2>{{ photo.title }}</h2>
-                <p><div>{{ photo.description }}</div>
+                {% if g.user and photo.user.id == g.user.id %}
+                    <h2 class="single-photo-title photo-display-info" onclick="editPhotoInfo(true);">{{ photo.title }}</h2>
+                    <input class="single-photo-title-edit photo-edit-info" type="text" />
+                    <div class="single-photo-desc photo-display-info" onclick="editPhotoInfo(true);">{{ photo.description }}</div>
+                    <textarea class="single-photo-desc-edit photo-edit-info"></textarea>
+                    <div class="photo-text-buttons photo-edit-info">
+                        <input type="button" class="save-button small-button" value="SAVE" onclick="editPhotoInfo(false, {{ photo.id }});"/>
+                        <input type="button" class="cancel-button small-button" value="CANCEL" onclick="editPhotoInfo(false, -1);"/>
+                    </div>
+                {% else %}
+                    <h2>{{ photo.title }}</h2>
+                    <div>{{ photo.description }}</div>
+                {% endif %}
             </div>
         </div>
     </div>

@@ -278,11 +278,11 @@
 
         $('.note-box').mouseover(noteIn).mouseout(noteOut);
         
-        $('.save-button').click(function() {
+        $('.note-save-button').click(function() {
             endNoteEdit(true);  // TODO: need to populate note ID, so that create -> save -> move -> save works
         });
         
-        $('.cancel-button').click(function() {
+        $('.note-cancel-button').click(function() {
             if (newest_note) {
                 newest_note.remove();  // Cancel new note creation
                 endNoteEdit(false);
@@ -293,8 +293,8 @@
                 endNoteEdit(false);
             }
         });
-        
-        $('.delete-button').click(function() {
+
+        $('.note-delete-button').click(function() {
             if (newest_note) {
                 newest_note.remove();  // Cancel new note creation
                 endNoteEdit(false);

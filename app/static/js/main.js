@@ -71,3 +71,46 @@ function leaveOrJoinGroup(action, groupName, groupID, userID) {
 		);
 	}
 }
+
+function editPhotoInfo(showUI, photoID) {
+
+    function toggleUI(show) {
+        if (show) {
+            $('.single-photo-title-edit').val($('.single-photo-title').text());
+            $('.single-photo-desc-edit').val($('.single-photo-desc').text());
+            $('.photo-display-info').hide();
+            $('.photo-edit-info').show();
+        } else {
+            $('.photo-display-info').show();
+            $('.photo-edit-info').hide();
+        }
+    }
+    
+    function pushToServer(title, desc) {
+        $.post($SCRIPT_ROOT + '/photos/_updatePhoto/',
+            {
+                photoID: window.__photoID,
+                title: title,
+                desc: desc
+            },
+            function(data) {
+                if (!data.result) {
+                    alert('Failed to update photo title & description because of random fluctuations in the space time continuum.  Or something.');
+                }
+            }
+        );
+    }
+    
+    if (showUI) {
+        toggleUI(true);
+    } else {  // User clicked 'Save' or 'Cancel'
+        if (photoID > 0) {
+            var title = $('.single-photo-title-edit').val() || $('.single-photo-title').text();
+            var desc = $('.single-photo-desc-edit').val() || $('.single-photo-desc').text();
+            pushToServer(title, desc);
+            $('.single-photo-title').text(title);
+            $('.single-photo-desc').text(desc);
+        }
+        toggleUI(false);
+    }
+}
