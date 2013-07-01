@@ -32,8 +32,9 @@
         n.dataset.originalLeft = n.dataset.currentLeft = n.style.left;  // cache current coords so we can restore them if edit is aborted
         n.dataset.originalTop = n.dataset.currentTop = n.style.top;
         edit_note = note_box;
-        edit_note.find('.note-text').show();
+        edit_note.find('.note-text').hide();
         edit_note.find('.note-buttons').show();
+        edit_note.find('.note-edit-text').show();
         positionNoteContent(edit_note);
     }
     
@@ -41,16 +42,24 @@
         if (edit_note == null) {
             return;  // Can't end an edit that doesn't exist
         }
-        if (doSave || doDelete) {
-            pushNoteToServer(edit_note, doDelete);
-        }
         edit_note.find('.note-text').hide();
         edit_note.find('.note-buttons').hide();
+        
+        var editor = edit_note.find('.note-edit-text');
+        editor.hide();
+        edit_note.find('.note-text').text(editor.val());
         positionNoteContent(edit_note);
 
         edit_note[0].dataset.brickrCoords = getNoteCoords(edit_note).join('_');
 
+        if (doSave || doDelete) {
+            pushNoteToServer(edit_note, doDelete);
+        }
+
         is_editing = false;
+        if (hovered_note) {
+            noteOut.call(hovered_note);
+        }
         edit_note = newest_note = hovered_note = null;
     }
     
@@ -102,12 +111,13 @@
     }
     
     function mouseDown(e) {
-        e.preventDefault();
-        mouse_pos = mousePos(e, this);
+        if (!is_editing || e.target.className === 'note-box') {
+            mouse_pos = mousePos(e, this);
+        }
         if (is_editing) {
             return;  // Only trigger either existing note edit or new note creation if we haven't already
         }
-        if (hovered_note && hovered_note.dataset.brickrUserid === window.__userID) {  // edit existing note
+        if (hovered_note && e.target.className === 'note-box' && hovered_note.dataset.brickrUserid === window.__userID) {  // edit existing note
             beginNoteEdit($(hovered_note));
         } else {  // create a new note
             if (hovered_note) {
@@ -149,8 +159,7 @@
         }
     }
     
-    function mouseUp(e) {
-        e.preventDefault();
+    function mouseUp() {
         mouse_pos = null;
         if (!is_editing && newest_note) {
             if (newest_note.width() > 10 && newest_note.height() > 10) {

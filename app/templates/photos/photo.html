@@ -30,6 +30,7 @@
                         <div id="{{ note.id }}" class="note-box" data-brickr-userid="{{ note.user_id }}" data-brickr-coords="{{ note.coords() }}">
                             <div class="note-content">
                                 <div class="note-text">{{ note.comment }}</div>
+                                <textarea class="note-edit-text" rows="5" placeholder="New Note" aria-label="New Note">{{ note.comment }}</textarea>
                                 <div class="note-buttons">
                                     <input type="button" class="save-button small-button" value = "SAVE" />
                                     <input type="button" class="cancel-button small-button" value = "CANCEL" />
@@ -44,6 +45,7 @@
                 <div id="dummy-note-placeholder" class="note-box" style="display: none">
                     <div class="note-content">
                         <div class="note-text"></div>
+                        <textarea class="note-edit-text"></textarea>
                         <div class="note-buttons">
                             <input type="button" class="save-button small-button" value = "SAVE" />
                             <input type="button" class="cancel-button small-button" value = "CANCEL" />

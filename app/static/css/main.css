@@ -231,6 +231,14 @@ h5 {
   width: -webkit-fit-content;
 }
 
+.note-edit-text {
+  display: none;  
+  background: #ffffd3;
+  border-radius: 4px;
+  margin: 7px 3px 1px -2px;
+  border: 0px;
+}
+
 .note-buttons {
   display: none;
 }
