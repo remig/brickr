@@ -40,6 +40,17 @@
                         {% endfor %}
                     </div>
                 </div>
+                <!-- This dummy is duplicated when user creates new notes.  Make sure its DOM stays in sync with real note def above -->
+                <div id="dummy-note-placeholder" class="note-box" style="display: none">
+                    <div class="note-content">
+                        <div class="note-text"></div>
+                        <div class="note-buttons">
+                            <input type="button" class="save-button small-button" value = "SAVE" />
+                            <input type="button" class="cancel-button small-button" value = "CANCEL" />
+                            <input type="button" class="delete-button small-button" value = "DELETE" />
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <div id="single-photo-info">

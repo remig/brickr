@@ -135,7 +135,7 @@ def updateNote():
         else:
             db.session.add(note)
         db.session.commit()
-        return jsonify(result = True)
+        return jsonify(result = True, noteID = note.id)
     return jsonify(result = False)
 
 @mod.route('/delete/<photoID>/', methods = ['GET', 'POST'])

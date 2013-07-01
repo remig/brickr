@@ -204,6 +204,7 @@ class Photo(db.Model):
         if not count % 2:
             photoStream.pop(0)  # If we need an even number of photos, remove first one
         return photoStream
-        
-    def getNotesInZOrder(self): # returns this a list of this photo's notes sorted largest to smallest
+
+    # Return a list of this photo's notes sorted largest to smallest by area.
+    def getNotesInZOrder(self):
         return sorted(self.notes.all(), key = Note.area, reverse = True)

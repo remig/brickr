@@ -67,7 +67,9 @@
                 x: coords[0], y: coords[1], w: coords[2], h: coords[3]
             },
             function(data) {
-                if (!data.result) {
+                if (data.result) {
+                    note.attr('id', data.noteID);  // Received a valid noteID from the server - store it.
+                } else {
                     alert('Add note failed because I suck');
                 }
             }
@@ -85,13 +87,13 @@
     }
 
     function createNewNote() {
-        var last_note = note_list.children().last();
-        newest_note = last_note.clone(true, true);
+        newest_note = $('#dummy-note-placeholder').clone(true, true);
         newest_note.attr('id', '0')
             .css('left', mouse_pos.x + 'px')
             .css('top', mouse_pos.y + 'px')
             .css('width', '0px')
             .css('height', '0px')
+            .show()
             .appendTo(note_list);  // TODO: insert this into list ordered by area
                         
         newest_note.find('.note-text').text('Your new note!');
@@ -109,7 +111,7 @@
             beginNoteEdit($(hovered_note));
         } else {  // create a new note
             if (hovered_note) {
-                noteOut.call(hovered_note);
+                noteOut.call(hovered_note);  // If we're inside an existing note and creating a new note, hide any note texts.
             }
             createNewNote();
         }
@@ -226,6 +228,9 @@
         img_h = d.height();
         $('#note-eventer').css('width', img_w + 'px').css('height', img_h + 'px');
         $('.note-box').each(function(i, v) {
+            if (!v.dataset.brickrCoords) {
+                return;
+            }
             var coords = v.dataset.brickrCoords.split('_').map(function(el){return parseInt(el, 10) / 100;});
             var l = img_w * coords[0];
             var t = img_h * coords[1];
@@ -253,7 +258,7 @@
     
     $(function() {
 
-        note_list = $('#note-list').data('userID', 7);
+        note_list = $('#note-list');
 
         $('#note-eventer')
             .mouseover(hoverIn)
