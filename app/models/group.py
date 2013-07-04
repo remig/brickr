@@ -30,4 +30,4 @@ class Group(db.Model):
         self.creation_time = datetime.utcnow()
         
     def __repr__(self):
-        return '<Group %d - %s>' % (self.id, self.url_name)
+        return '<Group %d - %s>' % (self.id or -1, self.url_name)

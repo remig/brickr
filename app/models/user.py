@@ -52,4 +52,4 @@ class User(db.Model):
         return PrivateMessage.query.filter_by(recipient_id = self.id).filter_by(isRead = False).count()
         
     def __repr__(self):
-        return '<User %r>' % (self.name)
+        return '<User %d, %r>' % (self.id or -1, self.name)

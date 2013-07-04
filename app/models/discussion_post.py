@@ -19,4 +19,4 @@ class DiscussionPost(db.Model):
         self.creation_time = datetime.utcnow()
 
     def __repr__(self):
-        return '<Post %d>' % (self.id)
+        return '<Post %d>' % (self.id or -1)

@@ -15,4 +15,4 @@ class Favorite(db.Model):
         self.creation_time = datetime.utcnow()
         
     def __repr__(self):
-        return '<Favorite %d, user: %d, photo: %d>' % (self.id, self.user_id, self.photo_id)
+        return '<Favorite %d, user: %d, photo: %d>' % (self.id or -1, self.user_id, self.photo_id)

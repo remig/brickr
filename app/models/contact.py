@@ -31,4 +31,4 @@ class Contact(db.Model):
         return User.query.filter_by(id = self.target_user_id).first()
         
     def __repr__(self):
-        return '<Contact %d, %d -> %d>' % (self.id, self.user_id, self.target_user_id)
+        return '<Contact %d, %d -> %d>' % (self.id or -1, self.user_id, self.target_user_id)

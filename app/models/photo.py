@@ -37,7 +37,7 @@ class Photo(db.Model):
         self.creation_time = datetime.utcnow()
         
     def __repr__(self):
-        return '<Photo %d>' % (self.id)
+        return '<Photo %d>' % (self.id or -1)
         
     def url(self):
         if not hasattr(self, '__url'):

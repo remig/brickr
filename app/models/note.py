@@ -23,7 +23,7 @@ class Note(db.Model):
         self.creation_time = datetime.utcnow()
 
     def __repr__(self):
-        return '<Note %d, user: %d, photo: %d, pos: (%d, %d, %d, %d)>' % (self.id, self.user_id, self.photo_id, self.x, self.y, self.w, self.h)
+        return '<Note %d, user: %d, photo: %d, pos: (%d, %d, %d, %d)>' % (self.id or -1, self.user_id, self.photo_id, self.x, self.y, self.w, self.h)
 
     def coords(self):
         return '%d_%d_%d_%d' % (self.x, self.y, self.w, self.h)
