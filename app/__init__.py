@@ -1,5 +1,3 @@
-PRODUCTION = True  # change this to False when developing locally
-
 import os.path, re
 from flask import Flask, render_template, g, session, send_file
 from flask.ext.sqlalchemy import SQLAlchemy
@@ -15,11 +13,7 @@ def strip(text):
     return pattern.sub('', text)
 
 app = Flask(__name__)
-if PRODUCTION:
-    app.config.from_object('config.ProductionConfig')
-else:
-    app.config.from_object('config.DevelopmentConfig')
-app.config['PRODUCTION'] = PRODUCTION
+app.config.from_object('config')
 
 db = SQLAlchemy(app)
 
