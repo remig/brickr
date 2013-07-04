@@ -1,6 +1,6 @@
 import os, sys
 
-PRODUCTION = False  # change this to False when developing locally
+PRODUCTION = True  # change this to False when developing locally
 
 if not PRODUCTION:
     import brickr_keys
