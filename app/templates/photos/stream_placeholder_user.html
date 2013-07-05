@@ -1,0 +1,12 @@
+{% extends "nav.html" %}
+
+{% block content %}
+    <div id="content-main">
+        {% if username %}
+        <h2>Sorry, {{ username }} has not joined Brickr yet.</h2>
+        {% elif user %}
+        <h2>Sorry, {{ user.name }} has not joined Brickr yet.</h2>
+        <h3>But they do have a Flickr account.  <a href="http://www.flickr.com/photos/{{ user.placeholder }}/">Check it out!</a>
+        {% endif %}
+    </div>
+{% endblock %}

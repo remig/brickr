@@ -15,7 +15,7 @@
         {% for photo in g.user.photos %}
             {% if photo not in group.photos %}
                 <li>
-                    <div class="thumb"><a href="{{ url_for('photos.photo', username = g.user.name, photoID = photo.id) }}">
+                    <div class="thumb"><a href="{{ url_for('photos.photo', user_url = g.user.url, photoID = photo.id) }}">
                         <img width="200" src="{{ photo.url_thumb(75) }}" alt="{{ photo.title }}" title="{{ photo.title }}">
                     </a></div>
                     <input type="checkbox" name="{{ photo.id }}"/>
@@ -34,7 +34,7 @@
         {% for photo in g.user.photos %}
             {% if photo in group.photos %}
                 <li>
-                    <div class="thumb"><a href="{{ url_for('photos.photo', username = g.user.name, photoID = photo.id) }}">
+                    <div class="thumb"><a href="{{ url_for('photos.photo', user_url = g.user.url, photoID = photo.id) }}">
                         <img width="200" src="{{ photo.url_thumb(75) }}" alt="{{ photo.title }}" title="{{ photo.title }}">
                     </a></div>
                     <input type="checkbox" name="{{ photo.id }}"/>

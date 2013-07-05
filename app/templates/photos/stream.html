@@ -17,7 +17,7 @@
         <ul id="photo-stream">
         {% for photo in photos %}
             <li>
-                <div class="thumb"><a href="{{ url_for('photos.photo', username = user.name, photoID = photo.id) }}">
+                <div class="thumb"><a href="{{ url_for('photos.photo', user_url = user.url, photoID = photo.id) }}">
                     <img src="{{ photo.url_thumb(75) }}" alt="{{ photo.title }}" title="{{ photo.title }}">
                 </a></div>
             </li>
@@ -55,7 +55,6 @@
             {% endif %}
             </div>
         {% endif %}
-                
     </div>
     
     {% else %}
@@ -64,7 +63,7 @@
             <ul id="photo-stream">
             {% for photo in photos.query.order_by('id desc')[:5] %}
                 <li>
-                    <div class="thumb"><a href="{{ url_for('photos.photo', username = photo.user.name, photoID = photo.id) }}">
+                    <div class="thumb"><a href="{{ url_for('photos.photo', user_url = photo.user.url, photoID = photo.id) }}">
                         <img width="200" src="{{ photo.url_thumb(75) }}" alt="{{ photo.title }}" title="{{ photo.title }}">
                     </a></div>
                 </li>

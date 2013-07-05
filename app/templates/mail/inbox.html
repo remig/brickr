@@ -11,7 +11,7 @@
     <ul>
         {% for message in messages %}
         <span class="{% if message.isRead %}read{% else %}unread{% endif %}"><li>
-            <span><a href="{{ url_for('photos.stream', username = message.sender.name) }}">{{ message.sender.name }}</a></span> -
+            <span><a href="{{ url_for('photos.stream', user_url = message.sender.url) }}">{{ message.sender.name }}</a></span> -
             <span><a href="{{ url_for('mail.message', messageID = message.id) }}">{{ message.title }}</a></span> - 
             <span class="convert-time">{{ message.creation_time }},LL</span>
             {% if not message.isRead %}<span> | Unread </span>{% endif %}
@@ -23,7 +23,7 @@
     <ul>
         {% for message in sent_messages %}
         <span><li>
-            <span><a href="{{ url_for('photos.stream', username = message.recipient.name) }}">{{ message.recipient.name }}</a></span> -
+            <span><a href="{{ url_for('photos.stream', user_url = message.recipient.url) }}">{{ message.recipient.name }}</a></span> -
             <span><a href="{{ url_for('mail.message', messageID = message.id) }}">{{ message.title }}</a></span> - 
             <span class="convert-time">{{ message.creation_time }},LL</span>
             {% if not message.isRead %}<span> | Unread </span>{% endif %}

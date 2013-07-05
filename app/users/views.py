@@ -10,7 +10,7 @@ mod = Blueprint('users', __name__, url_prefix = '/users')
 
 @mod.route('/')
 def root():
-    return render_template('users/user_index.html', users = User)
+    return render_template('users/user_index.html', users = User.query.filter_by(placeholder = None).all())
 
 @mod.route('/me/')
 @requires_login
@@ -28,7 +28,7 @@ def login():
         if not openid:
             openid = request.form.get('openid')
         if openid:
-            return oid.try_login(openid, ask_for = ['email', 'fullname', 'nickname'])
+            return oid.try_login(openid, ask_for = ['email', 'fullname', 'nickname', 'country', 'timezone', 'website'])
 
     # login form
     form = LoginForm(request.form)
@@ -94,9 +94,7 @@ def register():
         
         # flash will display a message to the user
         flash('Thank you for registering with Brickr!')
-        
-        # redirect user to the 'home' method of the user module.
-        return redirect(url_for('users.home'))
+        return redirect(url_for('index'))  # Send newly minted user to their Brickr landing page
     return render_template('users/register.html', form = form, next = oid.get_next_url())
 
 @mod.route('/_addContact/', methods = ['POST'])

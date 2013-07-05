@@ -6,18 +6,18 @@
         <ul>
             {% for contact in user.contacts %}
             <li>
-                <a href="{{ url_for('photos.stream', username = contact.getTargetUser().name) }}">{{contact.getTargetUser().name}}</a>
+                <a href="{{ url_for('photos.stream', user_url = contact.getTargetUser().url) }}">{{contact.getTargetUser().name}}</a>
                 - Added on {{ contact.creation_time }}
             </li>
             {% endfor %}
         </ul>
     </div>
-    <p><a href="{{ url_for('mail.inbox') }}">Your Private Messages</a>
+    <p><a href="{{ url_for('mail.inbox') }}">Your Private Message Inbox</a>
     <p>Your favorite Photos:
     <div>
         {% for fav in user.favorites %}
-            <a href="{{ url_for('photos.photo', username = fav.photo.user.name, photoID = fav.photo.id) }}">
-                <p><img width="200" src="{{ fav.photo.url_thumb(75) }}" alt="{{ fav.photo.title }}" title="{{ fav.photo.title }}">
+            <a href="{{ url_for('photos.photo', user_url = fav.photo.user.url, photoID = fav.photo.id) }}">
+                <p><img width="75" src="{{ fav.photo.url_thumb(75) }}" alt="{{ fav.photo.title }}" title="{{ fav.photo.title }}">
             </a>
         {% endfor %}
     </div>

@@ -8,8 +8,8 @@
     {% if users %}
         <h3>A list of all registered users:</h3>
         <ul>
-        {% for user in users.query.all() %}
-            <li><a href="{{ url_for('photos.stream', username = user.name) }}">{{ user.name }}</a> - User ID: {{ user.id }} - Joined on <span class="convert-time">{{ user.creation_time }},LL</span></li>
+        {% for user in users %}
+            <li><a href="{{ url_for('photos.stream', user_url = user.url) }}">{{ user.name }}</a> - User ID: {{ user.id }} - Joined on <span class="convert-time">{{ user.creation_time }},LL</span></li>
         {% endfor %}
         </ul>
     {% endif %}

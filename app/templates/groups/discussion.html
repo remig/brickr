@@ -12,12 +12,12 @@
     {% for post in discussion.posts %}
     <div class="discussion-post">
         <div class="post-avatar">
-            <a href="{{ url_for('photos.stream', username = post.user.name) }}">
+            <a href="{{ url_for('photos.stream', user_url = post.user.url) }}">
                 <img src="{{ url_for('static', filename = 'img/avatar.jpg') }}" alt="" title="" border="0" height="36" width="36">
             </a>
         </div>
         <div class="post-username">
-            <a href="{{ url_for('photos.stream', username = post.user.name) }}">{{ post.user.name }}</a> says:
+            <a href="{{ url_for('photos.stream', user_url = post.user.url) }}">{{ post.user.name }}</a> says:
         </div>
         <div class="post-text">
             {{ post.post }}

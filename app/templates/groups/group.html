@@ -17,7 +17,7 @@
     <h4>Members:</h4>
     <ul>
     {% for member in group.members %}
-        <li><a href="{{ url_for('photos.stream', username = member.name) }}">{{ member.name }}</a></li>
+        <li><a href="{{ url_for('photos.stream', user_url = member.url) }}">{{ member.name }}</a></li>
     {% endfor %}
     </ul>
     {% if g.user %}
@@ -32,7 +32,7 @@
         <ul id="photo-stream">
         {% for photo in group.photos %}
             <li>
-                <div class="thumb"><a href="{{ url_for('photos.photo', username = photo.user.name, photoID = photo.id) }}">
+                <div class="thumb"><a href="{{ url_for('photos.photo', user_url = photo.user.url, photoID = photo.id) }}">
                     <img width="200" src="{{ photo.url_thumb(75) }}" alt="{{ photo.title }}" title="{{ photo.title }}">
                 </a></div>
             </li>

@@ -13,17 +13,19 @@ mod = Blueprint('photos', __name__, url_prefix = '/photos')
 def root():
     return render_template('photos/stream.html', user = None, photos = Photo)
 
-@mod.route('/<username>/')
-def stream(username):
-    user = User.query.filter(func.lower(User.name) == func.lower(username)).first()
+@mod.route('/<user_url>/')
+def stream(user_url):
+    user = User.query.filter_by(url = user_url).first()
     if user is None:
-        abort(404)
+        return render_template('photos/stream_placeholder_user.html', username = user_url)
+    elif user.placeholder:
+        return render_template('photos/stream_placeholder_user.html', user = user)
 
     photos = user.photos
     return render_template('photos/stream.html', user = user, photos = photos)
     
-@mod.route('/<username>/<photoID>/')
-def photo(photoID, username = None):
+@mod.route('/<user_url>/<photoID>/')
+def photo(photoID, user_url = None):
     photo = Photo.query.get(photoID)
     if photo is None:
         abort(404)
@@ -50,7 +52,7 @@ def upload():
                 flash(u'Image upload success!')
             else:
                 flash(u'Something went horribly wrong while uploading.  Sharks, maybe.')
-            return redirect(url_for('photos.stream', username = g.user.name))
+            return redirect(url_for('photos.stream', user_url = g.user.url))
         else:
             flash(u'This type of file cannot be uploaded.')
     return render_template('photos/upload.html')
@@ -65,7 +67,7 @@ def addComment():
             comment = Comment(g.user, photo, request.form.get('comment'))
             db.session.add(comment)
             db.session.commit()
-        return redirect(url_for('photos.photo', username = photo.user.name, photoID = photo.id))
+        return redirect(url_for('photos.photo', user_url = photo.user.url, photoID = photo.id))
     
 @mod.route('/_addFavorite/', methods = ['POST'])
 @requires_login
@@ -77,7 +79,7 @@ def addFavorite():
             favorite = Favorite(g.user, photo)
             db.session.add(favorite)
             db.session.commit()
-        return redirect(url_for('photos.photo', username = photo.user.name, photoID = photo.id))
+        return redirect(url_for('photos.photo', user_url = photo.user.url, photoID = photo.id))
 
 @mod.route('/_addTag/', methods = ['POST'])
 @requires_login
@@ -158,10 +160,11 @@ def delete(photoID):
     photo = Photo.query.get(photoID)
     if g.user.id != photo.user.id:
         flash(u"You don't have permission to delete this photo.")
-        return redirect(url_for('photos.photo', username = photo.user.name, photoID = photoID))
+        return redirect(url_for('photos.photo', user_url = photo.user.url, photoID = photoID))
     if photo.delete_file():
         db.session.delete(photo)
         db.session.commit()
-        return redirect(url_for('photos.stream', username = g.user.name))
+        flash(u"Photo deleted successfully")
+        return redirect(url_for('photos.stream', user_url = g.user.url))
     flash(u'Something went horribly wrong while deleting your photo. It\'s still here...')
-    return redirect(url_for('photos.photo', username = photo.user.name, photoID = photoID))
+    return redirect(url_for('photos.photo', user_url = photo.user.url, photoID = photoID))
