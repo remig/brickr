@@ -1,8 +1,11 @@
 from datetime import datetime
 from app import db
 
+def bound(v, lMin = 0, lMax = 100):
+    return min(max(v, lMin), lMax)
+
 class Note(db.Model):
-    
+
     __tablename = 'note'
     id = db.Column(db.Integer, primary_key = True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -14,7 +17,7 @@ class Note(db.Model):
     w = db.Column(db.SmallInteger)
     h = db.Column(db.SmallInteger)
     creation_time = db.Column(db.DateTime)
-    
+
     def __init__(self, user, photo, comment, x, y, w, h):
         self.user_id = user.id
         self.photo_id = photo.id
@@ -27,12 +30,12 @@ class Note(db.Model):
 
     def coords(self):
         return '%d_%d_%d_%d' % (self.x, self.y, self.w, self.h)
-        
+
     def set_coords(self, x, y, w, h):
-        self.x = x
-        self.y = y
-        self.w = w
-        self.h = h
-        
+        self.x = bound(x)
+        self.y = bound(y)
+        self.w = bound(w)
+        self.h = bound(h)
+
     def area(self):
         return self.w * self.h
