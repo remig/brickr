@@ -6,3 +6,4 @@ flask-openid
 boto
 pil
 sqlalchemy-migrate
+flickrapi

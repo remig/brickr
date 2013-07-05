@@ -1,6 +1,10 @@
-import os, shlex
+from __future__ import division  # Need to use this across the entire project - is there an easy way to do so?
+
+import os, shlex, urllib2, datetime
+from StringIO import StringIO
 from flask import *
 from sqlalchemy import func
+from flickrapi import FlickrAPI, FlickrError
 
 from app import app, db, breakpoint, strip
 from app.models import *
@@ -168,3 +172,147 @@ def delete(photoID):
         return redirect(url_for('photos.stream', user_url = g.user.url))
     flash(u'Something went horribly wrong while deleting your photo. It\'s still here...')
     return redirect(url_for('photos.photo', user_url = photo.user.url, photoID = photoID))
+
+@mod.route('/_importFromFlickr/', methods = ['POST'])
+@requires_login
+def importFromFlickr():
+
+    if g.user is None:
+        return jsonify(result = False, error = "You need to be logged in to import from Flickr")
+        
+    if not g.user.flickr_auth:
+        return jsonify(result = False, error = "Your account has not been authenticated with Flickr")
+
+    try:  # Yes yes, a massive try block, the horror! But almost every single line in here throws an error from FlickrAPI
+        photoID = request.form.get('photoID')
+        api_key = os.environ['PARAM1']
+        api_secret = os.environ['PARAM2']
+        flickr = FlickrAPI(api_key, api_secret, store_token = False)
+
+        # Get original photo's URL
+        sizes = flickr.photos_getSizes(photo_id = photoID).find('sizes')[-1]
+        photo_url = sizes.attrib['source']
+        img_width = int(sizes.attrib['width'])   # necessary to correctly scale notes
+        img_height = int(sizes.attrib['height'])
+
+        # Pull a blob of most of the photo's metadata
+        photo_info = flickr.photos_getInfo(photo_id = photoID).find('photo')
+
+        # Check if the person importing this photo actually owns it
+        flickr_screen_name = photo_info.find('owner').attrib['username']
+        if flickr_screen_name.lower() != g.user.name.lower():
+            return jsonify(result = False, error = 'You dog!  You don\'t own this photo!  %s does.  For shame.' % flickr_screen_name)
+
+        # Pull photo's title, desc, timestamps from metadata blob
+        flickr_owner_id = photo_info.find('owner').attrib['nsid']  # used to retrieve views
+        title = photo_info.find('title').text
+        desc = photo_info.find('description').text
+        time_taken = photo_info.find('dates').attrib['taken']  # '2013-06-22 11:16:32' ... wtf?
+        time_posted = photo_info.find('dates').attrib['posted']  # '1372279163'
+
+        # flickr notes are in a 0..500px coordinate space, where 500 maps to max(img_width, img_height)
+        # brickr notes are normalized to a 0..100 % coordinate space, regardless of image aspect ratio (because I'm smarter)
+        # flickr notes don't have timestamp info
+        scale_w = 500 if img_width >= img_height else (500 / img_height * img_width)
+        scale_h = 500 if img_width < img_height else (500 / img_width * img_height)
+        notes = []
+        for note in photo_info.find('notes'):
+            notes.append({
+                'user_id': note.attrib['author'],
+                'screen_name': note.attrib['authorname'],
+                'text': note.text,
+                'x': int(note.attrib['x']) / scale_w * 100,
+                'y': int(note.attrib['y']) / scale_h * 100,
+                'w': int(note.attrib['w']) / scale_w * 100,
+                'h': int(note.attrib['h']) / scale_h * 100
+            })
+
+        # Photo tags are easy
+        tags = []
+        for tag in photo_info.find('tags'):
+            if tag.attrib['machine_tag'] != '1':  # Ignore ugly automatically created inivisible-to-users tags
+                tags.append(tag.attrib['raw'])
+
+        # Import comments - needs its own Flickr API call
+        comments = []
+        if int(photo_info.find('comments').text) > 0:
+            comment_rsp = flickr.photos_comments_getList(photo_id = photoID).find('comments')
+            for comment in comment_rsp:
+                comments.append({
+                    'user_id': comment.attrib['author'],
+                    'screen_name': comment.attrib['authorname'],
+                    'timestamp': comment.attrib['datecreate'],
+                    'text': comment.text
+                })
+
+        # Import Favorites.  These come in at most 50 per request. Another dedicated Flickr API call
+        favorites = []
+        favorite_rsp = flickr.photos_getFavorites(photo_id = photoID, per_page = '50').find('photo')
+        for fav in favorite_rsp:
+            favorites.append({
+                'user_id': fav.attrib['nsid'],
+                'screen_name': fav.attrib['username'],
+                'timestamp': fav.attrib['favedate']
+            })
+
+        fav_page_count = int(favorite_rsp.attrib['pages'])
+    
+        if fav_page_count > 1:
+            for i in range(2, fav_page_count + 1):
+                favorite_rsp = flickr.photos_getFavorites(photo_id = photoID, page = str(i), per_page = '50').find('photo')
+                for fav in favorite_rsp:
+                    favorites.append({
+                        'user_id': fav.attrib['nsid'],
+                        'screen_name': fav.attrib['username'],
+                        'timestamp': fav.attrib['favedate']
+                    })
+
+        # View count
+        # There's no direct flickr API to get a photo's view count (weird)
+        # But we can add 'views' to the list of extra info returned by photo.search... (weird)
+        # Can't search by photo ID (not weird), but can search by min & max upload time... set those to the photo's upload time, and we find the exact photo... (lucky)
+        views = flickr.photos_search(user_id = flickr_owner_id, min_upload_date = time_posted, max_upload_date = time_posted, extras = 'views')
+        views = views.find('photos')[0].attrib['views']
+
+    except Exception as e:
+        return jsonify(result = False, error = "Fuck me.  Flickr Import went horribly awry.  Send this message to Remi:\n\nPhoto: %s - %s" % (photoID, e.__repr__()))
+
+    try:
+        # So, we've pulled absolutely everything about this one photo out of Flickr.
+        # Now dump it all into Brickr. You're welcome.
+        photo = Photo(photo_url, g.user, title, desc)
+        file_object = urllib2.urlopen(photo_url)  # Download photo from Flickr
+        fp = StringIO(file_object.read())
+        if not photo.save_file(fp):
+            return jsonify(result = False, error = "Well shit. So, everything exported FROM Flickr just fine.  But we failed to save the exported photo file.  Send this message to Remi:\n\nPhoto: %s - Flickr Export - %s" % (photoID, photo_url))
+
+        photo.views = views
+        db.session.add(photo)
+        db.session.commit()  # Shit, should do everything in one commit, but we need a photo ID before adding things to the photo...
+
+        for c in comments:
+            user = User.get_user_or_placeholder(c['screen_name'], c['user_id'])
+            comment = Comment(user, photo, c['text'], datetime.date.fromtimestamp(float(c['timestamp'])))
+            db.session.add(comment)
+
+        for n in notes:
+            user = User.get_user_or_placeholder(n['screen_name'], n['user_id'])
+            note = Note(user, photo, n['text'], n['x'], n['y'], n['w'], n['h'])
+            db.session.add(note)
+
+        for t in tags:
+            tag = Tag.get_or_create(t)
+            photo.tags.extend([tag])
+            db.session.add(tag)
+
+        for f in favorites:
+            user = User.get_user_or_placeholder(f['screen_name'], f['user_id'])
+            fav = Favorite(user, photo)
+            db.session.add(fav)
+
+        db.session.commit()
+
+        return jsonify(result = True, url = url_for('photos.photo', user_url = g.user.url, photoID = photo.id))
+
+    except Exception as e:
+        return jsonify(result = False, error = "Well shit. So, everything exported FROM flickr just fine.  But dumping it INTO Brickr is apparently too much to ask.  Send this message to Remi:\n\nPhoto: %s - Brickr Import - %s" % (photoID, e.__repr__()))

@@ -3,6 +3,11 @@ from flask import Flask, render_template, g, session, send_file
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.openid import OpenID
 
+from flickrapi import FlickrAPI
+import logging
+for handler in logging.root.handlers:  # flickrapi sets up basic logging, which hoses flask logging
+    logging.root.removeHandler(handler)
+
 def breakpoint(): # pragma: no cover
     if app.debug:
         import pdb

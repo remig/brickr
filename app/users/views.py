@@ -1,5 +1,6 @@
 from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for, jsonify
 from werkzeug import check_password_hash, generate_password_hash
+from flickrapi import FlickrAPI
 
 from app import db, oid, breakpoint
 from app.users.forms import RegisterForm, LoginForm
@@ -79,7 +80,7 @@ def register():
 
     if form.validate_on_submit():
         # Create a user instance not yet stored in the database
-        user = User(form.name.data, form.email.data)
+        user = User(form.screen_name.data, form.email.data, form.real_name.data)
         if 'openid' in session:
             user.openid = session['openid']
         else:
@@ -89,13 +90,49 @@ def register():
         db.session.add(user)
         db.session.commit()
         
-        # Log the user in, as he hnow has an ID
+        # Log the user in, as he now has an ID
         session['user_id'] = user.id
         
-        # flash will display a message to the user
+        if form.flickr_auth.data:  # User selected to authorize their screen name as a flickr account
+            api_key = os.environ['PARAM1']
+            api_secret = os.environ['PARAM2']
+            flickr = FlickrAPI(api_key, api_secret, store_token = False)
+
+            login_url = flickr.web_login_url('read')
+            return redirect(login_url)
+    
+            #token = flickr.get_token(request.values['frob'])
+            #rsp = flickr.auth_checkToken(auth_token = token, format = 'xmlnode')
+            #if (rsp.auth[0].user[0].attrib['username'] == 'Bolt of Blue'):
+            #    return "SUCCESS"
+            #return 'FAIL'
+        
         flash('Thank you for registering with Brickr!')
         return redirect(url_for('index'))  # Send newly minted user to their Brickr landing page
     return render_template('users/register.html', form = form, next = oid.get_next_url())
+
+# This URL is hit by flickr itself after user has successfully authenticated
+@mod.route('/flickr_auth/', methods = ['GET', 'POST'])
+@requires_login
+def flickr_auth():
+    # Convert the frob passed back from Flickr's auth system into an auth token.
+    api_key = os.environ['PARAM1']
+    api_secret = os.environ['PARAM2']
+    flickr = FlickrAPI(api_key, api_secret, store_token = False)
+    token = flickr.get_token(request.values['frob'])
+
+    # Retrieve the Flickr screen name associated with the dude that just authenticated
+    rsp = flickr.auth_checkToken(auth_token = token, format = 'xmlnode')
+    flickr_screen_name = rsp.auth[0].user[0].attrib['username']
+    
+    # Check if authenticated screen name matches screen name entered on account creation
+    if flickr_screen_name.lower() == g.user.name.lower():
+        g.user.flickr_auth = True
+        db.session.add(g.user)
+        db.session.commit()
+        flash('You have successfully authenticated your Flickr account.  Welcome.')
+        return redirect(url_for('index'))  # Send newly minted user to their Brickr landing page
+    return 'FAILED to Authenticate with Flickr.  FAILED.  HARD.'
 
 @mod.route('/_addContact/', methods = ['POST'])
 @requires_login

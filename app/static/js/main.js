@@ -114,3 +114,19 @@ function editPhotoInfo(showUI, photoID) {
         toggleUI(false);
     }
 }
+
+function importFromFlickr() {
+	$('.activity-indicator').show();
+    var photoID = $('#flickr-photo-id').val();
+    $.post($SCRIPT_ROOT + '/photos/_importFromFlickr/',
+        {photoID: photoID},
+        function(data) {
+			$('.activity-indicator').hide();
+            if (data.result) {
+				document.location = data.url;
+			} else {
+                alert(data.error || 'Failed to Import Flickr photo.  Gremlins in the tubes.');
+            }
+        }
+    );
+}

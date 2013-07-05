@@ -16,3 +16,9 @@ class Tag(db.Model):
         
     def __repr__(self):
         return '<Tag %r>' % (self.description)
+        
+    # If 'description' is an existing tag, retrieve it; if not, create it
+    @staticmethod
+    def get_or_create(description):
+        tag = Tag.query.filter_by(description = description).first()
+        return tag or Tag(description)

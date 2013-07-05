@@ -138,15 +138,13 @@
         <div id="photo-favorites">
             <div class="hr"></div>
             <p>
-            {% for favorite in photo.favorites.slice(0, 5) %}
-                {% if loop.last and loop.index0 >= 5 %}
-                and {{ photo.favorites.count() - 5 }} others
-                {% elif loop.last and loop.index0 > 0 %}
-                and
-                {% endif %}
-                <a href="{{ url_for('photos.stream', user_url = favorite.user.url) }}">{{favorite.user.name}}</a>
-                {% if loop.revindex0 > 0 %}
-                ,
+            {% set favDispCount = 4 %}  {# change this number to set how many people are listed in the 'added this photo' text #}
+            {% for favorite in photo.favorites.slice(0, favDispCount + 1) %}
+                {% if loop.last and loop.index0 >= favDispCount %}
+                and {{ photo.favorites.count() - favDispCount }} others
+                {% else %}
+                    {% if loop.last and loop.index0 > 0 %}and{% endif %}
+                    <a href="{{ url_for('photos.stream', user_url = favorite.user.url) }}">{{favorite.user.name}}</a>{% if loop.revindex0 > 0 %},{% endif %}
                 {% endif %}
             {% endfor %}
             added this photo to their favorites.</p>
@@ -170,7 +168,7 @@
                             <a href="{{ url_for('photos.stream', user_url = comment.user.url)}}">{{comment.user.name}}</a>
                             <span class="small comments-date"><span class="convert-time">{{ comment.creation_time }},fromNow</span></span>
                         </div>
-                        <div class="comment-text">{{ comment.comment }}</div>
+                        <div class="comment-text">{{ comment.comment | safe }}</div>
                     </div>
                 </li>
                 {% endfor %}
