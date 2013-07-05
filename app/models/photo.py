@@ -1,4 +1,4 @@
-import os, boto, mimetypes
+import os, boto, mimetypes, shutil
 from PIL import Image
 from StringIO import StringIO
 from uuid import uuid4
@@ -77,8 +77,8 @@ class Photo(db.Model):
 
     def generate_thumb(self, source_file, size = 75, bucket = None):  # for now, all thumbnails are assumed squares of width & height = size
         try:
+            source_file.seek(0)
             if isinstance(source_file, FileStorage):
-                source_file.seek(0)
                 img = Image.open(StringIO(source_file.read()))
             else:
                 img = Image.open(source_file)
@@ -139,13 +139,14 @@ class Photo(db.Model):
                 if not os.path.exists(path):
                     os.makedirs(path)
                 fn = os.path.join(path, self.binary_url)
-                source_file.save(fn)
+                fh = file(fn, 'wb')
+                shutil.copyfileobj(source_file, fh)
                 
                 return self.generate_thumb(source_file, 75)  # Don't care about leaving stray photos locally - delete them yerself
             return True
         except:  # need to log this, or something
             return False
-            
+
     # Delete the file associated with this photo, either on the local disk or S3
     def delete_file(self):
         try:
@@ -162,7 +163,7 @@ class Photo(db.Model):
             return True
         except:  # need to log this too, damn it
             return False
-        
+
     def url_path(self):
         u = self.binary_url
         return '/'.join([u[0], u[1], u[2]])
