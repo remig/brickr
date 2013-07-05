@@ -19,6 +19,7 @@
             <input type="text" name="openid" size="30">
             -->
             <input type="hidden" id="openid_auto_url" name="openid_auto_url" value="">
+            {% if not config['PRODUCTION'] %}
             <br />
             <legend>Or a Brickr account:</legend>
             <br />
@@ -31,6 +32,7 @@
             <div id="logon-help">
                 <p><a href="">Forgot your password?</a></p>
             </div>
+            {% endif %}
         </fieldset>
     </form>
 {% endblock %}
