@@ -19,7 +19,9 @@
             <input type="text" name="openid" size="30">
             -->
             <input type="hidden" id="openid_auto_url" name="openid_auto_url" value="">
-            {% if not config['PRODUCTION'] %}
+            <p>If you want to import your photos from Flickr, that happens in 
+            the next account creation step.  The login info you use here doesn't matter.
+            {% if config['PRODUCTION'] %}
             <br />
             <legend>Or a Brickr account:</legend>
             <br />

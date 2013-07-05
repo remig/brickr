@@ -9,19 +9,23 @@
             <legend>Create a new Brickr Account</legend>
             <br />
             {{ form.csrf_token }}
-            {{ render_field(form.screen_name, class="input text") }} (Required)
+            {{ render_field(form.screen_name, class="input text", value=request.values.screen_name) }} (Required)
             <br /><br />
             If you want to import your photos from Flickr, you <b>must</b> enter your Flickr <b>screen name</b> above.
             You also need to verify that you really do own your Flickr account.  Click 'Authenticate with Flickr' to do so.
             You will be sent to Flickr to log in, then sent back here to complete your registration.  
             Your Flickr log in information is <b>never</b> seen by Brickr.
             <br />
+            {% if request.values.do_flickr_auth %}
+            {{ render_field(form.flickr_auth, class="input checkbox", checked="checked") }}
+            {% else %}
             {{ render_field(form.flickr_auth, class="input checkbox") }}
+            {% endif %}
             <br />
             {{ render_field(form.email, class="input text", value=request.values.email) }}
             (Required)
             <br />
-            {{ render_field(form.real_name, class="input text", value=request.values.name) }}
+            {{ render_field(form.real_name, class="input text", value=request.values.real_name) }}
             (Optional)
             <br />
             {% if 'openid' not in session %}
