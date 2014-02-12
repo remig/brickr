@@ -8,15 +8,37 @@
 <script type="text/javascript">
     window.__photoID = {{ photo.id }};
     window.__userID = "{{ g.user.id or 0 }}";
+	var photo = {
+		id: {{ photo.id }},
+		favorite: {{ g.user.isFavorited(photo) | lower }},
+		title: "{{ photo.title }}",
+		tagList: [{% if photo.tags %} "{{ photo.tags | map(attribute='description') | join('", "') | safe }}" {% endif %}]
+	};
 </script>
 {% endblock %}
 
+{% block script_onload %}
+ko.applyBindings(new PhotoViewModel(photo));
+{% endblock %}
+
 {% block content %}
+	{% set isPhotoOwner = g.user and photo.user.id == g.user.id %}
     <div id="content-main">
         <div id="single-photo">
             <div id="single-photo-actions">
                 <ul>
-                    <li><a href="" id="photo-fave" {% if g.user and g.user.isFavorited(photo) %}class="isFavorited" onclick="return false;"{% else %}onclick="addFavorite({{ photo.id }});"{% endif %} title="Add to Favorites">Favorite</a></li>
+                    <li><div id="photo-fave" data-bind="css: { favorite: favorite() }, click: changeFavorite"
+					{% if g.user %}
+						class="clickable"
+						{% if g.user.isFavorited(photo) %}
+							title="Remove from Favorites"
+						{% else %}
+							title="Add to Favorites"
+						{% endif %} 
+					{% else %}
+						title="Favorites"
+					{% endif %}
+					></div></li>
                     <li><a href="" id="photo-share" title="Share photo (NYI)">Share</a></li>
                     <li><a href="" id="photo-download" title="Download photo (NYI)">Download</a></li>
                 </ul>
@@ -56,8 +78,8 @@
             </div>
             
             <div id="single-photo-info">
-                {% if g.user and photo.user.id == g.user.id %}
-                    <h2 class="single-photo-title photo-display-info" onclick="editPhotoInfo(true);">{{ photo.title }}</h2>
+                {% if isPhotoOwner %}
+                    <h2 class="single-photo-title photo-display-info" onclick="editPhotoInfo(true);" data-bind="text: photo.title"></h2>
                     <input class="single-photo-title-edit photo-edit-info" type="text" />
                     <div class="single-photo-desc photo-display-info" onclick="editPhotoInfo(true);">{{ photo.description }}</div>
                     <textarea class="single-photo-desc-edit photo-edit-info"></textarea>
@@ -66,7 +88,7 @@
                         <input type="button" class="cancel-button small-button" value="CANCEL" onclick="editPhotoInfo(false, -1);"/>
                     </div>
                 {% else %}
-                    <h2>{{ photo.title }}</h2>
+                    <h2 data-bind="text: photo.title"></h2>
                     <div>{{ photo.description }}</div>
                 {% endif %}
             </div>
@@ -114,22 +136,23 @@
 
         <div id="tags" class="sidebar-box">
             <h3>Tags
-            {% if g.user and photo.user.id == g.user.id %}
-                <span class="small" id="addTagLink">(<a href="javascript:$('input#tagBox').show();$('span#addTagLink').hide();">add a tag</a>)</span>
+            {% if isPhotoOwner %}
+                <span class="small" id="addTagLink">(<a href="javascript:$('input#tagBox').show().focus();$('span#addTagLink').hide();">add a tag</a>)</span>
             {% endif %}
             </h3>
-            <ul id="tagList">
-                {% for tag in photo.tags %}
-                <li><a href="">{{ tag.description }}</a></li>
-                {% endfor %}
+            <ul id="tagList" data-bind="foreach: tags">
+                <li><div>
+					<a href="#" data-bind="text: desc"></a>
+                    {% if isPhotoOwner %} <a href="#" data-bind="click: $parent.removeTag">x</a> {% endif %}
+				</div></li>
             </ul>
             <br /><br />
-            <input type="text" id="tagBox" style="display: none" onkeypress="tagKeyPress(this, event, {{ photo.id }});">
+            <input type="text" id="tagBox" style="display: none" data-bind="event: {keypress: addTag}">
         </div>
         
-        {% if g.user and photo.user.id == g.user.id %}
+        {% if isPhotoOwner %}
             <a href="{{ url_for('photos.delete', photoID = photo.id) }}" onclick="return confirm('Do you really want to delete this photo?');">Delete this Photo</a>
-        {% endif %}        
+        {% endif %}
     </div>
 
     <div id="content-interact">

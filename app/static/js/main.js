@@ -1,12 +1,56 @@
-function addFavorite(photoID) {
-	$.ajax($SCRIPT_ROOT + '/photos/_addFavorite/', {
-		data: {photoID: photoID},
-		type: 'POST',
-		success: function(data) {
-			alert(data.result);
+function PhotoViewModel(photo) {
+
+	var self = this;
+	self.baseURL = $SCRIPT_ROOT + '/photos/';
+	self.photo = photo;
+	self.favorite = ko.observable(photo.favorite);
+	
+	self.tags = ko.observableArray(photo.tagList.map(function(el){return {desc: el};}));
+	
+	self.addTag = function(model, event) {
+		if (event.charCode !== 13 || !event.target.value) {
+			return true;
 		}
-	});
-	return false;
+		$.post(self.baseURL + 'addTags',
+			{photoID: self.photo.id, tag: event.target.value},
+			function(data) {
+				if (data.result && data.tags) {
+					for (var i = 0; i < data.tags.length; i++) {
+						self.tags.push({desc: data.tags[i]});
+					}
+					event.target.value = '';
+				}
+			}
+		);
+		return false;
+	}
+	
+	self.removeTag = function() {
+		var tag = this;
+		$.post(self.baseURL + 'removeTag',
+			{photoID: self.photo.id, tag: tag.desc},
+			function(data) {
+				if (data.result) {
+					self.tags.remove(tag);
+				}
+			}
+		);
+		return false;
+	}
+	
+	self.changeFavorite = function() {
+		
+		var isFavorited = self.favorite();
+		$.post(self.baseURL + (isFavorited ? 'removeFavorite' : 'addFavorite'),
+			{photoID: self.photo.id},
+			function(data) {
+				if (data.result) {
+					self.favorite(!isFavorited);
+				}
+			}
+		);
+		return false;
+	}
 }
 
 function addContact(userID, username) {
@@ -34,26 +78,6 @@ function removeContact(userID, username) {
 			}
 		}
 	});
-	return false;
-}
-
-function tagKeyPress(el, e, photoID) {
-	if (e.charCode !== 13) {
-		return;
-	}
-	$.post($SCRIPT_ROOT + '/photos/_addTag/', 
-		{photoID: photoID, tag: el.value},
-		function(data) {
-			if (data.result && data.tags) {
-				for (var i = 0; i < data.tags.length; i++) {
-					$('ul#tagList').append('<li><a href="">' + data.tags[i] + '</a></li>');
-				}
-				el.value = '';
-			} else {
-				console.log('Add tag failed because I suck');
-			}
-		}
-	);
 	return false;
 }
 
@@ -86,10 +110,10 @@ function editPhotoInfo(showUI, photoID) {
         }
     }
     
-    function pushToServer(title, desc) {
+    function pushToServer(title, desc, photoID) {
         $.post($SCRIPT_ROOT + '/photos/_updatePhoto/',
             {
-                photoID: window.__photoID,
+                photoID: photoID,
                 title: title,
                 desc: desc
             },
@@ -107,7 +131,7 @@ function editPhotoInfo(showUI, photoID) {
         if (photoID > 0) {
             var title = $('.single-photo-title-edit').val() || $('.single-photo-title').text();
             var desc = $('.single-photo-desc-edit').val() || $('.single-photo-desc').text();
-            pushToServer(title, desc);
+            pushToServer(title, desc, photoID);
             $('.single-photo-title').text(title);
             $('.single-photo-desc').text(desc);
         }

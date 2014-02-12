@@ -73,7 +73,7 @@ def addComment():
             db.session.commit()
         return redirect(url_for('photos.photo', user_url = photo.user.url, photoID = photo.id))
     
-@mod.route('/_addFavorite/', methods = ['POST'])
+@mod.route('/addFavorite', methods = ['POST'])
 @requires_login
 def addFavorite():
     if request.method == 'POST':
@@ -83,11 +83,25 @@ def addFavorite():
             favorite = Favorite(g.user, photo)
             db.session.add(favorite)
             db.session.commit()
-        return redirect(url_for('photos.photo', user_url = photo.user.url, photoID = photo.id))
+            return jsonify(result = True)
+    return jsonify(result = False)
 
-@mod.route('/_addTag/', methods = ['POST'])
+@mod.route('/removeFavorite', methods = ['POST'])
 @requires_login
-def addTag():
+def removeFavorite():
+    if request.method == 'POST':
+        photoID = request.form.get('photoID')
+        photo = Photo.query.get(photoID)
+        fav = Favorite.query.filter_by(user_id = g.user.id, photo_id = photoID)
+        if photo and fav.count() > 0:
+            db.session.delete(fav.first())
+            db.session.commit()
+            return jsonify(result = True)
+    return jsonify(result = False)
+
+@mod.route('/addTags', methods = ['POST'])
+@requires_login
+def addTags():
     if request.method == 'POST':
         photoID = request.form.get('photoID')
         photo = Photo.query.get(photoID)
@@ -109,6 +123,31 @@ def addTag():
             db.session.add(tag)
         db.session.commit()
         return jsonify(result = True, tags = tag_list)
+    return jsonify(result = False)
+
+@mod.route('/removeTag', methods = ['POST'])
+@requires_login
+def removeTag():
+    if request.method == 'POST':
+        photoID = request.form.get('photoID')
+        photo = Photo.query.get(photoID)
+        if not photo:
+            return jsonify(result = False)
+
+        existing_tags = [x.description.lower() for x in photo.tags]
+        tag_text = request.form.get('tag').strip()
+        if tag_text.lower() not in existing_tags:
+            return jsonify(result = False)
+            
+        tag = Tag.query.filter_by(description = tag_text).first()
+        if tag is None:
+            return jsonify(result = False)
+        photo.tags.remove(tag)
+        db.session.commit()
+        if db.session.query('* from tag_list where tag_id = %d' % tag.id).count() < 1:
+            db.session.delete(tag)
+            db.session.commit()
+        return jsonify(result = True)
     return jsonify(result = False)
 
 @mod.route('/_updatePhoto/', methods = ['POST'])

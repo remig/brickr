@@ -35,6 +35,10 @@ h5 {
   font-weight: bold;
 }
 
+.clickable {
+  cursor: pointer;
+}
+
 .small {
   font-size: .9em;
   font-weight: normal;}
@@ -326,11 +330,13 @@ h5 {
 }
 
 #photo-fave {
+  height: 22px;
   background: url(../img/icon_add_favorites.png) 3px 2px no-repeat;
   background-size: 85%;
 }
 
-#photo-fave.isFavorited {
+#photo-fave.favorite {
+  height: 22px;
   background: url(../img/icon_favorited.png) 3px 2px no-repeat;
   background-size: 85%;
 }
@@ -483,7 +489,7 @@ h5 {
   margin-left: 8px;
 }
  
-#tags li a {
+#tags li div {
   display: block;
   border: 1px solid #e6e6e6;
   padding: 1px 5px;
@@ -491,10 +497,14 @@ h5 {
   border-radius: 2px;
 }
  
-#tags li a:hover{
+#tags li div:hover{
   background: #033E6B;
   color: #FFF;
   text-decoration: none;
+}
+
+#tags li div a + a{
+  margin-left: 2px;
 }
 
 /* Log On */
