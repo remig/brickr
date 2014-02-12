@@ -3,10 +3,12 @@ from PIL import Image
 from StringIO import StringIO
 from uuid import uuid4
 from datetime import datetime
+from flask import json
+from werkzeug import secure_filename, FileStorage
+
 from app import app, db, breakpoint
 from tag import tag_list
 from group import group_photo_list
-from werkzeug import secure_filename, FileStorage
 from app.models.note import Note
 
 mimetypes.init([])  # Don't use platform's mimetype mapping, which is broken on Windows (http://bugs.python.org/issue10551)
@@ -209,3 +211,13 @@ class Photo(db.Model):
     # Return a list of this photo's notes sorted largest to smallest by area.
     def getNotesInZOrder(self):
         return sorted(self.notes.all(), key = Note.area, reverse = True)
+
+    def to_json(self, active_user = None):
+        return json.dumps({
+            'id': self.id,
+            'title': self.title,
+            'description': self.description,
+            'favorite': active_user.isFavorited(self) if active_user else False,
+            'views': self.views,
+            'tags': [{'desc': t.description} for t in self.tags]
+        })

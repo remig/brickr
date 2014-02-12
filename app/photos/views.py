@@ -34,10 +34,12 @@ def photo(photoID, user_url = None):
     if photo is None:
         abort(404)
 
-    photo.views += 1
+    photo.views += 1  # TODO: Totally naive view counter - try harder
     db.session.commit()
+    
+    photoJSON = photo.to_json(g.user)
 
-    return render_template('photos/photo.html', photo = photo)
+    return render_template('photos/photo.html', photo = photo, photoJSON = photoJSON)
 
 ALLOWED_EXTENSIONS = set(['.jpg', '.jpeg', '.gif', '.png'])
 def allowed_file(filename):
