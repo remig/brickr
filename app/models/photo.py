@@ -216,8 +216,9 @@ class Photo(db.Model):
             'id': self.id,
             'title': self.title,
             'description': self.description,
-            'favorite': active_user.isFavorited(self) if active_user else False,
             'views': self.views,
+            'favorite': active_user.isFavorited(self) if active_user else False,
+            'favorites': [f.to_json() for f in self.favorites],
             'tags': [{'desc': t.description} for t in self.tags],
             'comments': [c.to_json() for c in self.comments]
         }

@@ -1,3 +1,4 @@
+from flask import url_for
 from datetime import datetime
 from app import db
 
@@ -16,3 +17,10 @@ class Favorite(db.Model):
         
     def __repr__(self):
         return '<Favorite %d, user: %d, photo: %d>' % (self.id or -1, self.user_id, self.photo_id)
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'user_name': self.user.name,
+            'user_url': url_for('photos.stream', user_url = self.user.url)
+        }

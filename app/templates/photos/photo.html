@@ -7,34 +7,34 @@
 <script src="{{ url_for('static', filename = 'js/add_note.js') }}" type="text/javascript"></script>
 {% include "fix_time.html" %}
 <script type="text/javascript">
-	var photo = JSON.parse({{ photoJSON | tojson | safe }});
+    var photo = JSON.parse({{ photoJSON | tojson | safe }});
     window.__photoID = photo.id;
     window.__userID = "{{ g.user.id or 0 }}";
 </script>
 {% endblock %}
 
 {% block script_onload %}
-	ko.applyBindings(new PhotoViewModel(photo));
+    ko.applyBindings(new PhotoViewModel(photo));
 {% endblock %}
 
 {% block content %}
-	{% set isPhotoOwner = g.user and photo.user.id == g.user.id %}
+    {% set isPhotoOwner = g.user and photo.user.id == g.user.id %}
     <div id="content-main">
         <div id="single-photo">
             <div id="single-photo-actions">
                 <ul>
                     <li><div id="photo-fave" data-bind="css: { favorite: favorite() }, click: changeFavorite"
-					{% if g.user %}
-						class="clickable"
-						{% if g.user.isFavorited(photo) %}
-							title="Remove from Favorites"
-						{% else %}
-							title="Add to Favorites"
-						{% endif %} 
-					{% else %}
-						title="Favorites"
-					{% endif %}
-					></div></li>
+                        {% if g.user %}
+                            class="clickable"
+                            {% if g.user.isFavorited(photo) %}
+                                title="Remove from Favorites"
+                            {% else %}
+                                title="Add to Favorites"
+                            {% endif %} 
+                        {% else %}
+                            title="Favorites"
+                        {% endif %}
+                    ></div></li>
                     <li><a href="" id="photo-share" title="Share photo (NYI)">Share</a></li>
                     <li><a href="" id="photo-download" title="Download photo (NYI)">Download</a></li>
                 </ul>
@@ -138,9 +138,9 @@
             </h3>
             <ul id="tags" data-bind="foreach: tags">
                 <li><div>
-					<a href="#" data-bind="text: desc"></a>
+                    <a href="#" data-bind="text: desc"></a>
                     {% if isPhotoOwner %} <a href="#" data-bind="click: $parent.removeTag">x</a> {% endif %}
-				</div></li>
+                </div></li>
             </ul>
             <br /><br />
             <input type="text" id="tagBox" style="display: none" data-bind="event: {keypress: addTag}">
@@ -153,25 +153,13 @@
 
     <div id="content-interact">
 
-        {% if photo.favorites and photo.favorites.count() %}
-        <div id="photo-favorites">
+        <div id="photo-favorites" data-bind="if: favorites().length > 0">
             <div class="hr"></div>
-            <p>
-            {% set favDispCount = 4 %}  {# change this number to set how many people are listed in the 'added this photo' text #}
-            {% for favorite in photo.favorites.slice(0, favDispCount + 1) %}
-                {% if loop.last and loop.index0 >= favDispCount %}
-                and {{ photo.favorites.count() - favDispCount }} others
-                {% else %}
-                    {% if loop.last and loop.index0 > 0 %}and{% endif %}
-                    <a href="{{ url_for('photos.stream', user_url = favorite.user.url) }}">{{favorite.user.name}}</a>{% if loop.revindex0 > 0 %},{% endif %}
-                {% endif %}
-            {% endfor %}
-            added this photo to their favorites.</p>
-            <div class="hr"></div>
+            <div data-bind="html: favoriteNameList('<a href=user_url>user_name</a>')"></div>
         </div>
-        {% endif %}
 
-        <div id="photo-comments" data-bind="visible: comments().length > 0">
+        <div id="photo-comments" data-bind="if: comments().length > 0">
+            <div class="hr"></div>
             <h3>Comments:</h3>
             <ul data-bind="foreach: comments">
                 <li>
@@ -184,7 +172,7 @@
                         <div class="comments-author">
                             <a data-bind="text: user_name, attr: {href: user_url}"></a>
                             <span class="small comments-date"><span data-bind="text: moment.utc(time).fromNow()"></span></span>
-							{% if isPhotoOwner %}<a href="" class="deleteComment" data-bind="click: $parent.deleteComment">delete</a>{% endif %}
+                            {% if isPhotoOwner %}<a href="" class="deleteComment" data-bind="click: $parent.deleteComment">delete</a>{% endif %}
                         </div>
                         <div class="comment-text" data-bind="text: comment"></div>
                     </div>
@@ -196,8 +184,8 @@
         <div id="photo-add-comment">
             <div class="hr"></div>
             <h3>Add a Comment</h3>
-			<textarea id="comment" name="comment" rows="6" placeholder="Add a comment" aria-label="Add a comment" data-bind="value: newComment"></textarea>
-			<input type="submit" value="Submit" class="button" data-bind="click: addComment">
+            <textarea id="comment" name="comment" rows="6" placeholder="Add a comment" aria-label="Add a comment" data-bind="value: newComment"></textarea>
+            <input type="submit" value="Submit" class="button" data-bind="click: addComment">
         </div>
        {% endif %}
     </div>

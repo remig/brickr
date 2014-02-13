@@ -4,9 +4,35 @@ function PhotoViewModel(photo) {
 	self.baseURL = $SCRIPT_ROOT + '/photos/';
 	self.photo = photo;
 	self.favorite = ko.observable(photo.favorite);
+	self.favorites = ko.observableArray(photo.favorites);
 	self.comments = ko.observableArray(photo.comments);
 	self.newComment = ko.observable('');
 	self.tags = ko.observableArray(photo.tags);
+	
+	
+	self.favoriteNameList = function(markup) {
+		var maxNames = 4;  // Display up to this many user names before appending 'and x others'
+		var lineEnd = ' favorited this photo.'
+		var favCount = self.favorites().length;
+		var favNames = self.favorites().slice(0, maxNames).map(function(el){
+			return markup.replace('user_url', '"' + el.user_url + '"')
+				.replace('user_name', el.user_name);
+		});
+
+		if (favCount === maxNames + 1) {
+			favNames.push('1 other' + lineEnd);
+		} else if (favCount > maxNames) {
+			favNames.push((favCount - maxNames) + ' others' + lineEnd);
+		}
+		
+		var res = favNames.join(', ').replace(/,([^,]*)$/, ' and$1');
+		
+		if (favCount <= maxNames) {
+			res += lineEnd;
+		}
+
+		return res;
+	};
 	
 	self.addTag = function(model, event) {
 		if (event.charCode !== 13 || !event.target.value) {
