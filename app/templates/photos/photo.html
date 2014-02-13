@@ -23,7 +23,7 @@
         <div id="single-photo">
             <div id="single-photo-actions">
                 <ul>
-                    <li><div id="photo-fave" data-bind="css: { favorite: favorite() }, click: changeFavorite"
+                    <li><div id="photo-fave" data-bind="css: { favorite: favorite }, click: changeFavorite"
                         {% if g.user %}
                             class="clickable"
                             {% if g.user.isFavorited(photo) %}
@@ -41,7 +41,7 @@
             </div>
 
             <div id="single-photo-img">
-                <img id="the-actual-photo" src="{{ photo.url() }}" alt="{{ photo.title }}" title="{{ photo.title }}">
+                <img id="the-actual-photo" data-bind="attr: {src: photo.url, alt: photo.title, title: photo.title}">
                 <div id="note-eventer">
                     <div id="note-list">
                         {% for note in photo.getNotesInZOrder() %}
@@ -119,16 +119,14 @@
             </div>
         </div>
 
-        {% if photo.groups %}
+        <!-- ko if: groups().length -->
         <div id="single-groups" class="sidebar-box">
             <h3>Also in</h3>
-            <ul>
-                {% for group in photo.groups %}
-                <li><a href="{{ url_for('groups.group', groupURL = group.url_name) }}">{{ group.name }}</a></li>
-                {% endfor %}
+            <ul data-bind="foreach: groups">
+                <li><a data-bind="text: name, attr: {href: url}"></a></li>
             </ul>
         </div>
-        {% endif %}
+        <!-- /ko -->
 
         <div id="tagList" class="sidebar-box">
             <h3>Tags
@@ -153,12 +151,15 @@
 
     <div id="content-interact">
 
-        <div id="photo-favorites" data-bind="if: favorites().length > 0">
+        <!-- ko if: favorites().length -->
+        <div id="photo-favorites">
             <div class="hr"></div>
             <div data-bind="html: favoriteNameList('<a href=user_url>user_name</a>')"></div>
         </div>
+        <!-- /ko -->
 
-        <div id="photo-comments" data-bind="if: comments().length > 0">
+        <!-- ko if: comments().length -->
+        <div id="photo-comments">
             <div class="hr"></div>
             <h3>Comments:</h3>
             <ul data-bind="foreach: comments">
@@ -179,6 +180,7 @@
                 </li>
             </ul>
         </div>
+        <!-- /ko -->
 
         {% if g.user %}
         <div id="photo-add-comment">

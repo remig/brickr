@@ -1,3 +1,4 @@
+from flask import url_for
 from datetime import datetime
 from app import db
 
@@ -31,3 +32,11 @@ class Group(db.Model):
         
     def __repr__(self):
         return '<Group %d - %s>' % (self.id or -1, self.url_name)
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'description': self.description,
+            'url': url_for('groups.group', groupURL = self.url_name)
+        }

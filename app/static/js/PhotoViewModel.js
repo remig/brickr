@@ -8,8 +8,8 @@ function PhotoViewModel(photo) {
 	self.comments = ko.observableArray(photo.comments);
 	self.newComment = ko.observable('');
 	self.tags = ko.observableArray(photo.tags);
-	
-	
+	self.groups = ko.observableArray(photo.groups);
+
 	self.favoriteNameList = function(markup) {
 		var maxNames = 4;  // Display up to this many user names before appending 'and x others'
 		var lineEnd = ' favorited this photo.'
@@ -66,7 +66,6 @@ function PhotoViewModel(photo) {
 	}
 	
 	self.changeFavorite = function() {
-		
 		var isFavorited = self.favorite();
 		$.post(self.baseURL + (isFavorited ? 'removeFavorite' : 'addFavorite'),
 			{photoID: self.photo.id},
