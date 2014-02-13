@@ -37,7 +37,7 @@ def photo(photoID, user_url = None):
     photo.views += 1  # TODO: Totally naive view counter - try harder
     db.session.commit()
     
-    photoJSON = photo.to_json(g.user)
+    photoJSON = json.dumps(photo.to_json(g.user))
 
     return render_template('photos/photo.html', photo = photo, photoJSON = photoJSON)
 
@@ -63,7 +63,7 @@ def upload():
             flash(u'This type of file cannot be uploaded.')
     return render_template('photos/upload.html')
 
-@mod.route('/addComment/', methods = ['POST'])
+@mod.route('/addComment', methods = ['POST'])
 @requires_login
 def addComment():
     if request.method == 'POST':
@@ -73,8 +73,23 @@ def addComment():
             comment = Comment(g.user, photo, request.form.get('comment'))
             db.session.add(comment)
             db.session.commit()
-        return redirect(url_for('photos.photo', user_url = photo.user.url, photoID = photo.id))
+            return jsonify(result = True, comment = json.dumps(comment.to_json()))
+    return jsonify(result = False)
     
+@mod.route('/removeComment', methods = ['POST'])
+@requires_login
+def removeComment():
+    if request.method == 'POST':
+        photoID = request.form.get('photoID')
+        photo = Photo.query.get(photoID)
+        commentID = request.form.get('commentID')
+        comment = Comment.query.get(commentID)
+        if photo and comment:
+            photo.comments.remove(comment)
+            db.session.commit()
+            return jsonify(result = True)
+    return jsonify(result = False)
+
 @mod.route('/addFavorite', methods = ['POST'])
 @requires_login
 def addFavorite():

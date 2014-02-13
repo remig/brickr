@@ -171,39 +171,33 @@
         </div>
         {% endif %}
 
-        {% if photo.comments and photo.comments.count() %}
-        <div id="photo-comments">
+        <div id="photo-comments" data-bind="visible: comments().length > 0">
             <h3>Comments:</h3>
-            <ul>
-                {% for comment in photo.comments %}
+            <ul data-bind="foreach: comments">
                 <li>
                     <div class="comments-avatar">
-                        <a href="{{ url_for('photos.stream', user_url = comment.user.url) }}">
-                            <img src="{{ url_for('static', filename = 'img/avatar.jpg') }}" alt="" title="" border="0" height="36" width="36">
+                        <a data-bind="attr: {href: user_url}">
+                            <img src="/static/img/avatar.jpg" alt="" title="" border="0" height="36" width="36">
                         </a>
                     </div>
-                    <div class="comments-body">
+                    <div class="comments-body" onmouseover="$('.deleteComment', this).show()" onmouseout="$('.deleteComment', this).hide()">
                         <div class="comments-author">
-                            <a href="{{ url_for('photos.stream', user_url = comment.user.url)}}">{{comment.user.name}}</a>
-                            <span class="small comments-date"><span class="convert-time">{{ comment.creation_time }},fromNow</span></span>
+                            <a data-bind="text: user_name, attr: {href: user_url}"></a>
+                            <span class="small comments-date"><span data-bind="text: moment.utc(time).fromNow()"></span></span>
+							{% if isPhotoOwner %}<a href="" class="deleteComment" data-bind="click: $parent.deleteComment">delete</a>{% endif %}
                         </div>
-                        <div class="comment-text">{{ comment.comment | safe }}</div>
+                        <div class="comment-text" data-bind="text: comment"></div>
                     </div>
                 </li>
-                {% endfor %}
             </ul>
         </div>
-        {% endif %}
 
         {% if g.user %}
         <div id="photo-add-comment">
             <div class="hr"></div>
             <h3>Add a Comment</h3>
-            <form method="POST" action="{{ url_for('photos.addComment') }}" class="form">
-                <textarea id="comment" name="comment" rows="6" placeholder="Add a comment" aria-label="Add a comment"></textarea>
-                <input type="hidden" value="{{ photo.id }}" id="photoID" name="photoID">
-                <input type="submit" value="Submit" class="button">
-            </form>
+			<textarea id="comment" name="comment" rows="6" placeholder="Add a comment" aria-label="Add a comment" data-bind="value: newComment"></textarea>
+			<input type="submit" value="Submit" class="button" data-bind="click: addComment">
         </div>
        {% endif %}
     </div>

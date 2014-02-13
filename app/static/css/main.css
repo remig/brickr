@@ -708,3 +708,7 @@ textarea {
 .activity-indicator {
   display: none
 }
+
+.deleteComment {
+  display: none
+}

@@ -4,7 +4,8 @@ function PhotoViewModel(photo) {
 	self.baseURL = $SCRIPT_ROOT + '/photos/';
 	self.photo = photo;
 	self.favorite = ko.observable(photo.favorite);
-	
+	self.comments = ko.observableArray(photo.comments);
+	self.newComment = ko.observable('');
 	self.tags = ko.observableArray(photo.tags);
 	
 	self.addTag = function(model, event) {
@@ -51,6 +52,30 @@ function PhotoViewModel(photo) {
 		);
 		return false;
 	}
+
+	self.addComment = function() {
+		var comment = self.newComment();
+		$.post(self.baseURL + 'addComment',
+			{photoID: self.photo.id, comment: comment},
+			function(data) {
+				if (data.result && data.comment) {
+					self.comments.push(JSON.parse(data.comment));
+				}
+			}
+		);
+	};
+	
+	self.deleteComment = function() {
+		var comment = this;
+		$.post(self.baseURL + 'removeComment',
+			{photoID: self.photo.id, commentID: comment.id},
+			function(data) {
+				if (data.result) {
+					self.comments.remove(comment);
+				}
+			}
+		);
+	};
 }
 
 function editPhotoInfo(showUI, photoID) {

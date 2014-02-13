@@ -3,7 +3,6 @@ from PIL import Image
 from StringIO import StringIO
 from uuid import uuid4
 from datetime import datetime
-from flask import json
 from werkzeug import secure_filename, FileStorage
 
 from app import app, db, breakpoint
@@ -213,11 +212,12 @@ class Photo(db.Model):
         return sorted(self.notes.all(), key = Note.area, reverse = True)
 
     def to_json(self, active_user = None):
-        return json.dumps({
+        return {
             'id': self.id,
             'title': self.title,
             'description': self.description,
             'favorite': active_user.isFavorited(self) if active_user else False,
             'views': self.views,
-            'tags': [{'desc': t.description} for t in self.tags]
-        })
+            'tags': [{'desc': t.description} for t in self.tags],
+            'comments': [c.to_json() for c in self.comments]
+        }

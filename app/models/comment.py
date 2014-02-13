@@ -1,3 +1,4 @@
+from flask import url_for
 from datetime import datetime
 from app import db
 
@@ -19,3 +20,12 @@ class Comment(db.Model):
         
     def __repr__(self):
         return '<Comment %d, user: %d, photo: %d, text: %s>' % (self.id or -1, self.user_id, self.photo_id, self.comment)
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'user_name': self.user.name,
+            'user_url': url_for('photos.stream', user_url = self.user.url),
+            'comment': self.comment,
+            'time': str(self.creation_time)
+        }
