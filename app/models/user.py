@@ -1,9 +1,28 @@
 import re
 from datetime import datetime
 from app import db, breakpoint
-from app.users import constants as USER
 from group import group_member_list
 from werkzeug import generate_password_hash
+
+# User role
+ADMIN = 0
+STAFF = 1
+USER = 2
+ROLE = {
+    ADMIN: 'admin',
+    STAFF: 'staff',
+    USER: 'user',
+}
+
+# user status
+INACTIVE = 0
+NEW = 1
+ACTIVE = 2
+STATUS = {
+    INACTIVE: 'inactive',
+    NEW: 'new',
+    ACTIVE: 'active',
+}
 
 class User(db.Model):
 
@@ -13,8 +32,8 @@ class User(db.Model):
     name = db.Column(db.String(50), unique = True)  # user name, screen name, same thing
     email = db.Column(db.String(120), unique = True)
     password = db.Column(db.String(20))  # Should not be used in production
-    role = db.Column(db.SmallInteger, default = USER.USER)
-    status = db.Column(db.SmallInteger, default = USER.NEW)
+    role = db.Column(db.SmallInteger, default = USER)
+    status = db.Column(db.SmallInteger, default = NEW)
     creation_time = db.Column(db.DateTime)
     url = db.Column(db.String(50), unique = True)  # A simplified version of name to be used in urls (eg http://x.com/photos/url)
     real_name = db.Column(db.String(120))
@@ -42,10 +61,10 @@ class User(db.Model):
                 self.password = generate_password_hash(password)
 
     def getStatus(self):
-        return USER.STATUS[self.status]
+        return STATUS[self.status]
         
     def getRole(self):
-        return USER.ROLE[self.role]
+        return ROLE[self.role]
 
     def isUserInContactList(self, user):
         count = self.contacts.filter_by(target_user_id = user.id).count()

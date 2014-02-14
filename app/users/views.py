@@ -6,7 +6,7 @@ from flickrapi import FlickrAPI
 from app import db, oid, breakpoint
 from app.users.forms import RegisterForm, LoginForm
 from app.models import *
-from app.users.decorators import requires_login
+from app.decorators import requires_login
 
 mod = Blueprint('users', __name__, url_prefix = '/users')
 

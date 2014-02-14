@@ -3,7 +3,7 @@ from flask import *
 from app import db, oid, breakpoint, strip
 from app.models import *
 
-from app.users.decorators import requires_login
+from app.decorators import requires_login
 
 mod = Blueprint('groups', __name__, url_prefix = '/groups')
 

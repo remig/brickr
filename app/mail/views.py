@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, g, request, redirect, url_for, flash
 from app import db, breakpoint, strip
 from app.models import *
-from app.users.decorators import requires_login
+from app.decorators import requires_login
 
 mod = Blueprint('mail', __name__, url_prefix = '/mail')
 

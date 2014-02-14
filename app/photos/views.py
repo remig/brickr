@@ -9,7 +9,7 @@ from flickrapi import FlickrAPI, FlickrError
 from app import app, db, breakpoint, strip
 from app.models import *
 
-from app.users.decorators import requires_login
+from app.decorators import requires_login
 
 mod = Blueprint('photos', __name__, url_prefix = '/photos')
 
