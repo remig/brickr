@@ -60,16 +60,16 @@ def about():
 def binary_photo(filename):
     return send_file(os.path.join('binaries', filename))
 
-from app.users.users import mod as usersModule
+from app.views.users import mod as usersModule
 app.register_blueprint(usersModule)
 
-from app.photos.photos import mod as photoModule
+from app.views.photos import mod as photoModule
 app.register_blueprint(photoModule)
 
-from app.mail.mail import mod as mailModule
+from app.views.mail import mod as mailModule
 app.register_blueprint(mailModule)
 
-from app.groups.groups import mod as groupModule
+from app.views.groups import mod as groupModule
 app.register_blueprint(groupModule)
 
 if not app.debug:
