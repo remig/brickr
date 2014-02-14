@@ -4,7 +4,7 @@ from werkzeug import check_password_hash, generate_password_hash
 from flickrapi import FlickrAPI
 
 from app import db, oid, breakpoint
-from app.users.forms import RegisterForm, LoginForm
+from app.users.userForms import RegisterForm, LoginForm
 from app.models import *
 from app.decorators import requires_login
 
