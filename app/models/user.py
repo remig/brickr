@@ -1,6 +1,5 @@
-import re
 from datetime import datetime
-from app import db, breakpoint
+from app import db, util, breakpoint
 from group import group_member_list
 from werkzeug import generate_password_hash
 
@@ -79,10 +78,9 @@ class User(db.Model):
         
     @staticmethod
     def _name_to_url(name):
-        url = '_'.join(name.strip().lower().split())  # lower case and replace space with underscore
-        url = re.sub('[^a-z0-9_]+', '', url)  # remove anything except letters, numbers and underscore
-
-        # urls must be unique. If this url is already taken, append _x to it, where x is the number of urls like this already
+        # user urls must be unique. If this url is already taken, append _x to it, 
+        # where x is the number of urls like this already.  Sorry common named people.
+        url = util.str_to_url(name)
         conflict_count = User.query.filter(User.url.like(url + '%')).count()
         if conflict_count > 0:
             url += '_%d' % (conflict_count)
