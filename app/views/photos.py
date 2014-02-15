@@ -28,6 +28,22 @@ def stream(user_url):
     photos = user.photos
     return render_template('photos/stream.html', user = user, photos = photos)
     
+@mod.route('/tags/<tag_url>/')
+def tags(tag_url = ''):
+    photos = Photo.query.filter(Photo.tags.any(Tag.url.is_(tag_url)))
+    return render_template('photos/stream.html', user = None, photos = None, photoList = photos, tag = tag_url)
+
+@mod.route('/<user_url>/tags/<tag_url>/')
+def user_tags(user_url = None, tag_url = ''):
+    user = User.query.filter_by(url = user_url).first()
+    if user is None:
+        return render_template('photos/tags.html', username = user_url)
+    elif user.placeholder:
+        return render_template('photos/stream_placeholder_user.html', user = user)
+
+    photos = Photo.query.filter_by(user_id = user.id).filter(Photo.tags.any(Tag.url.is_(tag_url)))
+    return render_template('photos/stream.html', user = user, photos = photos)
+
 @mod.route('/<user_url>/<photoID>/')
 def photo(photoID, user_url = None):
     photo = Photo.query.get(photoID)

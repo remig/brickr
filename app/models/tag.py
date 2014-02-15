@@ -1,4 +1,4 @@
-from app import db
+from app import db, util
 
 tag_list = db.Table('tag_list',
     db.Column('tag_id', db.Integer, db.ForeignKey('tag.id')),
@@ -10,9 +10,11 @@ class Tag(db.Model):
     __tablename__ = 'tag'
     id = db.Column(db.Integer, primary_key = True)
     description = db.Column(db.String(120), unique = True, nullable = False)
+    url = db.Column(db.String(120))
 
-    def __init__(self, description = None):
+    def __init__(self, description):
         self.description = description
+        self.url = util.str_to_url(description)
         
     def __repr__(self):
         return '<Tag %r>' % (self.description)
@@ -22,3 +24,10 @@ class Tag(db.Model):
     def get_or_create(description):
         tag = Tag.query.filter_by(description = description).first()
         return tag or Tag(description)
+
+    def to_json(self, active_user = None):
+        return {
+            'id': self.id,
+            'desc': self.description,
+            'url': self.url
+        }

@@ -81,6 +81,17 @@
                 </li>
             {% endfor %}
             </ul>
+		{% elif photoList and tag %}
+			<h3>Photos that match the tag <b>{{ tag }}</b>:</h3>
+            <ul id="photo-stream">
+            {% for photo in photoList %}
+                <li>
+                    <div class="thumb"><a href="{{ url_for('photos.photo', user_url = photo.user.url, photoID = photo.id) }}">
+                        <img width="200" src="{{ photo.url_thumb(75) }}" alt="{{ photo.title }}" title="{{ photo.title }}">
+                    </a></div>
+                </li>
+            {% endfor %}
+            </ul>
         {% endif %}
     {% endif %}
 {% endblock %}

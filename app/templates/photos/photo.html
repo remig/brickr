@@ -136,7 +136,7 @@
             </h3>
             <ul id="tags" data-bind="foreach: tags">
                 <li><div>
-                    <a href="#" data-bind="text: desc"></a>
+                    <a data-bind="text: desc, attr: {href: '/photos/' + photo.user_url + '/tags/' + url + '/'}"></a>
                     {% if isPhotoOwner %} <a href="#" data-bind="click: $parent.removeTag">x</a> {% endif %}
                 </div></li>
             </ul>
