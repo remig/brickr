@@ -1,6 +1,7 @@
 from flask.ext.wtf import Form, TextField, PasswordField, BooleanField, RecaptchaField, HiddenField
 from flask.ext.wtf import Required, Email, EqualTo
 from wtforms.validators import ValidationError
+from app import util
 from app.models import User
 
 class LoginForm(Form):
@@ -18,7 +19,7 @@ class RegisterForm(Form):
     flickr_auth = BooleanField('Authenticate with Flickr')
     
     def validate_screen_name(form, field):
-        if User.query.filter_by(name = field.data).count() > 0:
+        if User.query.filter_by(name = field.data).count() > 0 or User.query.filter_by(url = util.str_to_url(field.data)).count() > 0:
             raise ValidationError("That screen name is already taken.")
 
     def validate_email(form, field):

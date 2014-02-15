@@ -51,7 +51,7 @@ class User(db.Model):
         self.email = email
         self.openid = openid
         self.real_name = real_name
-        self.url = User._name_to_url(name)
+        self.url = util.str_to_url(name)
         self.creation_time = datetime.utcnow()
         if password is not None:
             if password.startswith('sha1$'):
@@ -75,16 +75,6 @@ class User(db.Model):
     def unread_pm_count(self):
         from private_message import PrivateMessage  # fuck me, really?
         return PrivateMessage.query.filter_by(recipient_id = self.id).filter_by(isRead = False).count()
-        
-    @staticmethod
-    def _name_to_url(name):
-        # user urls must be unique. If this url is already taken, append _x to it, 
-        # where x is the number of urls like this already.  Sorry common named people.
-        url = util.str_to_url(name)
-        conflict_count = User.query.filter(User.url.like(url + '%')).count()
-        if conflict_count > 0:
-            url += '_%d' % (conflict_count)
-        return url
 
     @staticmethod
     def _create_placeholder(name, flickr_id):

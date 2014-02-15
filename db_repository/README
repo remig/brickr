@@ -2,3 +2,14 @@ This is a database migration repository.
 
 More information at
 http://code.google.com/p/sqlalchemy-migrate/
+
+To migrate a db:
+
+- Makes changes to one or more db model files in app/models.
+
+- Run db_update.py to generate a migration script in app/db_repository/versions.
+
+- Verify the migration script is correct.
+
+- Run db_update.py to actually update the db.  db_update.py does the 'right thing' 
+  for local & production dbs, based on app.config.
