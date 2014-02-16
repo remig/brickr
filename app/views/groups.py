@@ -70,7 +70,7 @@ def leaveOrJoinGroup():
         action = request.form.get('action')
         if user and group:
             if action == 'join':
-                group.members.append(user)
+                GroupMemberList(user, group)
             elif action == 'leave' and user in group.members:
                 group.members.remove(user)
             db.session.commit()

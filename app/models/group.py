@@ -1,11 +1,29 @@
-from flask import url_for
 from datetime import datetime
-from app import db
+from flask import url_for
+from sqlalchemy.ext.associationproxy import association_proxy
+from app import db, breakpoint
+from user import User
 
-group_member_list = db.Table('group_member_list',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('group_id', db.Integer, db.ForeignKey('group_tbl.id'))
-)
+class GroupMemberList(db.Model):
+    
+    __tablename__  = 'group_member_list'
+    user_id = db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key = True)
+    group_id = db.Column('group_id', db.Integer, db.ForeignKey('group_tbl.id'), primary_key = True)
+    join_time = db.Column('join_time', db.DateTime)
+    
+    user = db.relationship(User, backref = db.backref("user_groups", cascade = "all, delete-orphan"))
+    
+    group = db.relationship("Group", backref = db.backref("user_groups", cascade = "all, delete-orphan"))
+    
+    def __init__(self, user, group):
+        self.user = user
+        self.group = group
+        self.join_time = datetime.utcnow()
+
+    def to_json(self):
+        groupJSON = self.group.to_json()
+        groupJSON['join_time'] = str(self.join_time)
+        return groupJSON
 
 group_photo_list = db.Table('group_photo_list',
     db.Column('photo_id', db.Integer, db.ForeignKey('photo.id')),
@@ -22,6 +40,7 @@ class Group(db.Model):
     rules = db.Column(db.Text)
     creation_time = db.Column(db.DateTime)
     discussions = db.relationship('Discussion', backref = 'group', lazy = 'dynamic')
+    members = association_proxy('user_groups', 'user')
 
     def __init__(self, name, url_name, description = None, rules = None):
         self.name = name

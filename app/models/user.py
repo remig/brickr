@@ -1,8 +1,8 @@
 from datetime import datetime
 from flask import url_for
 from app import db, util, breakpoint
-from group import group_member_list
 from werkzeug import generate_password_hash
+from sqlalchemy.ext.associationproxy import association_proxy
 
 # User role
 ADMIN = 0
@@ -44,7 +44,7 @@ class User(db.Model):
     favorites = db.relationship('Favorite', backref = 'user', lazy = 'dynamic')
     notes = db.relationship('Note', backref = 'user', lazy = 'dynamic')
     contacts = db.relationship('Contact', backref = 'user', lazy = 'dynamic')
-    groups = db.relationship('Group', secondary = group_member_list, backref = db.backref('members', lazy = 'dynamic'))
+    groups = association_proxy('user_groups', 'group')
     posts = db.relationship('DiscussionPost', backref = 'user', lazy = 'dynamic')
 
     def __init__(self, name, email, real_name = None, openid = None, password = None):
@@ -108,5 +108,5 @@ class User(db.Model):
             'profile_url': url_for('users.profile', user_url = self.url),
             'contacts': [x.to_json() for x in self.contacts],
             'favorites': [x.to_json() for x in self.favorites],
-            'groups': [x.to_json() for x in self.groups]
+            'groups': [x.to_json() for x in self.user_groups]
         }

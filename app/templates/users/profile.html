@@ -36,7 +36,7 @@
 		<ul data-bind="foreach: user.groups">
 			<li>
 				<a data-bind="text: name, attr: {href: url}"></a>
-				<span data-bind="text: ' - Joined (NYI - no db record!!)'"></span>
+				<span data-bind="text: ' - Joined ' + moment.utc(join_time).fromNow()"></span>
 			</li>
 		</ul>
 	</div>
