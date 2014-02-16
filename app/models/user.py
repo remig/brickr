@@ -1,4 +1,5 @@
 from datetime import datetime
+from flask import url_for
 from app import db, util, breakpoint
 from group import group_member_list
 from werkzeug import generate_password_hash
@@ -94,3 +95,18 @@ class User(db.Model):
 
     def __repr__(self):
         return '<User %d, %r>' % (self.id or -1, self.name)
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'is_placeholder': bool(self.placeholder),
+            'name': self.name,
+            'real_name': self.real_name,
+            'email': self.email,
+            'joined': str(self.creation_time),
+            'url': self.url,
+            'profile_url': url_for('users.profile', user_url = self.url),
+            'contacts': [x.to_json() for x in self.contacts],
+            'favorites': [x.to_json() for x in self.favorites],
+            'groups': [x.to_json() for x in self.groups]
+        }

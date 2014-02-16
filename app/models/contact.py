@@ -1,3 +1,4 @@
+from flask import url_for
 from datetime import datetime
 from app import db, breakpoint
 from user import User
@@ -32,3 +33,13 @@ class Contact(db.Model):
         
     def __repr__(self):
         return '<Contact %d, %d -> %d>' % (self.id or -1, self.user_id, self.target_user_id)
+
+    def to_json(self):
+        target_user = self.getTargetUser()
+        return {
+            'id': self.id,
+            'user': self.user.name,
+            'target_user': target_user.name,
+            'target_user_url': url_for('photos.stream', user_url = target_user.url),
+            'creation': str(self.creation_time)
+        }

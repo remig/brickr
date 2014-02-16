@@ -54,7 +54,6 @@ def photo(photoID, user_url = None):
     db.session.commit()
     
     photoJSON = json.dumps(photo.to_json(g.user))
-
     return render_template('photos/photo.html', photo = photo, photoJSON = photoJSON)
 
 ALLOWED_EXTENSIONS = set(['.jpg', '.jpeg', '.gif', '.png'])

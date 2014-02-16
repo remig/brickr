@@ -1,24 +1,55 @@
 {% extends "nav.html" %}
+
+{% block title %}{{user.name}}'s Profile{% endblock %}
+
+{% block script %}
+{% include "fix_time.html" %}
+<script type="text/javascript">
+    var user = JSON.parse({{ userJSON | tojson | safe }});
+</script>
+{% endblock %}
+
+{% block script_onload %}
+    ko.applyBindings();
+{% endblock %}
+
 {% block content %}
-    <p>Welcome {{ g.user.name }}, user #{{ g.user.id }}
-    <p>Your Contacts:
+	<h3 data-bind="text: user.name + '\'s Profile'"></h3>
+	<div>
+		<div>Name: <span data-bind="text: user.real_name || 'No Name Given'"></span></div>
+		<div>Joined: <span data-bind="text: moment.utc(user.joined).format('LL')"></span></div>
+		<div>Email: <a data-bind="text: user.email, attr: {href: 'mailto:' + user.email}"></a></div>
+	</div>
+
+    <p><div data-bind="visible: user.contacts.length > 0"><span data-bind="text: user.name + '\'s Contacts:'"></span></div>
     <div>
-        <ul>
-            {% for contact in user.contacts %}
+        <ul data-bind="foreach: user.contacts">
             <li>
-                <a href="{{ url_for('photos.stream', user_url = contact.getTargetUser().url) }}">{{contact.getTargetUser().name}}</a>
-                - Added on {{ contact.creation_time }}
+                <a data-bind="text: target_user, attr: {href: target_user_url}"></a>
+				<span data-bind="text: ' - Added ' + moment.utc(creation).fromNow()"></span>
             </li>
-            {% endfor %}
         </ul>
     </div>
-    <p><a href="{{ url_for('mail.inbox') }}">Your Private Message Inbox</a>
-    <p>Your favorite Photos:
-    <div>
-        {% for fav in user.favorites %}
-            <a href="{{ url_for('photos.photo', user_url = fav.photo.user.url, photoID = fav.photo.id) }}">
-                <p><img width="75" src="{{ fav.photo.url_thumb(75) }}" alt="{{ fav.photo.title }}" title="{{ fav.photo.title }}">
-            </a>
-        {% endfor %}
-    </div>
+
+	<p><div>
+		<span data-bind="text: user.name + '\'s Groups:'"></span>
+		<ul data-bind="foreach: user.groups">
+			<li>
+				<a data-bind="text: name, attr: {href: url}"></a>
+				<span data-bind="text: ' - Joined (NYI - no db record!!)'"></span>
+			</li>
+		</ul>
+	</div>
+	
+    <p><div>
+		<span data-bind="text: user.name + '\'s favorite Photos:'"></span>
+		<ul id="photo-stream" data-bind="foreach: user.favorites">
+			<li>
+				<div class="thumb"><a data-bind="attr: {href: photo.url}">
+					<img width="75" data-bind="title: photo.title, attr: {src: photo.thumb_url}">
+				</a></div>
+			</li>
+		</ul>
+	</div>
+	
 {% endblock %}

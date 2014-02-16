@@ -48,8 +48,7 @@ def before_request():
 @app.route('/')
 def index():
     if g.user:
-        photos = g.user.photos
-        return render_template('photos/stream.html', user = g.user, photos = photos)
+        return render_template('dashboard/dashboard.html')
     return render_template('index.html')
     
 @app.route('/about')

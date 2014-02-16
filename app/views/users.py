@@ -1,5 +1,5 @@
 import os
-from flask import Blueprint, request, render_template, flash, g, session, redirect, url_for, jsonify
+from flask import *
 from werkzeug import check_password_hash, generate_password_hash
 from flickrapi import FlickrAPI
 
@@ -14,10 +14,17 @@ mod = Blueprint('users', __name__, url_prefix = '/users')
 def root():
     return render_template('users/user_index.html', users = User.query.filter_by(placeholder = None).all())
 
-@mod.route('/me/')
+@mod.route('/<user_url>/')
 @requires_login
-def home():
-    return render_template('users/profile.html', user = g.user)
+def profile(user_url):
+    user = User.query.filter_by(url = user_url).first()
+    if user is None:
+        return render_template('photos/stream_placeholder_user.html', username = user_url)
+    elif user.placeholder:
+        return render_template('photos/stream_placeholder_user.html', user = user)
+
+    userJSON = json.dumps(user.to_json())
+    return render_template('users/profile.html', user = user, userJSON = userJSON)
 
 @mod.route('/login/', methods = ['GET', 'POST'])
 @oid.loginhandler

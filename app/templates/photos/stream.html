@@ -9,10 +9,10 @@
     <div id="content-main">
         <h2>{{ user.name }}'s photos</h2>
         <ul id="stream-nav">
-            <li><a href="">Sets</a></li>
-            <li><a href="">Collections</a></li>
-            <li><a href="">Archive</a></li>
-            <li><a href="">Profile</a></li>
+            <li><a href="">Sets (NYI)</a></li>
+            <li><a href="">Collections (NYI)</a></li>
+            <li><a href="">Archive (NYI)</a></li>
+            <li><a href="{{ url_for('users.profile', user_url = user.url) }}">Profile</a></li>
         </ul>
         <ul id="photo-stream">
         {% for photo in photos %}

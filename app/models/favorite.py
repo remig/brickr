@@ -21,6 +21,12 @@ class Favorite(db.Model):
     def to_json(self):
         return {
             'id': self.id,
+            'photo': {
+                'id': self.photo_id,
+                'title': self.photo.title,
+                'thumb_url': self.photo.url_thumb(75),
+                'url': url_for('photos.photo', user_url = self.photo.user.url, photoID = self.photo.id)
+            },
             'user_name': self.user.name,
             'user_url': url_for('photos.stream', user_url = self.user.url)
         }
