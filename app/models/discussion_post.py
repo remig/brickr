@@ -1,5 +1,4 @@
-from datetime import datetime
-from app import db
+from app import db, util
 
 class DiscussionPost(db.Model):
 
@@ -16,7 +15,7 @@ class DiscussionPost(db.Model):
         self.user_id = user.id
         self.parent_id = parent_id
         self.post = post_text
-        self.creation_time = datetime.utcnow()
+        self.creation_time = util.now()
 
     def __repr__(self):
         return '<Post %d>' % (self.id or -1)

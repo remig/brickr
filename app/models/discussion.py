@@ -1,5 +1,4 @@
-from datetime import datetime
-from app import db
+from app import db, util
 
 class Discussion(db.Model):
 
@@ -13,7 +12,7 @@ class Discussion(db.Model):
     def __init__(self, group, title):
         self.group_id = group.id
         self.title = title
-        self.creation_time = datetime.utcnow()
+        self.creation_time = util.now()
         
     def __repr__(self):
         return '<Discussion %d - %s>' % (self.id or -1, self.title)

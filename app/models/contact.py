@@ -1,6 +1,5 @@
 from flask import url_for
-from datetime import datetime
-from app import db, breakpoint
+from app import db, util, breakpoint
 from user import User
 
 # Contact permission levels
@@ -25,8 +24,8 @@ class Contact(db.Model):
     def __init__(self, user, target_user, permission = CONTACT):
         self.user_id = user.id
         self.target_user_id = target_user.id
-        self.permission = permission;
-        self.creation_time = datetime.utcnow()
+        self.permission = permission
+        self.creation_time = util.now()
         
     def getTargetUser(self):
         return User.query.filter_by(id = self.target_user_id).first()

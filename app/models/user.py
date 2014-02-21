@@ -1,4 +1,3 @@
-from datetime import datetime
 from flask import url_for
 from app import db, util, breakpoint
 from werkzeug import generate_password_hash
@@ -53,7 +52,7 @@ class User(db.Model):
         self.openid = openid
         self.real_name = real_name
         self.url = util.str_to_url(name)
-        self.creation_time = datetime.utcnow()
+        self.creation_time = util.now()
         if password is not None:
             if password.startswith('sha1$'):
                 self.password = password
@@ -97,6 +96,11 @@ class User(db.Model):
         return '<User %d, %r>' % (self.id or -1, self.name)
 
     def to_json(self):
+        try:
+            profile_url = url_for('users.profile', user_url = self.url)
+        except RuntimeError as e:
+            profile_url = 'profile.html'
+            
         return {
             'id': self.id,
             'is_placeholder': bool(self.placeholder),
@@ -105,7 +109,7 @@ class User(db.Model):
             'email': self.email,
             'joined': str(self.creation_time),
             'url': self.url,
-            'profile_url': url_for('users.profile', user_url = self.url),
+            'profile_url': profile_url,
             'contacts': [x.to_json() for x in self.contacts],
             'favorites': [x.to_json() for x in self.favorites],
             'groups': [x.to_json() for x in self.user_groups]

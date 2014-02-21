@@ -1,5 +1,4 @@
-from datetime import datetime
-from app import db
+from app import db, util
 from user import User
 
 class PrivateMessage(db.Model):
@@ -20,7 +19,7 @@ class PrivateMessage(db.Model):
         self.title = title
         self.text = text
         self.isRead = False
-        self.creation_time = datetime.utcnow()
+        self.creation_time = util.now()
        
     @property
     def sender(self):

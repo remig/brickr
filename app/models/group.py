@@ -1,7 +1,6 @@
-from datetime import datetime
 from flask import url_for
 from sqlalchemy.ext.associationproxy import association_proxy
-from app import db, breakpoint
+from app import db, util, breakpoint
 from user import User
 
 class GroupMemberList(db.Model):
@@ -18,7 +17,7 @@ class GroupMemberList(db.Model):
     def __init__(self, user, group):
         self.user = user
         self.group = group
-        self.join_time = datetime.utcnow()
+        self.join_time = util.now()
 
     def to_json(self):
         groupJSON = self.group.to_json()
@@ -47,7 +46,7 @@ class Group(db.Model):
         self.url_name = url_name
         self.description = description
         self.rules = rules
-        self.creation_time = datetime.utcnow()
+        self.creation_time = util.now()
         
     def __repr__(self):
         return '<Group %d - %s>' % (self.id or -1, self.url_name)

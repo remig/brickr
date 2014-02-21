@@ -1,6 +1,5 @@
 from flask import url_for
-from datetime import datetime
-from app import db
+from app import db, util
 
 class Comment(db.Model):
     
@@ -16,7 +15,7 @@ class Comment(db.Model):
         self.user_id = user.id
         self.photo_id = photo.id
         self.comment = comment
-        self.creation_time = timestamp or datetime.utcnow()
+        self.creation_time = timestamp or util.now()
         
     def __repr__(self):
         return '<Comment %d, user: %d, photo: %d, text: %s>' % (self.id or -1, self.user_id, self.photo_id, self.comment)

@@ -1,6 +1,5 @@
 from flask import url_for
-from datetime import datetime
-from app import db
+from app import db, util
 
 class Favorite(db.Model):
     
@@ -13,7 +12,7 @@ class Favorite(db.Model):
     def __init__(self, user, photo):
         self.user_id = user.id
         self.photo_id = photo.id
-        self.creation_time = datetime.utcnow()
+        self.creation_time = util.now()
         
     def __repr__(self):
         return '<Favorite %d, user: %d, photo: %d>' % (self.id or -1, self.user_id, self.photo_id)

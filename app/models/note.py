@@ -1,5 +1,4 @@
-from datetime import datetime
-from app import db
+from app import db, util
 
 def bound(v, lMin = 0, lMax = 100):
     return min(max(v, lMin), lMax)
@@ -23,7 +22,7 @@ class Note(db.Model):
         self.photo_id = photo.id
         self.comment = comment
         self.set_coords(x, y, w, h)
-        self.creation_time = datetime.utcnow()
+        self.creation_time = util.now()
 
     def __repr__(self):
         return '<Note %d, user: %d, photo: %d, pos: (%d, %d, %d, %d)>' % (self.id or -1, self.user_id, self.photo_id, self.x, self.y, self.w, self.h)

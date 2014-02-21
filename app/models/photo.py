@@ -2,10 +2,9 @@ import os, boto, mimetypes, shutil
 from PIL import Image
 from StringIO import StringIO
 from uuid import uuid4
-from datetime import datetime
 from werkzeug import secure_filename, FileStorage
 
-from app import app, db, breakpoint
+from app import app, db, util, breakpoint
 from tag import tag_list
 from group import group_photo_list
 from app.models.note import Note
@@ -35,7 +34,7 @@ class Photo(db.Model):
         self.title = title
         self.description = description
         self.views = 0
-        self.creation_time = datetime.utcnow()
+        self.creation_time = util.now()
         
     def __repr__(self):
         return '<Photo %d>' % (self.id or -1)
