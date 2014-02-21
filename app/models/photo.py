@@ -217,7 +217,7 @@ class Photo(db.Model):
             'description': self.description,
             'url': self.url(),
             'user': self.user.to_json(),
-            'user_url': self.user.url,
+            'user_url': self.user.url,  # TODO: get rid of this - use user.url instead
             'views': self.views,
             'creation_time': str(self.creation_time),
             'favorite': active_user.isFavorited(self) if active_user else False,
