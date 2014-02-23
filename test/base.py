@@ -41,6 +41,11 @@ class BaseTestCase(unittest.TestCase):
         db.session.add(u)
         db.session.commit()
         return u
+        
+    def add(self, t):
+        db.session.add(t)
+        db.session.commit()
+        return t
 
 def assert_obj_subset(expected, actual):
     for key, val in expected.iteritems():
