@@ -21,3 +21,11 @@ class DiscussionPost(db.Model):
 
     def __repr__(self):
         return '<Post %d>' % (self.id or -1)
+        
+    def to_json(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'discussion_id': self.discussion_id,
+            'text': self.post
+        }

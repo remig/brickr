@@ -7,15 +7,18 @@ from test.base import BaseTestCase, assert_obj_subset
 
 class PhotoModelTestCase(BaseTestCase):
 
-    def test_create_photo(self):
+    def test_creation(self):
         user = self.create_user()
-        photo = Photo('new_photo.jpg', user, 'photo title', 'desc')
-        db.session.add(photo)
-        db.session.commit()
+        photo = self.add(Photo('new_photo.jpg', user, 'photo title', 'desc'))
         
         assert_obj_subset({'id': 1, 'user_id': user.id, 'title': 'photo title', 
             'description': 'desc', 'views': 0}, photo)
         eq_(photo.creation_time, util.now())
+    
+    def test_repr(self):
+        user = self.create_user()
+        photo = self.add(Photo('new_photo.jpg', user, 'photo title', 'desc'))
+        eq_(str(photo), "<Photo 1>")
     
     def test_to_json(self):
         user = self.create_user('Remi', 'remigagne@gmail.com', 'abc')

@@ -28,18 +28,24 @@ class Contact(db.Model):
         self.permission = permission
         self.creation_time = util.now()
         
-    def getTargetUser(self):
-        return User.query.filter_by(id = self.target_user_id).first()
+    @property
+    def target_user(self):
+        if not hasattr(self, '__target_user'):
+            self.__target_user = User.query.get(self.target_user_id)
+        return self.__target_user
         
     def __repr__(self):
         return '<Contact %d, %d -> %d>' % (self.id or -1, self.user_id, self.target_user_id)
 
     def to_json(self):
-        target_user = self.getTargetUser()
+        try:
+            url = url_for('photos.stream', user_url = self.target_user.url),
+        except RuntimeError as e:
+            url = 'photos.html'
         return {
             'id': self.id,
             'user': self.user.name,
-            'target_user': target_user.name,
-            'target_user_url': url_for('photos.stream', user_url = target_user.url),
+            'target_user': self.target_user.name,
+            'target_user_url': url,
             'creation': str(self.creation_time)
         }

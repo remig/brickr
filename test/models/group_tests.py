@@ -7,7 +7,7 @@ from test.base import BaseTestCase, assert_obj_subset
 
 class GroupModelTestCase(BaseTestCase):
 
-    def test_create_group(self):
+    def test_creation(self):
         group = self.add(Group('Test Group', 'test_group', 'description text', 'rules text'))
         assert_obj_subset({'id': 1, 'name': 'Test Group', 'url_name': 
             'test_group', 'description': 'description text', 'rules': 'rules text'}, group)
@@ -17,7 +17,7 @@ class GroupModelTestCase(BaseTestCase):
         group = self.add(Group('Test Group', 'test_group'))
         eq_(str(group), "<Group 1, test_group>")
 
-    def test_dupe_group(self):
+    def test_dupe(self):
         group = self.add(Group('Test Group', 'test_group'))
 
         bad_group = Group('Test Group', 'unique_url')

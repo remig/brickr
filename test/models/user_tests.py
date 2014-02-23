@@ -8,7 +8,7 @@ from test.base import BaseTestCase, assert_obj_subset
 
 class UserModelTestCase(BaseTestCase):
 
-    def test_create_user(self):
+    def test_creation(self):
         user = self.add(User('Remi', 'remi@gmail.com', password = 'abc'))
         assert_obj_subset({'id': 1, 'name': 'Remi', 'email': 'remi@gmail.com'}, user)
         assert_true(user.password.startswith('sha1$'))
@@ -23,7 +23,7 @@ class UserModelTestCase(BaseTestCase):
         user = self.add(User('Remi', 'remi@gmail.com', password = 'abc'))
         eq_(str(user), "<User 1, Remi>")
     
-    def test_dupe_user(self):
+    def test_dupe(self):
         user = self.add(User('Remi', 'remi@gmail.com', password = 'abc'))
         
         bad_user = User('Remi', 'test', password = 'abc')

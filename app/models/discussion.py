@@ -16,4 +16,11 @@ class Discussion(db.Model):
         self.creation_time = util.now()
         
     def __repr__(self):
-        return '<Discussion %d - %s>' % (self.id or -1, self.title)
+        return '<Discussion %d, %s>' % (self.id or -1, self.title)
+        
+    def to_json(self):
+        return {
+            'id': self.id,
+            'title': self.title,
+            'creation_time': str(self.creation_time)
+        }

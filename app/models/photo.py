@@ -195,9 +195,9 @@ class Photo(db.Model):
                 prev = p
         return None
         
-    # Return a list of the previous two and next two photos adjacent to this
-    # photo in this users photo stream.  This will always return exactly 'count'
-    # items.  If there aren't enough photos, empty spots are padded with None
+    # Return a list of the previous and next few photos adjacent to this photo
+    # in this users photo stream.  This will always return exactly 'count' items.
+    # If the user doesn't have enough photos, empty spots are padded with None.
     def getAdjacentPhotoStream(self, count):
         photoStream = [self]
         for i in range(count // 2):
