@@ -1,4 +1,5 @@
 from flask import url_for
+from sqlalchemy import UniqueConstraint
 from app import db, util, breakpoint
 from user import User
 
@@ -21,6 +22,7 @@ class Contact(db.Model):
     permission = db.Column(db.SmallInteger, default = CONTACT)
     creation_time = db.Column(db.DateTime)
     # user created by User backref
+    __table_args__ = (UniqueConstraint('user_id', 'target_user_id', name='_user_uc'),)
     
     def __init__(self, user, target_user, permission = CONTACT):
         self.user_id = user.id
@@ -35,7 +37,7 @@ class Contact(db.Model):
         return self.__target_user
         
     def __repr__(self):
-        return '<Contact %d, %d -> %d>' % (self.id or -1, self.user_id, self.target_user_id)
+        return '<Contact %d, %d -> %d>' % (self.id or -1, self.user_id or -1, self.target_user_id or -1)
 
     def to_json(self):
         try:
