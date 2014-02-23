@@ -28,7 +28,9 @@ class Photo(db.Model):
     groups = db.relationship('Group', secondary = group_photo_list, backref = db.backref('photos', lazy = 'dynamic'))
     # user created by User backref
 
-    def __init__(self, filename, user, title, description):
+    def __init__(self, filename, user, title = None, description = "Description text goes here"):
+        if title is None:
+            title = filename
         filename = secure_filename(filename)
         self.binary_url = uuid4().hex + os.path.splitext(filename)[1]
         self.user_id = user.id
