@@ -42,7 +42,7 @@ class User(db.Model):
     comments = db.relationship('Comment', backref = 'user', lazy = 'dynamic')
     favorites = db.relationship('Favorite', backref = 'user', lazy = 'dynamic')
     notes = db.relationship('Note', backref = 'user', lazy = 'dynamic')
-    contacts = db.relationship('Contact', backref = 'user', lazy = 'dynamic')
+    contacts = db.relationship('Contact', backref = 'user',  lazy = 'dynamic', cascade = "all, delete, delete-orphan")
     groups = association_proxy('user_groups', 'group')  # TODO: get rid of this, use user_groups always
     posts = db.relationship('DiscussionPost', backref = 'user', lazy = 'dynamic')
     # user_groups created by GroupMemberList backref
