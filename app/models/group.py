@@ -11,7 +11,6 @@ class GroupMemberList(db.Model):
     join_time = db.Column('join_time', db.DateTime)
     
     user = db.relationship(User, backref = db.backref("user_groups", cascade = "all, delete-orphan"))
-    
     group = db.relationship("Group", backref = db.backref("user_groups", cascade = "all, delete-orphan"))
     
     def __init__(self, user, group):
@@ -39,7 +38,9 @@ class Group(db.Model):
     rules = db.Column(db.Text)
     creation_time = db.Column(db.DateTime)
     discussions = db.relationship('Discussion', backref = 'group', lazy = 'dynamic')
-    members = association_proxy('user_groups', 'user')
+    members = association_proxy('user_groups', 'user')  # TODO: get rid of this, use user_groups always
+    # user_groups created by GroupMemberList backref
+    # photos created by Photo backref
 
     def __init__(self, name, url_name, description = None, rules = None):
         self.name = name
@@ -49,12 +50,18 @@ class Group(db.Model):
         self.creation_time = util.now()
         
     def __repr__(self):
-        return '<Group %d - %s>' % (self.id or -1, self.url_name)
+        return '<Group %d, %s>' % (self.id or -1, self.url_name)
 
     def to_json(self):
+        try:
+            url = url_for('groups.group', groupURL = self.url_name)
+        except RuntimeError as e:
+            url = 'group.html'
         return {
             'id': self.id,
             'name': self.name,
             'description': self.description,
-            'url': url_for('groups.group', groupURL = self.url_name)
+            'rules': self.rules,
+            'creation_time': str(self.creation_time),
+            'url': url
         }

@@ -8,6 +8,7 @@ class Discussion(db.Model):
     title = db.Column(db.String(120), nullable = False)
     creation_time = db.Column(db.DateTime)
     posts = db.relationship('DiscussionPost', backref = 'discussion', lazy = 'dynamic')
+    # group created by Group backref
 
     def __init__(self, group, title):
         self.group_id = group.id

@@ -16,6 +16,8 @@ class Note(db.Model):
     w = db.Column(db.SmallInteger)
     h = db.Column(db.SmallInteger)
     creation_time = db.Column(db.DateTime)
+    # user created by User backref
+    # photo created by Photo backref
 
     def __init__(self, user, photo, comment, x, y, w, h):
         self.user_id = user.id

@@ -43,8 +43,9 @@ class User(db.Model):
     favorites = db.relationship('Favorite', backref = 'user', lazy = 'dynamic')
     notes = db.relationship('Note', backref = 'user', lazy = 'dynamic')
     contacts = db.relationship('Contact', backref = 'user', lazy = 'dynamic')
-    groups = association_proxy('user_groups', 'group')
+    groups = association_proxy('user_groups', 'group')  # TODO: get rid of this, use user_groups always
     posts = db.relationship('DiscussionPost', backref = 'user', lazy = 'dynamic')
+    # user_groups created by GroupMemberList backref
 
     def __init__(self, name, email, real_name = None, openid = None, password = None):
         self.name = name
@@ -93,7 +94,7 @@ class User(db.Model):
         return user
 
     def __repr__(self):
-        return '<User %d, %r>' % (self.id or -1, self.name)
+        return '<User %d, %s>' % (self.id or -1, self.name)
 
     def to_json(self):
         try:

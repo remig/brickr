@@ -8,6 +8,8 @@ class Favorite(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     photo_id = db.Column(db.Integer, db.ForeignKey('photo.id'))
     creation_time = db.Column(db.DateTime)
+    # user created by User backref
+    # photo created by Photo backref
     
     def __init__(self, user, photo):
         self.user_id = user.id

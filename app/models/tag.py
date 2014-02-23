@@ -11,6 +11,7 @@ class Tag(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     description = db.Column(db.String(120), unique = True, nullable = False)
     url = db.Column(db.String(120))
+    # photo created by Photo backref
 
     def __init__(self, description):
         self.description = description

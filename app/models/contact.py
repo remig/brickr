@@ -20,6 +20,7 @@ class Contact(db.Model):
     target_user_id = db.Column(db.Integer)
     permission = db.Column(db.SmallInteger, default = CONTACT)
     creation_time = db.Column(db.DateTime)
+    # user created by User backref
     
     def __init__(self, user, target_user, permission = CONTACT):
         self.user_id = user.id

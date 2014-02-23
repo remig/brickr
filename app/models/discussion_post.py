@@ -9,6 +9,8 @@ class DiscussionPost(db.Model):
     parent_id = db.Column(db.Integer, db.ForeignKey('discussion_post.id'))
     post = db.Column(db.Text())
     creation_time = db.Column(db.DateTime)
+    # discussion created by Discussion backref
+    # user created by User backref
 
     def __init__(self, discussion, user, post_text, parent_id = None):
         self.discussion_id = discussion.id
