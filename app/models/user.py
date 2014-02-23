@@ -38,13 +38,13 @@ class User(db.Model):
     real_name = db.Column(db.String(120))
     flickr_auth = db.Column(db.Boolean, default = False)  # If true, this account's screen name is a valid, authenticated Flickr screen name
     placeholder = db.Column(db.String(20))  # If set, this account is not a 'real' user, it's a placeholder used when importing non-existant user info from Flickr.  Will contain user's Flickr ID
-    photos = db.relationship('Photo', backref = 'user', lazy = 'dynamic')
-    comments = db.relationship('Comment', backref = 'user', lazy = 'dynamic')
-    favorites = db.relationship('Favorite', backref = 'user', lazy = 'dynamic')
-    notes = db.relationship('Note', backref = 'user', lazy = 'dynamic')
-    contacts = db.relationship('Contact', backref = 'user',  lazy = 'dynamic', cascade = "all, delete, delete-orphan")
+    photos = db.relationship('Photo', backref = 'user', lazy = 'dynamic', cascade = "all, delete, delete-orphan")
+    comments = db.relationship('Comment', backref = 'user', lazy = 'dynamic', cascade = "all, delete, delete-orphan")
+    favorites = db.relationship('Favorite', backref = 'user', lazy = 'dynamic', cascade = "all, delete, delete-orphan")
+    notes = db.relationship('Note', backref = 'user', lazy = 'dynamic', cascade = "all, delete, delete-orphan")
+    contacts = db.relationship('Contact', backref = 'user', lazy = 'dynamic', cascade = "all, delete, delete-orphan")
     groups = association_proxy('user_groups', 'group')  # TODO: get rid of this, use user_groups always
-    posts = db.relationship('DiscussionPost', backref = 'user', lazy = 'dynamic')
+    posts = db.relationship('DiscussionPost', backref = 'user', lazy = 'dynamic', cascade = "all, delete, delete-orphan")
     # user_groups created by GroupMemberList backref
 
     def __init__(self, name, email, real_name = None, openid = None, password = None):

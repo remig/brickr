@@ -1,4 +1,5 @@
 from flask import url_for
+from sqlalchemy import UniqueConstraint
 from app import db, util
 
 class Favorite(db.Model):
@@ -8,8 +9,9 @@ class Favorite(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     photo_id = db.Column(db.Integer, db.ForeignKey('photo.id'))
     creation_time = db.Column(db.DateTime)
-    # user created by User backref
-    # photo created by Photo backref
+    # user created by User.favorites backref
+    # photo created by Photo.favorites backref
+    __table_args__ = (UniqueConstraint('user_id', 'photo_id', name='_user_uc'),)
     
     def __init__(self, user, photo):
         self.user_id = user.id
@@ -20,14 +22,20 @@ class Favorite(db.Model):
         return '<Favorite %d, user: %d, photo: %d>' % (self.id or -1, self.user_id, self.photo_id)
 
     def to_json(self):
+        try:
+            photo_url = url_for('photos.photo', user_url = self.photo.user.url, photoID = self.photo.id)
+            user_url = url_for('photos.stream', user_url = self.user.url)
+        except RuntimeError as e:
+            photo_url = 'photo.html'
+            user_url = 'user.html'
         return {
             'id': self.id,
             'photo': {
                 'id': self.photo_id,
                 'title': self.photo.title,
                 'thumb_url': self.photo.url_thumb(75),
-                'url': url_for('photos.photo', user_url = self.photo.user.url, photoID = self.photo.id)
+                'url': photo_url
             },
             'user_name': self.user.name,
-            'user_url': url_for('photos.stream', user_url = self.user.url)
+            'user_url': user_url
         }

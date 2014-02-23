@@ -10,8 +10,8 @@ class Comment(db.Model):
     comment = db.Column(db.Text)
     creation_time = db.Column(db.DateTime)
     parentID = db.Column(db.Integer, db.ForeignKey('comment.id'))
-    # user created by User backref
-    # photo created by Photo backref
+    # user created by User.comments backref
+    # photo created by Photo.comments backref
     
     def __init__(self, user, photo, comment, timestamp = None):
         self.user_id = user.id

@@ -21,7 +21,7 @@ class Contact(db.Model):
     target_user_id = db.Column(db.Integer)
     permission = db.Column(db.SmallInteger, default = CONTACT)
     creation_time = db.Column(db.DateTime)
-    # user created by User backref
+    # user created by User.contacts backref
     __table_args__ = (UniqueConstraint('user_id', 'target_user_id', name='_user_uc'),)
     
     def __init__(self, user, target_user, permission = CONTACT):

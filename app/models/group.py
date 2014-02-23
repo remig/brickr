@@ -40,7 +40,7 @@ class Group(db.Model):
     discussions = db.relationship('Discussion', backref = 'group', lazy = 'dynamic')
     members = association_proxy('user_groups', 'user')  # TODO: get rid of this, use user_groups always
     # user_groups created by GroupMemberList backref
-    # photos created by Photo backref
+    # photos created by Photo.groups backref
 
     def __init__(self, name, url_name, description = None, rules = None):
         self.name = name

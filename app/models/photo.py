@@ -26,7 +26,7 @@ class Photo(db.Model):
     notes = db.relationship('Note', backref = 'photo', lazy = 'dynamic', cascade = "all, delete, delete-orphan")
     tags = db.relationship('Tag', secondary = tag_list, backref = db.backref('photos', lazy = 'dynamic'))
     groups = db.relationship('Group', secondary = group_photo_list, backref = db.backref('photos', lazy = 'dynamic'))
-    # user created by User backref
+    # user created by User.photos backref
 
     def __init__(self, filename, user, title = None, description = "Description text goes here"):
         if title is None:

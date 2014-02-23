@@ -16,8 +16,8 @@ class Note(db.Model):
     w = db.Column(db.SmallInteger)
     h = db.Column(db.SmallInteger)
     creation_time = db.Column(db.DateTime)
-    # user created by User backref
-    # photo created by Photo backref
+    # user created by User.notes backref
+    # photo created by Photo.notes backref
 
     def __init__(self, user, photo, comment, x, y, w, h):
         self.user_id = user.id
@@ -40,3 +40,15 @@ class Note(db.Model):
 
     def area(self):
         return self.w * self.h
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'photo_id': self.photo_id,
+            'x': self.x,
+            'y': self.y,
+            'w': self.w,
+            'h': self.h
+        }
+        
