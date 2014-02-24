@@ -83,3 +83,4 @@ class CommentModelTestCase(BaseTestCase):
         
         user, photo, comment = self.create_comment()
         assert_dict_contains_subset(expected, comment.to_json())
+        eq_(photo.to_json()['comments'], [comment.to_json()])

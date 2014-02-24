@@ -31,3 +31,14 @@ class PrivateMessage(db.Model):
         
     def __repr__(self):
         return '<PM %d, sender: %d, recipient: %d, title: %s>' % (self.id or -1, self.sender_id, self.recipient_id, self.title)
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'sender_id': self.sender_id,
+            'recipient_id': self.recipient_id,
+            'title': self.title,
+            'text': self.text,
+            'isRead': self.isRead,
+            'time': str(self.creation_time)
+        }

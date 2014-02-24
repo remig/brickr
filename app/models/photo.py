@@ -24,7 +24,7 @@ class Photo(db.Model):
     comments = db.relationship('Comment', backref = 'photo', lazy = 'dynamic', cascade = "all, delete, delete-orphan")
     favorites = db.relationship('Favorite', backref = 'photo', lazy = 'dynamic', cascade = "all, delete, delete-orphan")
     notes = db.relationship('Note', backref = 'photo', lazy = 'dynamic', cascade = "all, delete, delete-orphan")
-    tags = db.relationship('Tag', secondary = tag_list, backref = db.backref('photos', lazy = 'dynamic'))
+    tags = db.relationship('Tag', secondary = tag_list, lazy = 'dynamic', backref = db.backref('photos', lazy = 'dynamic'))
     groups = db.relationship('Group', secondary = group_photo_list, backref = db.backref('photos', lazy = 'dynamic'))
     # user created by User.photos backref
 

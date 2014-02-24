@@ -73,4 +73,7 @@ class FavoriteModelTestCase(BaseTestCase):
         }
         
         user, photo, fav = self.create_favorite()
-        assert_dict_contains_subset(expected, fav.to_json())
+        fav_json = fav.to_json()
+        assert_dict_contains_subset(expected, fav_json)
+        eq_(user.to_json()['favorites'], [fav_json])
+        eq_(photo.to_json()['favorites'], [fav_json])

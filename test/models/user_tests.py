@@ -41,6 +41,44 @@ class UserModelTestCase(BaseTestCase):
         assert_raises(IntegrityError, db.session.commit)
         db.session.rollback()
 
+    def test_getStatus(self):
+        user = self.create_user()
+        eq_(user.getStatus(), 'new')
+
+    def test_getRole(self):
+        user = self.create_user()
+        eq_(user.getRole(), 'user')
+
+    def test_isUserInContactList(self):
+        user1 = self.create_user('Remi', 'remi@gmail.com', 'abc')
+        user2 = self.create_user('Alyse', 'alyse@gmail.com', 'abc')
+        eq_(user1.isUserInContactList(user2), False)
+        contact = self.add(Contact(user1, user2))
+        eq_(user1.isUserInContactList(user2), True)
+ 
+    def test_isFavorited(self):
+        user = self.create_user()
+        photo = self.add(Photo('new_photo.jpg', user))
+        eq_(user.isFavorited(photo), False)
+        fav = self.add(Favorite(user, photo))
+        eq_(user.isFavorited(photo), True)
+
+    def test_unread_pn_count(self):
+        user1 = self.create_user('Remi', 'remi@gmail.com', 'abc')
+        user2 = self.create_user('Alyse', 'alyse@gmail.com', 'abc')
+        pm1 = self.add(PrivateMessage(user1, user2, 'Title', 'Body'))
+        eq_(user1.unread_pm_count(), 0)
+        eq_(user2.unread_pm_count(), 1)
+        
+        pm2 = self.add(PrivateMessage(user1, user2, 'Title', 'Body'))
+        eq_(user2.unread_pm_count(), 2)
+        pm2.isRead = True
+        db.session.commit()
+        eq_(user2.unread_pm_count(), 1)
+        pm1.isRead = True
+        db.session.commit()
+        eq_(user2.unread_pm_count(), 0)
+
     def test_to_json(self):
         expected = {
             'id': 1,

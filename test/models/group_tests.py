@@ -60,6 +60,8 @@ class GroupModelTestCase(BaseTestCase):
 
         #user2 = self.create_user()
         
+    # TODO: test photos in groups
+        
     def test_to_json(self):
         expected = {
             'id': 1,
@@ -87,3 +89,4 @@ class GroupModelTestCase(BaseTestCase):
         group_assoc = GroupMemberList(user, group)
         db.session.commit()
         assert_dict_contains_subset(expected, group_assoc.to_json())
+        eq_(user.to_json()['groups'], [group_assoc.to_json()])

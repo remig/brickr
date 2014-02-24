@@ -67,3 +67,5 @@ class ContactModelTestCase(BaseTestCase):
         
         u1, u2, contact = self.create_contact()
         assert_dict_contains_subset(expected, contact.to_json())
+        eq_(u1.to_json()['contacts'], [contact.to_json()])
+        eq_(u2.to_json()['contacts'], [])

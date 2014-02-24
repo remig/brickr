@@ -147,12 +147,12 @@ def addTags():
         if not tag_list:
             return jsonify(result = False)
 
-        for tag_text in tag_list:
+        for tag_text in tag_list:  # TODO: use Tag.get_or_create()
             tag = Tag.query.filter_by(description = tag_text).first()
             if tag is None:
                 tag = Tag(tag_text)
             photo.tags.extend([tag])
-            db.session.add(tag)
+            db.session.add(tag)  # TODO: not necessary
         db.session.commit()
         return jsonify(result = True, tags = tag_list)
     return jsonify(result = False)
@@ -177,7 +177,7 @@ def removeTag():
         photo.tags.remove(tag)
         db.session.commit()
         if db.session.query('* from tag_list where tag_id = %d' % tag.id).count() < 1:
-            db.session.delete(tag)
+            db.session.delete(tag)  # TODO: probably not necessary.  Instead, just purge the Tag table occasionally
             db.session.commit()
         return jsonify(result = True)
     return jsonify(result = False)

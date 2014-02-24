@@ -11,14 +11,14 @@ class Tag(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     description = db.Column(db.String(120), unique = True, nullable = False)
     url = db.Column(db.String(120))
-    # photo created by Photo.tags backref
+    # photos created by Photo.tags backref
 
     def __init__(self, description):
         self.description = description
         self.url = util.str_to_url(description)
         
     def __repr__(self):
-        return '<Tag %r>' % (self.description)
+        return '<Tag %d, %s>' % (self.id or -1, self.description)
         
     # If 'description' is an existing tag, retrieve it; if not, create it
     @staticmethod
