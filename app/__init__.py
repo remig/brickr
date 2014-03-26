@@ -13,7 +13,7 @@ def breakpoint(): # pragma: no cover
         import pdb
         pdb.set_trace()
 
-pattern = re.compile('[^A-Za-z0-9 _!$]+')
+pattern = re.compile('[^A-Za-z0-9 _!$]+')  # TODO: move this to util
 def strip(text):
     return pattern.sub('', text)
 
@@ -70,6 +70,9 @@ app.register_blueprint(mailModule)
 
 from app.views.groups import mod as groupModule
 app.register_blueprint(groupModule)
+
+from app.views.api import mod as apiModule
+app.register_blueprint(apiModule)
 
 if not app.debug:
     import logging

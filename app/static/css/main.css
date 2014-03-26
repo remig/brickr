@@ -41,11 +41,14 @@ h5 {
 
 .small {
   font-size: .9em;
-  font-weight: normal;}
-  
+  font-weight: normal;
+}
+
 /* Header */
   
 #header {
+  z-index: 20;
+  position: relative;
   border-bottom: 2px solid #EEE;
   height: 3em;
   width: 100%;
@@ -99,8 +102,64 @@ h5 {
   color: #909090;
   text-decoration: none;
 }
+
+.menu li ul {
+  display: inline;
+}
+
+.menu lu ul li a {
+  color: #909090;
+  text-decoration: none;
+}
+
+.add_widget_menu ul.dropit-submenu {
+  background-color: #fff;
+  border: 1px solid #b2b2b2;
+  padding: 6px 0;
+  margin: 3px 0 0 1px;
+  -webkit-border-radius: 3px;
+     -moz-border-radius: 3px;
+          border-radius: 3px;
+  -webkit-box-shadow: 0px 1px 3px rgba(0,0,0,0.15);
+     -moz-box-shadow: 0px 1px 3px rgba(0,0,0,0.15);
+          box-shadow: 0px 1px 3px rgba(0,0,0,0.15);
+}          
+.add_widget_menu ul.dropit-submenu a {
+  display: block;
+  font-size: 14px;
+  line-height: 25px;
+  color: #7a868e;
+  padding: 0 18px;
+}
+.add_widget_menu ul.dropit-submenu a:hover {
+  background: #248fc1;
+  color: #fff;
+  text-decoration: none;
+}
  
-/* Center content */
+.dropit {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dropit .dropit-trigger {
+  position: relative;
+}
+
+.dropit .dropit-submenu {
+  position: absolute;
+  top: 100%;
+  left: 0; /* dropdown left or right */
+  min-width: 150px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.dropit .dropit-open .dropit-submenu {
+  display: block; /* Center content */
+}
 
 .container {
   width: 80%;
@@ -711,4 +770,62 @@ textarea {
 
 .deleteComment {
   display: none
+}
+
+#dashboard_container {
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-grid {
+  border-spacing: 0px;
+  table-layout: fixed;
+}
+
+.dashboard-grid td {
+  margin: 0px;
+  padding: 0px;
+  border: 1px solid rgba(100,100,100,0.3);
+  border-top-color: transparent;
+  border-left-color: transparent;
+}
+
+.dashboard-grid tr:first-child td {
+  border-top-color: rgba(100,100,100,0.3);
+}
+
+.dashboard-grid tr td:first-child  {
+  border-left-color: rgba(100,100,100,0.3);
+}
+
+#dashboard_eventer {
+  width: 100%;
+  height: 100%; 
+  position: absolute; 
+  top: 0px; 
+  left: 0px;
+}
+
+.dashboard_btn {
+  width: 21px;
+  height: 21px;
+  opacity: .55;
+  position: absolute;
+  right: 5px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+.dashboard_btn.delete {
+  background: url("/static/img/sprites.png") 0 -22px;
+  top: 5px;
+}
+
+.dashboard_btn.config {
+  background: url("/static/img/sprites.png");
+  bottom: 5px;
+}
+
+.widget {
+	position: absolute;
 }

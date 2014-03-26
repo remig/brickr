@@ -5,11 +5,42 @@ from app.models import *
 
 from app.decorators import requires_login
 
-mod = Blueprint('groups', __name__, url_prefix = '/groups')
+mod = Blueprint('api', __name__, url_prefix = '/api')
+
+#@mod.app_errorhandler(404):
+#def not_found(error):
+#   return make_response(jsonify( { 'error': 'Not found' } ), 404)
 
 @mod.route('/')
 def root():
     return render_template('groups/group_index.html', groups = Group)
+
+@mod.route('/p/<photoID>/')
+def get_photo(photoID):
+    photo = Photo.query.get(photoID)
+    if photo is None:
+        abort(404)
+
+    return jsonify(photo.to_json())
+    
+@mod.route('/u/<userID>/photos/')
+def get_user_photos(userID):
+    user = User.query.get(userID)
+    if user is None or user.placeholder:
+        abort(404)
+        
+    if 'from_contacts' in request.args:
+        return jsonify({'userID': userID, 'is_contact_list': True, 'photos': [p.to_json() for p in user.photos]})
+    else:
+        return jsonify({'userID': userID, 'photos': [p.to_json() for p in user.photos]})
+
+@mod.route('/u/<userID>/groups/')
+def get_user_groups(userID):
+    user = User.query.get(userID)
+    if user is None or user.placeholder:
+        abort(404)
+        
+    return jsonify({'userID': userID, 'groups': [g.to_json() for g in user.user_groups]})
 
 @mod.route('/<groupURL>/')
 def group(groupURL):

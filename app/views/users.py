@@ -171,3 +171,15 @@ def removeContact():
             db.session.commit()
             return jsonify(result = True)
     return jsonify(result = False)
+
+@mod.route('/updateDashboard', methods = ['POST'])
+@requires_login
+def updateDashboard():
+    if request.method == 'POST':
+        new_dashboard = request.form.get('dashboard')
+        if new_dashboard:
+            g.user.dashboard = new_dashboard
+            db.session.commit()
+            return jsonify(result = True)
+    return jsonify(result = False)
+

@@ -2,9 +2,54 @@
 
 {% block title %}Your Dashboard | brickr{% endblock %}
 
+{% block nav_entries %}
+<li data-bind="visible: configureEnabled()">
+	<ul class="add_widget_menu">
+		<li>
+			<a href="#">Add Widget</a>
+			<ul data-bind="foreach: unused_widget_list">
+				<li>
+					<a href="" data-bind="text: name, click: $parent.add_widget_to_dashboard"></a>
+				</li>
+			</ul>
+		</li>
+	</ul>
+</li>
+<li>
+	<a id="config_link" href="" data-bind="text: (configureEnabled() ? 'Done' : 'Configure'), click: configure"></a>
+</li>
+{% endblock %}
+
 {% block script %}
+<script src="{{ url_for('static', filename = 'js/dashboard.js') }}" type="text/javascript"></script>
+<script src="{{ url_for('static', filename = 'js/dropit.js') }}" type="text/javascript"></script>
+{% endblock %}
+
+{% block script_onload %}
+
+//	var dashboardLayout = {
+//		photo_stream: {x: 50, y: 50, w: 200, h: 200},
+//		group_list: {x: 250, y: 50, w: 200, h: 100}
+//	};
+	
+	var dashboardLayout = JSON.parse({{ g.user.dashboard | tojson | safe}});
+    ko.applyBindings(new DashboardViewModel(dashboardLayout));
+	
+	$('.add_widget_menu').dropit();
+
 {% endblock %}
 
 {% block content %}
-Your dashboard is coming soon...
+	<div style="position: relative; height: 1000px;">
+		<div id="dashboard_container" data-bind="" style="outline: 1px solid black; height: 1000px;">
+			<div id="widget_container" data-bind="foreach: user_widget_list">
+				<div class="widget" data-bind="style: {left: x, top: y, width: w, height: h, outline: $parent.configureEnabled() ? '3px solid grey' : ''}">
+					<div data-bind="html: htmlTemplate, attr: {id: 'widget_' + id}"></div>
+					<div class="dashboard_btn config" data-bind="click: config_click, visible: $parent.configureEnabled() && isConfigurable"></div>
+					<div class="dashboard_btn delete" data-bind="click: $parent.delete_click, visible: $parent.configureEnabled()"></div>
+				</div>
+			</div>
+		</div>
+		<div id="dashboard_eventer" data-bind="visible: configureEnabled()"></div>
+	</div>
 {% endblock %}

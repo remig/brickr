@@ -3,17 +3,24 @@
 {% block title %}{{ group.name }} | brickr{% endblock %}
 
 {% block script %}
+<script type="text/javascript">
+    var group = JSON.parse({{ groupJSON | tojson | safe }});
+</script>
 {% include "fix_time.html" %}
+{% endblock %}
+
+{% block script_onload %}
+    ko.applyBindings();
 {% endblock %}
 
 {% block content %}
 
-    <h2>{{ group.name }}</h2>
+    <h2 data-bind="text: group.name"></h2>
     <div>Created on <span class="convert-time">{{ group.creation_time }},LL</span></div>
-    <h4>About {{ group.name }}:</h4>
-    <div>{{ group.description }}</div>
+    <h4>About this Group:</h4>
+    <div data-bind="text: group.description"></div>
     <h4>Rules:</h4>
-    <div>{{ group.rules }}</div>
+    <div data-bind="text: group.rules"></div>
     <h4>Members:</h4>
     <ul>
     {% for member in group.members %}

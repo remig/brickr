@@ -38,6 +38,7 @@ class User(db.Model):
     real_name = db.Column(db.String(120))
     flickr_auth = db.Column(db.Boolean, default = False)  # If true, this account's screen name is a valid, authenticated Flickr screen name
     placeholder = db.Column(db.String(20))  # If set, this account is not a 'real' user, it's a placeholder used when importing non-existant user info from Flickr.  Will contain user's Flickr ID
+    dashboard = db.Column(db.String(5000))  # Stores a JSON blob representing the layout & config for each widget in this user's dashboard.
     photos = db.relationship('Photo', backref = 'user', lazy = 'dynamic', cascade = "all, delete, delete-orphan")
     comments = db.relationship('Comment', backref = 'user', lazy = 'dynamic', cascade = "all, delete, delete-orphan")
     favorites = db.relationship('Favorite', backref = 'user', lazy = 'dynamic', cascade = "all, delete, delete-orphan")
