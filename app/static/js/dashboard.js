@@ -105,6 +105,13 @@ WidgetViewModel = function(widget, id, layout, html) {  // Global
 
 DashboardViewModel = function (user_widgets) {  // Global
 
+	if (user_widgets == null) {  // If user has not initialized their dashboard yet, use these as defaults.
+		user_widgets = {
+			photo_stream: {x: 50, y: 50, w: 200, h: 200},
+			group_list: {x: 250, y: 50, w: 200, h: 100}
+		}
+	}
+
 	var self = this;
 	self.configureEnabled = ko.observable(false);
 	self.user_widget_list = ko.observableArray();

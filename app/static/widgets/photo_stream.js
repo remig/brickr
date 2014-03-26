@@ -2,7 +2,6 @@ WidgetList.photo_stream = function() {
 
 	function ready() {
 		var self = this;
-		console.log('Successfully Initialized Photo Stream Widget');
 		
 		$.get('/api/u/1/photos/?from_contacts')
 			.done(function(data) {

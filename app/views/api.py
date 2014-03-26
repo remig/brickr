@@ -40,7 +40,7 @@ def get_user_groups(userID):
     if user is None or user.placeholder:
         abort(404)
         
-    return jsonify({'userID': userID, 'groups': [g.to_json() for g in user.user_groups]})
+    return jsonify({'userID': userID, 'username': user.name, 'groups': [g.to_json() for g in user.user_groups]})
 
 @mod.route('/<groupURL>/')
 def group(groupURL):

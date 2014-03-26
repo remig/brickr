@@ -27,14 +27,8 @@
 
 {% block script_onload %}
 
-//	var dashboardLayout = {
-//		photo_stream: {x: 50, y: 50, w: 200, h: 200},
-//		group_list: {x: 250, y: 50, w: 200, h: 100}
-//	};
-	
 	var dashboardLayout = JSON.parse({{ g.user.dashboard | tojson | safe}});
-    ko.applyBindings(new DashboardViewModel(dashboardLayout));
-	
+	ko.applyBindings(new DashboardViewModel(dashboardLayout));
 	$('.add_widget_menu').dropit();
 
 {% endblock %}

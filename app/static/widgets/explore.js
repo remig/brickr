@@ -2,7 +2,6 @@ WidgetList.explore = function() {
 
 	function ready() {
 		var self = this;
-		console.log('Successfully Initialized Explore Widget');
 		
 		$.get('/api/u/1/photos/?from_contacts')
 			.done(function(data) {

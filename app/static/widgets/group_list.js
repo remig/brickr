@@ -4,7 +4,6 @@ WidgetList.group_list = function() {
 
 	function ready() {
 		var self = this;
-		console.log('Successfully Initialized Group List Widget');
 
 		$.get('/api/u/1/groups/')
 			.done(function(data) {
