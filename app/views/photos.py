@@ -15,6 +15,8 @@ mod = Blueprint('photos', __name__, url_prefix = '/photos')
 
 @mod.route('/')
 def root():
+    if g.user:
+        return render_template('photos/stream.html', user = g.user, photos = g.user.photos)
     return render_template('photos/stream.html', user = None, photos = Photo)
 
 @mod.route('/<user_url>/')
