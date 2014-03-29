@@ -80,7 +80,7 @@ class User(db.Model):
 
     def get_contacts_photo_list(self, count):
         from photo import Photo  # again with the fucky fuck
-        contacts = [x.id for x in self.contacts.all()]
+        contacts = [x.target_user.id for x in self.contacts.all()]
         photos = db.session.query(Photo) \
             .filter(Photo.user_id.in_(contacts)) \
             .order_by(Photo.creation_time) \
