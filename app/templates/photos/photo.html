@@ -19,37 +19,47 @@
 
 {% block content %}
   {% set isPhotoOwner = g.user and photo.user.id == g.user.id %}
-  <div id="photo-title">
-  </div>
-  <div id="content-main">
-    <div id="single-photo">
-      <div id="single-photo-actions">
-        <ul>
-          <li><div id="photo-fave" data-bind="css: { favorite: favorite }, click: changeFavorite"
-            {% if g.user %}
-              class="clickable"
-              {% if g.user.isFavorited(photo) %}
-                title="Remove from Favorites"
-              {% else %}
-                title="Add to Favorites"
-              {% endif %} 
+  <div id="photo-header">
+    {% if isPhotoOwner %}
+      <div id="photo-title" class="owner" data-bind="visible: !isEditing(), click: edit, text: title"></div>
+      <input id="photo-title-edit" type="text" data-bind="visible: isEditing(), value: title" />
+    {% else %}
+      <div id="photo-title" data-bind="text: photo.title"></div>
+    {% endif %}
+    <div id="photo-actions">
+      <div id="photo-fave" data-bind="css: { favorite: favorite }, click: changeFavorite"
+          {% if g.user %}
+            class="clickable"
+            {% if g.user.isFavorited(photo) %}
+              title="Remove from Favorites"
             {% else %}
-              title="Favorites"
-            {% endif %}
-          ></div></li>
-          <li><a href="" id="photo-share" title="Share photo (NYI)">Share</a></li>
-          <li><a href="" id="photo-download" title="Download photo (NYI)">Download</a></li>
-        </ul>
-      </div>
+              title="Add to Favorites"
+            {% endif %} 
+          {% else %}
+            title="Favorites"
+          {% endif %}
+        ></div>
+        <div id="photo-share" title="Share photo (NYI)"><a href="" title="Share photo (NYI)"></a></div>
+        <div id="photo-download" title="Download photo (NYI)"><a href="" title="Download photo (NYI)"></a></div>
+    </div>
+  </div>
 
-      <div id="single-photo-img">
-        <img id="the-actual-photo" data-bind="attr: {src: photo.url, alt: photo.title, title: photo.title}">
+  <div id="single-photo-nav">
+    <div id="single-photo-img">
+      <a data-bind="visible: photo.prev_photo_url, attr: {href: photo.prev_photo_url}"><div id="photo-nav-button-left" title="Previous Photo"></div></a>
+      <div id="photo-nav-holder">
+        <div id="photo-holder">
+          <img id="the-actual-photo" data-bind="attr: {src: photo.url, alt: photo.title, title: photo.title}">
+        </div>
         <div id="note-eventer">
             <div id="note-list">
                 {% for note in photo.getNotesInZOrder() %}
                 <div id="{{ note.id }}" class="note-box" data-brickr-userid="{{ note.user_id }}" data-brickr-coords="{{ note.coords() }}">
                     <div class="note-content">
-                        <div class="note-text">{{ note.comment }}</div>
+                        <div class="note-text">
+                          <div>{{ note.comment }}</div>
+                          <div><a href="{{ url_for('photos.stream', user_url = note.user.url) }}">{{ note.user.name }}</a></div>
+                        </div>
                         <textarea class="note-edit-text" rows="5" placeholder="New Note" aria-label="New Note">{{ note.comment }}</textarea>
                         <div class="note-buttons">
                             <input type="button" class="note-save-button small-button" value = "SAVE" />
@@ -74,24 +84,22 @@
           </div>
         </div>
       </div>
-      
-      <div id="single-photo-info">
-        {% if isPhotoOwner %}
-          <h2 class="single-photo-title" data-bind="visible: !isEditing(), click: edit, text: title"></h2>
-          <input class="single-photo-title-edit" type="text" data-bind="visible: isEditing(), value: title" />
-          <div class="single-photo-desc" data-bind="visible: !isEditing(), click: edit, text: description"></div>
-          <textarea class="single-photo-desc-edit" data-bind="visible: isEditing(), value: description"></textarea>
-          <div class="photo-text-buttons" data-bind="visible: isEditing()">
-            <input type="button" class="save-button small-button" value="SAVE" data-bind="click: saveEdit"/>
-            <input type="button" class="cancel-button small-button" value="CANCEL" data-bind="click: cancelEdit"/>
-          </div>
-        {% else %}
-          <h2 data-bind="text: photo.title"></h2>
-          <div data-bind="text: photo.description"></div>
-        {% endif %}
-      </div>
+      <a data-bind="visible: photo.next_photo_url, attr: {href: photo.next_photo_url}"><div id="photo-nav-button-right" title="Next Photo"></div></a>
     </div>
-  </div>  <!-- /content-main -->
+  </div>
+  
+  <div id="single-photo-info">
+    {% if isPhotoOwner %}
+      <div id="photo-desc" class="owner" data-bind="visible: !isEditing(), click: edit, text: description"></div>
+      <textarea id="photo-desc-edit" data-bind="visible: isEditing(), value: description"></textarea>
+      <div class="photo-text-buttons" data-bind="visible: isEditing()">
+        <input type="button" class="save-button small-button" value="SAVE" data-bind="click: saveEdit"/>
+        <input type="button" class="cancel-button small-button" value="CANCEL" data-bind="click: cancelEdit"/>
+      </div>
+    {% else %}
+      <div data-bind="text: photo.description"></div>
+    {% endif %}
+  </div>
 
   <div id="content-sidebar">
 

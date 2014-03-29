@@ -214,6 +214,8 @@ class Photo(db.Model):
         return sorted(self.notes.all(), key = Note.area, reverse = True)
 
     def to_json(self, active_user = None):
+        prev_photo = self.prevPhoto()
+        next_photo = self.nextPhoto()
         return {
             'id': self.id,
             'title': self.title,
@@ -227,5 +229,7 @@ class Photo(db.Model):
             'favorites': [x.to_json() for x in self.favorites],
             'tags': [x.to_json() for x in self.tags],
             'comments': [x.to_json() for x in self.comments],
-            'groups': [x.to_json() for x in self.groups]
+            'groups': [x.to_json() for x in self.groups],
+            'prev_photo_id': prev_photo.id if prev_photo else None,
+            'next_photo_id': next_photo.id if next_photo else None
         }

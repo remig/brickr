@@ -8,8 +8,8 @@
     
     function mousePos(e, target) {
         return {
-            x: e.pageX - target.offsetLeft,
-            y: e.pageY - target.offsetTop
+            x: e.pageX - target.offsetParent.offsetLeft,
+            y: e.pageY - target.offsetParent.offsetTop
         };
     }
     
@@ -111,6 +111,9 @@
     }
     
     function mouseDown(e) {
+        if (e.target.nodeName === 'A') {
+            return;
+        }
         if (!is_editing || e.target.className === 'note-box') {
             mouse_pos = mousePos(e, this);
         }
@@ -184,7 +187,7 @@
     }
 
     function hoverOut(e) {  // Mouse moved off image - hide notes
-        if (isDescendant(e.target, this.id) || isDescendant(e.relatedTarget, this.id)) {
+        if (isDescendant(e.relatedTarget, this.id)) {
             return;  // Ignore mouse out if we moved over something still inside the event panel
         }
         if (!is_editing) {  // Don't hide anything if we're in edit mode
@@ -236,6 +239,8 @@
         img_w = d.width();
         img_h = d.height();
         $('#note-eventer').css('width', img_w + 'px').css('height', img_h + 'px');
+        $('#photo-nav-holder').css('width', (img_w-1) + 'px');
+        $('#single-photo-img').css('width', (img_w + 88) + 'px');
         $('.note-box').each(function(i, v) {
             if (!v.dataset.brickrCoords) {
                 return;
