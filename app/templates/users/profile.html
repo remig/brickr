@@ -14,42 +14,46 @@
 {% endblock %}
 
 {% block content %}
-	<h3 data-bind="text: user.name + '\'s Profile'"></h3>
-	<div>
-		<div>Name: <span data-bind="text: user.real_name || 'No Name Given'"></span></div>
-		<div>Joined: <span data-bind="text: moment.utc(user.joined).format('LL')"></span></div>
-		<div>Email: <a data-bind="text: user.email, attr: {href: 'mailto:' + user.email}"></a></div>
-	</div>
-
-    <p><div data-bind="visible: user.contacts.length > 0"><span data-bind="text: user.name + '\'s Contacts:'"></span></div>
+  <div id="profile-content">
+    <h3 data-bind="text: user.name + '\'s Profile'"></h3>
     <div>
-        <ul data-bind="foreach: user.contacts">
-            <li>
-                <a data-bind="text: target_user, attr: {href: target_user_url}"></a>
-				<span data-bind="text: ' - Added ' + moment.utc(creation).fromNow()"></span>
-            </li>
-        </ul>
+      <div>Name: <span data-bind="text: user.real_name || 'No Name Given'"></span></div>
+      <div>Joined: <span data-bind="text: moment.utc(user.joined).format('LL')"></span></div>
+      <div>Email: <a data-bind="text: user.email, attr: {href: 'mailto:' + user.email}"></a></div>
     </div>
 
-	<p><div>
-		<span data-bind="text: user.name + '\'s Groups:'"></span>
-		<ul data-bind="foreach: user.groups">
-			<li>
-				<a data-bind="text: name, attr: {href: url}"></a>
-				<span data-bind="text: ' - Joined ' + moment.utc(join_time).fromNow()"></span>
-			</li>
-		</ul>
-	</div>
-	
-    <p><div>
-		<span data-bind="text: user.name + '\'s favorite Photos:'"></span>
-		<ul id="photo-stream" data-bind="foreach: user.favorites">
-			<li>
-				<div class="thumb"><a data-bind="attr: {href: photo.url}">
-					<img width="75" data-bind="title: photo.title, attr: {src: photo.thumb_url}">
-				</a></div>
-			</li>
-		</ul>
-	</div>
-	
+    <div>
+      <div data-bind="visible: user.contacts.length > 0">Contacts:</div>
+      <ul data-bind="foreach: user.contacts">
+        <li>
+            <a data-bind="text: target_user, attr: {href: target_user_url}"></a>
+            <span data-bind="text: ' - Added ' + moment.utc(creation).fromNow()"></span>
+        </li>
+      </ul>
+    </div>
+
+    <div>
+      <span>Groups:</span>
+      <ul data-bind="foreach: user.groups">
+        <li>
+          <a data-bind="text: name, attr: {href: url}"></a>
+          <span data-bind="text: ' - Joined ' + moment.utc(join_time).fromNow()"></span>
+        </li>
+      </ul>
+    </div>
+
+    <div>
+      <span data-bind="text: user.name + '\'s favorite Photos:'"></span>
+      <ul id="photo-stream" data-bind="foreach: user.favorites">
+        <li>
+          <div class="thumb">
+            <a data-bind="attr: {href: photo.url}">
+              <img width="75" data-bind="title: photo.title, attr: {src: photo.thumb_url}">
+            </a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
 {% endblock %}

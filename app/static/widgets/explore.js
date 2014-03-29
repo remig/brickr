@@ -3,7 +3,7 @@ WidgetList.explore = function() {
 	function ready() {
 		var self = this;
 		
-		$.get('/api/u/1/photos/?from_contacts')
+		$.get('/api/u/1/photos/')
 			.done(function(data) {
 				var el = document.getElementById('explore_container');
 				ko.applyBindings(data, el);

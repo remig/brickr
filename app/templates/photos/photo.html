@@ -152,7 +152,7 @@
         <ul>
           <li data-bind="text: photo.views + ' Views'"></li>
           <li data-bind="text: photo.favorites.length + ' Favorites'"></li>
-          <li data-bind="text: 'Taken on: ' + moment.utc(photo.creation_time).format('LL')"></li>
+          <li data-bind="text: 'Taken ' + moment.utc(photo.creation_time).format('LL')"></li>
         </ul>
       </div>
     </div>

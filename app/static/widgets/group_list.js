@@ -17,12 +17,8 @@ WidgetList.group_list = function() {
 		template: 'group_list.html',
 		ready: ready,
 		size: {
-			minWidth: 100,
-			minHeight: 50,
-			maxHeight: 150,
-			maxWidth: 300
-		},
-		config: {
+			minWidth: 200,
+			minHeight: 50
 		}
 	};
 };

@@ -28,9 +28,10 @@ def get_user_photos(userID):
     user = User.query.get(userID)
     if user is None or user.placeholder:
         abort(404)
-        
+
     if 'from_contacts' in request.args:
-        return jsonify({'userID': userID, 'is_contact_list': True, 'photos': [p.to_json() for p in user.photos]})
+        photos = user.get_contacts_photo_list(5)
+        return jsonify({'userID': userID, 'is_contact_list': True, 'photos': [p.to_json() for p in photos]})
     else:
         return jsonify({'userID': userID, 'photos': [p.to_json() for p in user.photos]})
 

@@ -78,6 +78,15 @@ class User(db.Model):
         from private_message import PrivateMessage  # fuck me, really?
         return PrivateMessage.query.filter_by(recipient_id = self.id).filter_by(isRead = False).count()
 
+    def get_contacts_photo_list(self, count):
+        from photo import Photo  # again with the fucky fuck
+        contacts = [x.id for x in self.contacts.all()]
+        photos = db.session.query(Photo) \
+            .filter(Photo.user_id.in_(contacts)) \
+            .order_by(Photo.creation_time) \
+            .limit(count)
+        return photos
+        
     @staticmethod
     def _create_placeholder(name, flickr_id):
         count = 1 + User.query.filter(User.placeholder).count()

@@ -47,8 +47,8 @@ WidgetViewModel = function(widget, id, layout, html) {  // Global
 		pos.y = minMax(0, max_h, pos.y);
 		if (self.size) {
 			var r = self.size;
-			pos.w = minMax(r.minWidth || 0, r.maxWidth || 0, pos.w);
-			pos.h = minMax(r.minHeight || 0, r.maxHeight || 0, pos.h);
+			pos.w = minMax(r.minWidth || 0, r.maxWidth || Infinity, pos.w);
+			pos.h = minMax(r.minHeight || 0, r.maxHeight || Infinity, pos.h);
 		}
 	};
 	

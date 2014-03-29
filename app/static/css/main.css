@@ -63,9 +63,9 @@
   display: inline-block;
 }
 
-
-
-
+#profile-content > div {
+  margin-top: 15px;
+}
 
  
  /* Old stuff - mostly unnecessary */
@@ -706,4 +706,5 @@ textarea {
 
 .widget {
   position: absolute;
+  overflow: auto;
 }

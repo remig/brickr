@@ -13,6 +13,8 @@ WidgetList.photo_stream = function() {
 	return {
 		name: 'Photo Stream',
 		template: 'photo_stream.html',
-		ready: ready
+		ready: ready,
+		config: {
+		}
 	};
 };

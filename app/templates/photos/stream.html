@@ -34,9 +34,7 @@
                 <ul>
                     <li>Member since <span class="convert-time">{{ user.creation_time }},LL</span></li>
                     <li>{{ user.photos.count() }} photos</li>
-                    <li>location</li>
-                    <li>facebook/twitter/web</li>
-                    <li>more...</li>
+                    <li><a href="{{ url_for('users.profile', user_url = user.url) }}">Profile</li>
                 </ul>            
             </div>
         </div>

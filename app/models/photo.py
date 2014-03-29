@@ -3,6 +3,7 @@ from PIL import Image
 from StringIO import StringIO
 from uuid import uuid4
 from werkzeug import secure_filename, FileStorage
+from flask import url_for
 
 from app import app, db, util, breakpoint
 from tag import tag_list
@@ -221,6 +222,7 @@ class Photo(db.Model):
             'title': self.title,
             'description': self.description,
             'url': self.url(),
+            'photo_page_url': url_for('photos.photo', user_url = self.user.url, photoID = self.id),
             'user': self.user.to_json(),
             'user_url': self.user.url,  # TODO: get rid of this - use user.url instead
             'views': self.views,
