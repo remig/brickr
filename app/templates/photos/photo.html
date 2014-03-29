@@ -89,18 +89,60 @@
   </div>
   
   <div id="single-photo-info">
-    {% if isPhotoOwner %}
-      <div id="photo-desc" class="owner" data-bind="visible: !isEditing(), click: edit, text: description"></div>
-      <textarea id="photo-desc-edit" data-bind="visible: isEditing(), value: description"></textarea>
-      <div class="photo-text-buttons" data-bind="visible: isEditing()">
-        <input type="button" class="save-button small-button" value="SAVE" data-bind="click: saveEdit"/>
-        <input type="button" class="cancel-button small-button" value="CANCEL" data-bind="click: cancelEdit"/>
-      </div>
-    {% else %}
-      <div data-bind="text: photo.description"></div>
-    {% endif %}
-  </div>
+    <div id="photo-description">
+      {% if isPhotoOwner %}
+        <div id="photo-desc" class="owner" data-bind="visible: !isEditing(), click: edit, text: description"></div>
+        <textarea id="photo-desc-edit" data-bind="visible: isEditing(), value: description"></textarea>
+        <div class="photo-text-buttons" data-bind="visible: isEditing()">
+          <input type="button" class="save-button small-button" value="SAVE" data-bind="click: saveEdit"/>
+          <input type="button" class="cancel-button small-button" value="CANCEL" data-bind="click: cancelEdit"/>
+        </div>
+      {% else %}
+        <div data-bind="text: photo.description"></div>
+      {% endif %}
+    </div>
 
+    <!-- ko if: favorites().length -->
+    <div id="photo-favorites">
+      <div class="hr"></div>
+      <div data-bind="html: favoriteNameList('<a href=user_url>user_name</a>')"></div>
+    </div>
+    <!-- /ko -->
+
+    <!-- ko if: comments().length -->
+    <div id="photo-comments">
+      <div class="hr"></div>
+      <h4>Comments:</h4>
+      <ul data-bind="foreach: comments">
+        <li>
+          <div class="comments-avatar">
+            <a data-bind="attr: {href: user_url}">
+              <img src="/static/img/avatar.jpg" alt="" title="" border="0" height="36" width="36">
+            </a>
+          </div>
+          <div class="comments-body" onmouseover="$('.deleteComment', this).show()" onmouseout="$('.deleteComment', this).hide()">
+            <div class="comments-author">
+              <a data-bind="text: user_name, attr: {href: user_url}"></a>
+              <span class="small comments-date"><span data-bind="text: moment.utc(time).fromNow()"></span></span>
+              {% if isPhotoOwner %}<a href="" class="deleteComment" data-bind="click: $parent.deleteComment">delete</a>{% endif %}
+            </div>
+            <div class="comment-text" data-bind="text: comment"></div>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <!-- /ko -->
+
+    {% if g.user %}
+    <div id="photo-add-comment">
+      <div class="hr"></div>
+      <h4>Add a Comment</h4>
+      <textarea id="comment" name="comment" rows="6" placeholder="Add a comment" aria-label="Add a comment" data-bind="value: newComment"></textarea>
+      <input type="submit" value="Submit" class="button" data-bind="click: addComment">
+    </div>
+   {% endif %}
+  </div>
+  
   <div id="content-sidebar">
 
     <div id="profile" class="sidebar-box">
@@ -109,7 +151,8 @@
         <h3><a data-bind="text: photo.user.name, attr: {href: photo.user.profile_url}"></a></h3>
         <ul>
           <li data-bind="text: photo.views + ' Views'"></li>
-          <li>Taken on <span data-bind="text: moment.utc(photo.creation_time).format('LL')"></span></li>
+          <li data-bind="text: photo.favorites.length + ' Favorites'"></li>
+          <li data-bind="text: 'Taken on: ' + moment.utc(photo.creation_time).format('LL')"></li>
         </ul>
       </div>
     </div>
@@ -159,46 +202,4 @@
     {% endif %}
   </div>  <!-- /content-sidebar -->
 
-  <div id="content-interact">
-
-    <!-- ko if: favorites().length -->
-    <div id="photo-favorites">
-      <div class="hr"></div>
-      <div data-bind="html: favoriteNameList('<a href=user_url>user_name</a>')"></div>
-    </div>
-    <!-- /ko -->
-
-    <!-- ko if: comments().length -->
-    <div id="photo-comments">
-      <div class="hr"></div>
-      <h3>Comments:</h3>
-      <ul data-bind="foreach: comments">
-        <li>
-          <div class="comments-avatar">
-            <a data-bind="attr: {href: user_url}">
-              <img src="/static/img/avatar.jpg" alt="" title="" border="0" height="36" width="36">
-            </a>
-          </div>
-          <div class="comments-body" onmouseover="$('.deleteComment', this).show()" onmouseout="$('.deleteComment', this).hide()">
-            <div class="comments-author">
-              <a data-bind="text: user_name, attr: {href: user_url}"></a>
-              <span class="small comments-date"><span data-bind="text: moment.utc(time).fromNow()"></span></span>
-              {% if isPhotoOwner %}<a href="" class="deleteComment" data-bind="click: $parent.deleteComment">delete</a>{% endif %}
-            </div>
-            <div class="comment-text" data-bind="text: comment"></div>
-          </div>
-        </li>
-      </ul>
-    </div>
-    <!-- /ko -->
-
-    {% if g.user %}
-    <div id="photo-add-comment">
-      <div class="hr"></div>
-      <h3>Add a Comment</h3>
-      <textarea id="comment" name="comment" rows="6" placeholder="Add a comment" aria-label="Add a comment" data-bind="value: newComment"></textarea>
-      <input type="submit" value="Submit" class="button" data-bind="click: addComment">
-    </div>
-   {% endif %}
-  </div>  <!-- /content-interact -->
 {% endblock %}
