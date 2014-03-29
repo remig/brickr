@@ -107,8 +107,8 @@ DashboardViewModel = function (user_widgets) {  // Global
 
 	if (user_widgets == null) {  // If user has not initialized their dashboard yet, use these as defaults.
 		user_widgets = {
-			photo_stream: {x: 50, y: 50, w: 200, h: 200},
-			group_list: {x: 250, y: 50, w: 200, h: 100}
+			photo_stream: {x: 50, y: 50, w: 300, h: 500},
+			group_list: {x: 400, y: 50, w: 350, h: 200}
 		}
 	}
 
