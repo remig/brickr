@@ -213,7 +213,7 @@ h5 {
   border: 0px;
 }
 
-.note-buttons, .photo-text-buttons {
+.note-buttons {
   display: none;
 }
 
@@ -235,7 +235,6 @@ h5 {
 }
 
 .single-photo-title-edit, .single-photo-desc-edit {
-  display: none;
   background: #ffffd3;
   width: 400px;
   border-radius: 0px;

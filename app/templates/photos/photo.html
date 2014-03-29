@@ -77,13 +77,13 @@
       
       <div id="single-photo-info">
         {% if isPhotoOwner %}
-          <h2 class="single-photo-title photo-display-info" onclick="editPhotoInfo(true);" data-bind="text: photo.title"></h2>
-          <input class="single-photo-title-edit photo-edit-info" type="text" />
-          <div class="single-photo-desc photo-display-info" onclick="editPhotoInfo(true);" data-bind="text: photo.description"></div>
-          <textarea class="single-photo-desc-edit photo-edit-info"></textarea>
-          <div class="photo-text-buttons photo-edit-info">
-            <input type="button" class="save-button small-button" value="SAVE" onclick="editPhotoInfo(false, {{ photo.id }});"/>
-            <input type="button" class="cancel-button small-button" value="CANCEL" onclick="editPhotoInfo(false, -1);"/>
+          <h2 class="single-photo-title" data-bind="visible: !isEditing(), click: edit, text: title"></h2>
+          <input class="single-photo-title-edit" type="text" data-bind="visible: isEditing(), value: title" />
+          <div class="single-photo-desc" data-bind="visible: !isEditing(), click: edit, text: description"></div>
+          <textarea class="single-photo-desc-edit" data-bind="visible: isEditing(), value: description"></textarea>
+          <div class="photo-text-buttons" data-bind="visible: isEditing()">
+            <input type="button" class="save-button small-button" value="SAVE" data-bind="click: saveEdit"/>
+            <input type="button" class="cancel-button small-button" value="CANCEL" data-bind="click: cancelEdit"/>
           </div>
         {% else %}
           <h2 data-bind="text: photo.title"></h2>

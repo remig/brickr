@@ -3,12 +3,15 @@ function PhotoViewModel(photo) {
 	var self = this;
 	self.baseURL = $SCRIPT_ROOT + '/photos/';
 	self.photo = photo;
+	self.title = ko.observable(photo.title);
+	self.description = ko.observable(photo.description);
 	self.favorite = ko.observable(photo.favorite);
 	self.favorites = ko.observableArray(photo.favorites);
 	self.comments = ko.observableArray(photo.comments);
 	self.newComment = ko.observable('');
 	self.tags = ko.observableArray(photo.tags);
 	self.groups = ko.observableArray(photo.groups);
+	self.isEditing = ko.observable(false);
 
 	self.favoriteNameList = function(markup) {
 		var maxNames = 4;  // Display up to this many user names before appending 'and x others'
@@ -33,7 +36,7 @@ function PhotoViewModel(photo) {
 
 		return res;
 	};
-	
+
 	self.addTag = function(model, event) {
 		if (event.charCode !== 13 || !event.target.value) {
 			return true;
@@ -89,7 +92,7 @@ function PhotoViewModel(photo) {
 			}
 		);
 	};
-	
+
 	self.deleteComment = function() {
 		var comment = this;
 		$.post(self.baseURL + 'removeComment',
@@ -101,47 +104,29 @@ function PhotoViewModel(photo) {
 			}
 		);
 	};
-}
 
-function editPhotoInfo(showUI, photoID) {
+	self.edit = function() {
+		self.isEditing(!self.isEditing());
+	}
 
-    function toggleUI(show) {
-        if (show) {
-            $('.single-photo-title-edit').val($('.single-photo-title').text());
-            $('.single-photo-desc-edit').val($('.single-photo-desc').text());
-            $('.photo-display-info').hide();
-            $('.photo-edit-info').show();
-        } else {
-            $('.photo-display-info').show();
-            $('.photo-edit-info').hide();
-        }
-    }
-    
-    function pushToServer(title, desc, photoID) {
-        $.post($SCRIPT_ROOT + '/photos/_updatePhoto/',
-            {
-                photoID: photoID,
-                title: title,
-                desc: desc
-            },
-            function(data) {
-                if (!data.result) {
-                    alert('Failed to update photo title & description because of random fluctuations in the space time continuum.  Or something.');
-                }
-            }
-        );
-    }
-    
-    if (showUI) {
-        toggleUI(true);
-    } else {  // User clicked 'Save' or 'Cancel'
-        if (photoID > 0) {
-            var title = $('.single-photo-title-edit').val() || $('.single-photo-title').text();
-            var desc = $('.single-photo-desc-edit').val() || $('.single-photo-desc').text();
-            pushToServer(title, desc, photoID);
-            $('.single-photo-title').text(title);
-            $('.single-photo-desc').text(desc);
-        }
-        toggleUI(false);
-    }
+	self.saveEdit = function() {
+		var title = self.title(), desc = self.description();
+		if (title !== self.photo.title || desc !== self.photo.description) {
+			$.post(self.baseURL + '_updatePhoto/',
+				{photoID: self.photo.id, title: title, desc: desc},
+				function(data) {
+					if (!data.result) {
+						alert('Failed to update photo title & description because of random fluctuations in the space time continuum.  Or something.');
+					}
+				}
+			);
+		}
+		self.edit();
+	}
+
+	self.cancelEdit = function() {
+		self.title(self.photo.title);
+		self.description(self.photo.description);
+		self.edit();
+	}
 }
