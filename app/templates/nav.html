@@ -1,25 +1,38 @@
 {% extends "base.html" %}
 {% block header %}
-<div class="container">
-    <h1 class="logo"><a href="{{ url_for('index') }}">brickr</a></h1>
-    <nav>
-        <ul class="menu">
-            <li><a href="{{ url_for('users.root') }}">Users</a></li>
-            <li><a href="{{ url_for('photos.root') }}">Photos</a></li>
-            <li><a href="{{ url_for('groups.root') }}">Groups</a></li>
-            <li><a href="{{ url_for('about') }}">About</a></li>
-            {% if session['openid'] or session['user_id'] and g.user %}
-            <li><a href="{{ url_for('users.profile', user_url = g.user.url) }}">Profile</a></li>
-            <li><a href="{{ url_for('mail.inbox') }}">Mail {% if g.user and g.user.unread_pm_count() %}({{ g.user.unread_pm_count() }}){% endif %}</a></li>
-            <li><a href="{{ url_for('users.logout') }}">Logout {{ g.user.name }}</a></li>
-            {% else %}
-            <li><a href="{{ url_for('users.login') }}">Login</a></li>
-            {% endif %}
-            {% block nav_entries %}
-            {% endblock %}
-        </ul>
-    </nav>
-</div>
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container-fluid">
+
+    <div class="navbar-header">
+      <a class="navbar-brand" href="{{ url_for('index') }}">brickr</a>
+    </div>
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <!--
+      <form class="navbar-form navbar-left" role="search">
+        <div class="form-group">
+          <input type="text" class="form-control" placeholder="Search">
+        </div>
+        <button type="submit" class="btn btn-default">Submit</button>
+      </form>
+      -->
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="{{ url_for('users.root') }}">Users</a></li>  <!-- li class="active" -->
+        <li><a href="{{ url_for('photos.root') }}">Photos</a></li>
+        <li><a href="{{ url_for('groups.root') }}">Groups</a></li>
+        <li><a href="{{ url_for('about') }}">About</a></li>
+        {% if session['openid'] or session['user_id'] and g.user %}
+        <li><a href="{{ url_for('users.profile', user_url = g.user.url) }}">Profile</a></li>
+        <li><a href="{{ url_for('mail.inbox') }}">Mail {% if g.user and g.user.unread_pm_count() %}({{ g.user.unread_pm_count() }}){% endif %}</a></li>
+        <li><a href="{{ url_for('users.logout') }}">Logout {{ g.user.name }}</a></li>
+        {% else %}
+        <li><a href="{{ url_for('users.login') }}">Login</a></li>
+        {% endif %}
+        {% block nav_entries %}
+        {% endblock %}
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
 {% endblock %}
 
 {% block footer %}

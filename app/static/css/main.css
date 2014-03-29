@@ -1,10 +1,36 @@
-body {
-  margin: 0;
-  padding: 0;
-  font: 68% "Helvetica Neue", Helvetica, Arial, sans-serif;
-  color: #444;
+/* New, works */
+#header {
+  z-index: 20;
+  position: relative;
+  height: 3em;
+  opacity: .85;
+  margin: 0 0 1em 0;
 }
 
+.navbar {
+  background: #0d69ab;
+}
+
+.navbar .nav > li > a {
+  color: white;
+}
+
+.navbar .navbar-brand {
+  font-size: 24px;
+  color: white;
+}
+
+.navbar .navbar-brand:hover, .navbar .nav > li > a:hover {
+  color: #FF8900;
+  text-decoration: underline;
+}
+ 
+
+
+
+
+ 
+ /* Old stuff - mostly unnecessary */
 a {
   color: #086FA1;
   text-decoration: none;
@@ -46,121 +72,6 @@ h5 {
 
 /* Header */
   
-#header {
-  z-index: 20;
-  position: relative;
-  border-bottom: 2px solid #EEE;
-  height: 3em;
-  width: 100%;
-  opacity: .9;
-  margin: 0 0 1em 0;
-  padding: 0;
-  background: #4c4c4c;
-  background: -moz-linear-gradient(top,  #4c4c4c 0%, #131313 100%);
-  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#4c4c4c), color-stop(100%,#131313));
-  background: -webkit-linear-gradient(top,  #4c4c4c 0%,#131313 100%);
-  background: -o-linear-gradient(top,  #4c4c4c 0%,#131313 100%);
-  background: -ms-linear-gradient(top,  #4c4c4c 0%,#131313 100%);
-  background: linear-gradient(to bottom,  #4c4c4c 0%,#131313 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4c4c4c', endColorstr='#131313',GradientType=0 );  
-}
- 
-#header h1.logo {
-  color: #fff;
-  float: left;
-  font-size: 2em;
-  letter-spacing: .05em;
-  margin: 0;
-  padding: .2em 0;
-}
-
-#header h1.logo a {
-  color: #3CA0D0;
-  text-decoration: none;
-}
- 
-/* Navigation */
- 
-.menu {
-  float: right;
-  margin-top: 8px;
-}
-
-.menu  a:hover {
-  color: #63ADD0;
-}
- 
-.menu li {
-  display: inline;
-}
- 
-.menu li + li {
-  margin-left: 35px;
-}
- 
-.menu li a {
-  color: #909090;
-  text-decoration: none;
-}
-
-.menu li ul {
-  display: inline;
-}
-
-.menu lu ul li a {
-  color: #909090;
-  text-decoration: none;
-}
-
-.add_widget_menu ul.dropit-submenu {
-  background-color: #fff;
-  border: 1px solid #b2b2b2;
-  padding: 6px 0;
-  margin: 3px 0 0 1px;
-  -webkit-border-radius: 3px;
-     -moz-border-radius: 3px;
-          border-radius: 3px;
-  -webkit-box-shadow: 0px 1px 3px rgba(0,0,0,0.15);
-     -moz-box-shadow: 0px 1px 3px rgba(0,0,0,0.15);
-          box-shadow: 0px 1px 3px rgba(0,0,0,0.15);
-}          
-.add_widget_menu ul.dropit-submenu a {
-  display: block;
-  font-size: 14px;
-  line-height: 25px;
-  color: #7a868e;
-  padding: 0 18px;
-}
-.add_widget_menu ul.dropit-submenu a:hover {
-  background: #248fc1;
-  color: #fff;
-  text-decoration: none;
-}
- 
-.dropit {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.dropit .dropit-trigger {
-  position: relative;
-}
-
-.dropit .dropit-submenu {
-  position: absolute;
-  top: 100%;
-  left: 0; /* dropdown left or right */
-  min-width: 150px;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.dropit .dropit-open .dropit-submenu {
-  display: block; /* Center content */
-}
-
 .container {
   width: 80%;
   margin: 0 auto;
@@ -621,38 +532,21 @@ textarea {
   letter-spacing: .2em;
   padding: 8px 20px;
   text-transform: uppercase;
-  background: -moz-linear-gradient( top,
-		#033e6b 0%,
-		#06a2d2);
-  background: -webkit-gradient( linear, left top, left bottom, 
-		from(#033e6b),
-		to(#06a2d2));
+  background: -moz-linear-gradient( top, #033e6b 0%, #06a2d2);
+  background: -webkit-gradient( linear, left top, left bottom, from(#033e6b), to(#06a2d2));
   -moz-border-radius: 4px;
   -webkit-border-radius: 4px;
   border-radius: 4px;
   border: 1px solid #0b62a4;
-  -moz-box-shadow: 0px 1px 1px rgba(000,000,000,0.2),
-		inset 0px 0px 3px rgba(255,255,255,1);
-  -webkit-box-shadow:
-		0px 1px 1px rgba(000,000,000,0.2),
-		inset 0px 0px 3px rgba(255,255,255,1);
-  box-shadow:
-		0px 1px 1px rgba(000,000,000,0.2),
-		inset 0px 0px 3px rgba(255,255,255,1);
-  text-shadow:
-		0px -1px 0px rgba(000,000,000,0.4),
-		0px 1px 0px rgba(255,255,255,0.3);
+  -moz-box-shadow: 0px 1px 1px rgba(000,000,000,0.2), inset 0px 0px 3px rgba(255,255,255,1);
+  -webkit-box-shadow: 0px 1px 1px rgba(000,000,000,0.2), inset 0px 0px 3px rgba(255,255,255,1);
+  box-shadow: 0px 1px 1px rgba(000,000,000,0.2), inset 0px 0px 3px rgba(255,255,255,1);
+  text-shadow: 0px -1px 0px rgba(000,000,000,0.4), 0px 1px 0px rgba(255,255,255,0.3);
 }
   
 .button:hover {
- background: -moz-linear-gradient(
-		bottom,
-		#033e6b 0%,
-		#06a2d2);
- background: -webkit-gradient(
-		linear, left bottom, left top, 
-		from(#033e6b),
-		to(#06a2d2));
+  background: -moz-linear-gradient(bottom, #033e6b 0%, #06a2d2);
+  background: -webkit-gradient( linear, left bottom, left top, from(#033e6b), to(#06a2d2));
 }
 
 /* Footer */
@@ -719,13 +613,13 @@ textarea {
 }
 
 .post-text {
-	margin-left: 20px;
-	margin-bottom: 5px;
+  margin-left: 20px;
+  margin-bottom: 5px;
 }
 
 .post-username {
-	margin-top: 10px;
-	margin-bottom: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .post-avatar {
@@ -827,5 +721,5 @@ textarea {
 }
 
 .widget {
-	position: absolute;
+  position: absolute;
 }

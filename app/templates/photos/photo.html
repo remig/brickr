@@ -3,192 +3,194 @@
 {% block title %}{{ photo.title }} by {{ photo.user.name }} | brickr{% endblock %}
 
 {% block script %}
-<script src="{{ url_for('static', filename = 'js/PhotoViewModel.js') }}" type="text/javascript"></script>
-<script src="{{ url_for('static', filename = 'js/add_note.js') }}" type="text/javascript"></script>
-{% include "fix_time.html" %}
-<script type="text/javascript">
+  <script src="{{ url_for('static', filename = 'js/PhotoViewModel.js') }}" type="text/javascript"></script>
+  <script src="{{ url_for('static', filename = 'js/add_note.js') }}" type="text/javascript"></script>
+  {% include "fix_time.html" %}
+  <script type="text/javascript">
     var photo = JSON.parse({{ photoJSON | tojson | safe }});
     window.__photoID = photo.id;
     window.__userID = "{{ g.user.id or 0 }}";
-</script>
+  </script>
 {% endblock %}
 
 {% block script_onload %}
-    ko.applyBindings(new PhotoViewModel(photo));
+  ko.applyBindings(new PhotoViewModel(photo));
 {% endblock %}
 
 {% block content %}
-    {% set isPhotoOwner = g.user and photo.user.id == g.user.id %}
-    <div id="content-main">
-        <div id="single-photo">
-            <div id="single-photo-actions">
-                <ul>
-                    <li><div id="photo-fave" data-bind="css: { favorite: favorite }, click: changeFavorite"
-                        {% if g.user %}
-                            class="clickable"
-                            {% if g.user.isFavorited(photo) %}
-                                title="Remove from Favorites"
-                            {% else %}
-                                title="Add to Favorites"
-                            {% endif %} 
-                        {% else %}
-                            title="Favorites"
-                        {% endif %}
-                    ></div></li>
-                    <li><a href="" id="photo-share" title="Share photo (NYI)">Share</a></li>
-                    <li><a href="" id="photo-download" title="Download photo (NYI)">Download</a></li>
-                </ul>
-            </div>
+  {% set isPhotoOwner = g.user and photo.user.id == g.user.id %}
+  <div id="photo-title">
+  </div>
+  <div id="content-main">
+    <div id="single-photo">
+      <div id="single-photo-actions">
+        <ul>
+          <li><div id="photo-fave" data-bind="css: { favorite: favorite }, click: changeFavorite"
+            {% if g.user %}
+              class="clickable"
+              {% if g.user.isFavorited(photo) %}
+                title="Remove from Favorites"
+              {% else %}
+                title="Add to Favorites"
+              {% endif %} 
+            {% else %}
+              title="Favorites"
+            {% endif %}
+          ></div></li>
+          <li><a href="" id="photo-share" title="Share photo (NYI)">Share</a></li>
+          <li><a href="" id="photo-download" title="Download photo (NYI)">Download</a></li>
+        </ul>
+      </div>
 
-            <div id="single-photo-img">
-                <img id="the-actual-photo" data-bind="attr: {src: photo.url, alt: photo.title, title: photo.title}">
-                <div id="note-eventer">
-                    <div id="note-list">
-                        {% for note in photo.getNotesInZOrder() %}
-                        <div id="{{ note.id }}" class="note-box" data-brickr-userid="{{ note.user_id }}" data-brickr-coords="{{ note.coords() }}">
-                            <div class="note-content">
-                                <div class="note-text">{{ note.comment }}</div>
-                                <textarea class="note-edit-text" rows="5" placeholder="New Note" aria-label="New Note">{{ note.comment }}</textarea>
-                                <div class="note-buttons">
-                                    <input type="button" class="note-save-button small-button" value = "SAVE" />
-                                    <input type="button" class="note-cancel-button small-button" value = "CANCEL" />
-                                    <input type="button" class="note-delete-button small-button" value = "DELETE" />
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-                <!-- This dummy is duplicated when user creates new notes.  Make sure its DOM stays in sync with real note def above -->
-                <div id="dummy-note-placeholder" class="note-box" style="display: none">
+      <div id="single-photo-img">
+        <img id="the-actual-photo" data-bind="attr: {src: photo.url, alt: photo.title, title: photo.title}">
+        <div id="note-eventer">
+            <div id="note-list">
+                {% for note in photo.getNotesInZOrder() %}
+                <div id="{{ note.id }}" class="note-box" data-brickr-userid="{{ note.user_id }}" data-brickr-coords="{{ note.coords() }}">
                     <div class="note-content">
-                        <div class="note-text"></div>
-                        <textarea class="note-edit-text"></textarea>
+                        <div class="note-text">{{ note.comment }}</div>
+                        <textarea class="note-edit-text" rows="5" placeholder="New Note" aria-label="New Note">{{ note.comment }}</textarea>
                         <div class="note-buttons">
-                            <input type="button" class="note-save-button small-button" value="SAVE" />
-                            <input type="button" class="note-cancel-button small-button" value="CANCEL" />
-                            <input type="button" class="note-delete-button small-button" value="DELETE" />
+                            <input type="button" class="note-save-button small-button" value = "SAVE" />
+                            <input type="button" class="note-cancel-button small-button" value = "CANCEL" />
+                            <input type="button" class="note-delete-button small-button" value = "DELETE" />
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <div id="single-photo-info">
-                {% if isPhotoOwner %}
-                    <h2 class="single-photo-title photo-display-info" onclick="editPhotoInfo(true);" data-bind="text: photo.title"></h2>
-                    <input class="single-photo-title-edit photo-edit-info" type="text" />
-                    <div class="single-photo-desc photo-display-info" onclick="editPhotoInfo(true);" data-bind="text: photo.description"></div>
-                    <textarea class="single-photo-desc-edit photo-edit-info"></textarea>
-                    <div class="photo-text-buttons photo-edit-info">
-                        <input type="button" class="save-button small-button" value="SAVE" onclick="editPhotoInfo(false, {{ photo.id }});"/>
-                        <input type="button" class="cancel-button small-button" value="CANCEL" onclick="editPhotoInfo(false, -1);"/>
-                    </div>
-                {% else %}
-                    <h2 data-bind="text: photo.title"></h2>
-                    <div data-bind="text: photo.description"></div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-
-    <div id="content-sidebar">
-
-        <div id="profile" class="sidebar-box">
-            <img src="{{ url_for('static', filename = 'img/avatar.jpg') }}" alt="" title="" border="0" width="100" height="100">
-            <div id="single-photo-meta">
-                <h3><a data-bind="text: photo.user.name, attr: {href: photo.user.profile_url}"></a></h3>
-                <ul>
-                    <li data-bind="text: photo.views + ' Views'"></li>
-                    <li>Taken on <span data-bind="text: moment.utc(photo.creation_time).format('LL')"></span></li>
-                </ul>
-            </div>
-        </div>
-
-        <div id="quick-photostream" class="sidebar-box">
-            <h3><a href="{{url_for('photos.stream', user_url = photo.user.url)}}">{{ photo.user.name }}'s photosteam</a> <span class="small">({{ photo.user.photos.count()}})</span></h3>
-            <div class="slider-stream">
-                {% for p in photo.getAdjacentPhotoStream(4) %}
-                    {% if p %}
-                        <a href="{{ url_for('photos.photo', user_url = p.user.url, photoID = p.id) }}">
-                            <img src="{{ p.url_thumb(75) }}" alt="{{ p.title }}" title="{{ p.title }}" border="0" height="55" width="55" />
-                        </a>
-                    {% else %}
-                        <img src="{{ url_for('static', filename = 'img/avatar.jpg') }}" alt="" title="" border="0" height="55" width="55" />
-                    {% endif %}
                 {% endfor %}
             </div>
         </div>
-
-        <!-- ko if: groups().length -->
-        <div id="single-groups" class="sidebar-box">
-            <h3>Also in</h3>
-            <ul data-bind="foreach: groups">
-                <li><a data-bind="text: name, attr: {href: url}"></a></li>
-            </ul>
+        <!-- This dummy is duplicated when user creates new notes.  Make sure its DOM stays in sync with real note def above -->
+        <div id="dummy-note-placeholder" class="note-box" style="display: none">
+          <div class="note-content">
+            <div class="note-text"></div>
+            <textarea class="note-edit-text"></textarea>
+            <div class="note-buttons">
+              <input type="button" class="note-save-button small-button" value="SAVE" />
+              <input type="button" class="note-cancel-button small-button" value="CANCEL" />
+              <input type="button" class="note-delete-button small-button" value="DELETE" />
+            </div>
+          </div>
         </div>
-        <!-- /ko -->
-
-        <div id="tagList" class="sidebar-box">
-            <h3>Tags
-            {% if isPhotoOwner %}
-                <span class="small" id="addTagLink">(<a href="javascript:$('input#tagBox').show().focus();$('span#addTagLink').hide();">add a tag</a>)</span>
-            {% endif %}
-            </h3>
-            <ul id="tags" data-bind="foreach: tags">
-                <li><div>
-                    <a data-bind="text: desc, attr: {href: '/photos/' + photo.user_url + '/tags/' + url + '/'}"></a>
-                    {% if isPhotoOwner %} <a href="#" data-bind="click: $parent.removeTag">x</a> {% endif %}
-                </div></li>
-            </ul>
-            <br /><br />
-            <input type="text" id="tagBox" style="display: none" data-bind="event: {keypress: addTag}">
-        </div>
-        
+      </div>
+      
+      <div id="single-photo-info">
         {% if isPhotoOwner %}
-            <a href="{{ url_for('photos.delete', photoID = photo.id) }}" onclick="return confirm('Do you really want to delete this photo?');">Delete this Photo</a>
+          <h2 class="single-photo-title photo-display-info" onclick="editPhotoInfo(true);" data-bind="text: photo.title"></h2>
+          <input class="single-photo-title-edit photo-edit-info" type="text" />
+          <div class="single-photo-desc photo-display-info" onclick="editPhotoInfo(true);" data-bind="text: photo.description"></div>
+          <textarea class="single-photo-desc-edit photo-edit-info"></textarea>
+          <div class="photo-text-buttons photo-edit-info">
+            <input type="button" class="save-button small-button" value="SAVE" onclick="editPhotoInfo(false, {{ photo.id }});"/>
+            <input type="button" class="cancel-button small-button" value="CANCEL" onclick="editPhotoInfo(false, -1);"/>
+          </div>
+        {% else %}
+          <h2 data-bind="text: photo.title"></h2>
+          <div data-bind="text: photo.description"></div>
         {% endif %}
+      </div>
+    </div>
+  </div>  <!-- /content-main -->
+
+  <div id="content-sidebar">
+
+    <div id="profile" class="sidebar-box">
+      <img src="{{ url_for('static', filename = 'img/avatar.jpg') }}" alt="" title="" border="0" width="100" height="100">
+      <div id="single-photo-meta">
+        <h3><a data-bind="text: photo.user.name, attr: {href: photo.user.profile_url}"></a></h3>
+        <ul>
+          <li data-bind="text: photo.views + ' Views'"></li>
+          <li>Taken on <span data-bind="text: moment.utc(photo.creation_time).format('LL')"></span></li>
+        </ul>
+      </div>
     </div>
 
-    <div id="content-interact">
-
-        <!-- ko if: favorites().length -->
-        <div id="photo-favorites">
-            <div class="hr"></div>
-            <div data-bind="html: favoriteNameList('<a href=user_url>user_name</a>')"></div>
-        </div>
-        <!-- /ko -->
-
-        <!-- ko if: comments().length -->
-        <div id="photo-comments">
-            <div class="hr"></div>
-            <h3>Comments:</h3>
-            <ul data-bind="foreach: comments">
-                <li>
-                    <div class="comments-avatar">
-                        <a data-bind="attr: {href: user_url}">
-                            <img src="/static/img/avatar.jpg" alt="" title="" border="0" height="36" width="36">
-                        </a>
-                    </div>
-                    <div class="comments-body" onmouseover="$('.deleteComment', this).show()" onmouseout="$('.deleteComment', this).hide()">
-                        <div class="comments-author">
-                            <a data-bind="text: user_name, attr: {href: user_url}"></a>
-                            <span class="small comments-date"><span data-bind="text: moment.utc(time).fromNow()"></span></span>
-                            {% if isPhotoOwner %}<a href="" class="deleteComment" data-bind="click: $parent.deleteComment">delete</a>{% endif %}
-                        </div>
-                        <div class="comment-text" data-bind="text: comment"></div>
-                    </div>
-                </li>
-            </ul>
-        </div>
-        <!-- /ko -->
-
-        {% if g.user %}
-        <div id="photo-add-comment">
-            <div class="hr"></div>
-            <h3>Add a Comment</h3>
-            <textarea id="comment" name="comment" rows="6" placeholder="Add a comment" aria-label="Add a comment" data-bind="value: newComment"></textarea>
-            <input type="submit" value="Submit" class="button" data-bind="click: addComment">
-        </div>
-       {% endif %}
+    <div id="quick-photostream" class="sidebar-box">
+      <h3><a href="{{url_for('photos.stream', user_url = photo.user.url)}}">{{ photo.user.name }}'s photosteam</a> <span class="small">({{ photo.user.photos.count()}})</span></h3>
+      <div class="slider-stream">
+        {% for p in photo.getAdjacentPhotoStream(4) %}
+          {% if p %}
+            <a href="{{ url_for('photos.photo', user_url = p.user.url, photoID = p.id) }}">
+              <img src="{{ p.url_thumb(75) }}" alt="{{ p.title }}" title="{{ p.title }}" border="0" height="55" width="55" />
+            </a>
+          {% else %}
+            <img src="{{ url_for('static', filename = 'img/avatar.jpg') }}" alt="" title="" border="0" height="55" width="55" />
+          {% endif %}
+        {% endfor %}
+      </div>
     </div>
+
+    <!-- ko if: groups().length -->
+    <div id="single-groups" class="sidebar-box">
+      <h3>Also in</h3>
+      <ul data-bind="foreach: groups">
+        <li><a data-bind="text: name, attr: {href: url}"></a></li>
+      </ul>
+    </div>
+    <!-- /ko -->
+
+    <div id="tagList" class="sidebar-box">
+      <h3>Tags
+      {% if isPhotoOwner %}
+        <span class="small" id="addTagLink">(<a href="javascript:$('input#tagBox').show().focus();$('span#addTagLink').hide();">add a tag</a>)</span>
+      {% endif %}
+      </h3>
+      <ul id="tags" data-bind="foreach: tags">
+        <li><div>
+          <a data-bind="text: desc, attr: {href: '/photos/' + photo.user_url + '/tags/' + url + '/'}"></a>
+          {% if isPhotoOwner %} <a href="#" data-bind="click: $parent.removeTag">x</a> {% endif %}
+        </div></li>
+      </ul>
+      <br /><br />
+      <input type="text" id="tagBox" style="display: none" data-bind="event: {keypress: addTag}">
+    </div>
+    
+    {% if isPhotoOwner %}
+        <a href="{{ url_for('photos.delete', photoID = photo.id) }}" onclick="return confirm('Do you really want to delete this photo?');">Delete this Photo</a>
+    {% endif %}
+  </div>  <!-- /content-sidebar -->
+
+  <div id="content-interact">
+
+    <!-- ko if: favorites().length -->
+    <div id="photo-favorites">
+      <div class="hr"></div>
+      <div data-bind="html: favoriteNameList('<a href=user_url>user_name</a>')"></div>
+    </div>
+    <!-- /ko -->
+
+    <!-- ko if: comments().length -->
+    <div id="photo-comments">
+      <div class="hr"></div>
+      <h3>Comments:</h3>
+      <ul data-bind="foreach: comments">
+        <li>
+          <div class="comments-avatar">
+            <a data-bind="attr: {href: user_url}">
+              <img src="/static/img/avatar.jpg" alt="" title="" border="0" height="36" width="36">
+            </a>
+          </div>
+          <div class="comments-body" onmouseover="$('.deleteComment', this).show()" onmouseout="$('.deleteComment', this).hide()">
+            <div class="comments-author">
+              <a data-bind="text: user_name, attr: {href: user_url}"></a>
+              <span class="small comments-date"><span data-bind="text: moment.utc(time).fromNow()"></span></span>
+              {% if isPhotoOwner %}<a href="" class="deleteComment" data-bind="click: $parent.deleteComment">delete</a>{% endif %}
+            </div>
+            <div class="comment-text" data-bind="text: comment"></div>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <!-- /ko -->
+
+    {% if g.user %}
+    <div id="photo-add-comment">
+      <div class="hr"></div>
+      <h3>Add a Comment</h3>
+      <textarea id="comment" name="comment" rows="6" placeholder="Add a comment" aria-label="Add a comment" data-bind="value: newComment"></textarea>
+      <input type="submit" value="Submit" class="button" data-bind="click: addComment">
+    </div>
+   {% endif %}
+  </div>  <!-- /content-interact -->
 {% endblock %}
