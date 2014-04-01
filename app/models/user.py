@@ -1,6 +1,7 @@
 from flask import url_for
 from app import db, util, breakpoint
 from werkzeug import generate_password_hash
+from sqlalchemy import desc
 from sqlalchemy.ext.associationproxy import association_proxy
 
 # User role
@@ -83,7 +84,7 @@ class User(db.Model):
         contacts = [x.target_user.id for x in self.contacts.all()]
         photos = db.session.query(Photo) \
             .filter(Photo.user_id.in_(contacts)) \
-            .order_by(Photo.creation_time) \
+            .order_by(desc(Photo.creation_time)) \
             .limit(count)
         return photos
         
@@ -109,8 +110,10 @@ class User(db.Model):
     def to_json(self):
         try:
             profile_url = url_for('users.profile', user_url = self.url)
+            stream_url = url_for('photos.stream', user_url = self.url)
         except RuntimeError as e:
             profile_url = 'profile.html'
+            stream_url = 'photos.html'
             
         return {
             'id': self.id,
@@ -121,6 +124,7 @@ class User(db.Model):
             'joined': str(self.creation_time),
             'url': self.url,
             'profile_url': profile_url,
+            'stream_url': stream_url,
             'contacts': [x.to_json() for x in self.contacts],
             'favorites': [x.to_json() for x in self.favorites],
             'groups': [x.to_json() for x in self.user_groups]

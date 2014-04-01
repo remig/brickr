@@ -30,7 +30,7 @@ def get_user_photos(userID):
         abort(404)
 
     if 'from_contacts' in request.args:
-        photos = user.get_contacts_photo_list(5)
+        photos = user.get_contacts_photo_list(int(request.args.get('count', 10)))
         return jsonify({'userID': userID, 'is_contact_list': True, 'photos': [p.to_json() for p in photos]})
     else:
         return jsonify({'userID': userID, 'photos': [p.to_json() for p in user.photos]})
