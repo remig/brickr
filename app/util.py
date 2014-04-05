@@ -1,4 +1,7 @@
-import re, datetime
+import re, datetime, bleach
+
+bleach.ALLOWED_TAGS.append(u'img')
+bleach.ALLOWED_ATTRIBUTES[u'img'] = [u'src', u'title']
 
 def str_to_url(s):
     url = '_'.join(s.strip().lower().split())  # lower case and replace space with underscore
@@ -10,3 +13,7 @@ def now():
     
 def roundFloat(f):  # In python < 3.0, round() still returns a float
     return int(round(float(f)))
+
+def sanitizeHTML(s):
+    return bleach.clean(s, strip=True)
+    

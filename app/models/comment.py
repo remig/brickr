@@ -30,7 +30,7 @@ class Comment(db.Model):
         return {
             'id': self.id,
             'user_name': self.user.name,
-            'user_url': url,
-            'comment': self.comment,
+            'user_url': url,  # TODO: rename this to stream_url and use user.stream_url
+            'comment': util.sanitizeHTML(self.comment),
             'time': str(self.creation_time)
         }

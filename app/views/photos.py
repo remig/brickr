@@ -87,7 +87,8 @@ def addComment():
         photoID = request.form.get('photoID')
         photo = Photo.query.get(photoID)
         if photo:
-            comment = Comment(g.user, photo, request.form.get('comment'))
+            comment_text = util.sanitizeHTML(request.form.get('comment'))
+            comment = Comment(g.user, photo, comment_text)
             db.session.add(comment)
             db.session.commit()
             return jsonify(result = True, comment = json.dumps(comment.to_json()))

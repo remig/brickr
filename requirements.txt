@@ -7,3 +7,4 @@ boto
 pil
 sqlalchemy-migrate
 flickrapi
+bleach

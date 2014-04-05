@@ -75,6 +75,11 @@
   cursor: move;
 }
 
+.comment-text img {
+  max-width: 100px;
+  max-height: 100px;
+}
+
 a {
   color: #086FA1;
   text-decoration: none;

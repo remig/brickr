@@ -115,7 +115,7 @@
               <span class="small comments-date"><span data-bind="text: moment.utc(time).fromNow()"></span></span>
               {% if isPhotoOwner %}<a href="" class="deleteComment" data-bind="click: $parent.deleteComment">delete</a>{% endif %}
             </div>
-            <div class="comment-text" data-bind="text: comment"></div>
+            <div class="comment-text" data-bind="html: comment"></div>
           </div>
         </li>
       </ul>
