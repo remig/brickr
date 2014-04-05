@@ -6,7 +6,7 @@ from flask import *
 from sqlalchemy import func
 from flickrapi import FlickrAPI, FlickrError
 
-from app import app, db, breakpoint, strip
+from app import app, db, util, breakpoint, strip
 from app.models import *
 
 from app.decorators import requires_login
@@ -207,14 +207,14 @@ def updateNote():
         if not photo:
             return jsonify(result = False)
 
-        x = request.form.get('x', type = int)
-        y = request.form.get('y', type = int)
-        w = request.form.get('w', type = int)
-        h = request.form.get('h', type = int)
+        x = request.form.get('x', type = util.roundFloat)
+        y = request.form.get('y', type = util.roundFloat)
+        w = request.form.get('w', type = util.roundFloat)
+        h = request.form.get('h', type = util.roundFloat)
         
         noteID = request.form.get('noteID', type = int)
         note_text = request.form.get('note_text')
-        doDelete = request.form.get('doDelete', type = bool)
+        doDelete = request.form.get('doDelete')
 
         if noteID > 0:
             note = Note.query.get(noteID)  # note exists - update it
@@ -223,12 +223,12 @@ def updateNote():
         else:
             note = Note(g.user, photo, note_text, x, y, w, h)
 
-        if doDelete:
+        if doDelete == 'true':
             db.session.delete(note)
         else:
             db.session.add(note)
         db.session.commit()
-        return jsonify(result = True, noteID = note.id)
+        return jsonify(result = True, noteID = note.id, user_name = g.user.name)
     return jsonify(result = False)
 
 @mod.route('/delete/<photoID>/', methods = ['GET', 'POST'])

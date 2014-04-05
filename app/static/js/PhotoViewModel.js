@@ -1,4 +1,7 @@
-function PhotoViewModel(photo) {
+/*global $: false, ko: false, $SCRIPT_ROOT: false, PhotoViewModel: true, NoteViewModel: false */
+(function() {
+
+PhotoViewModel = function (photo, current_user) {  // Global
 
 	var self = this;
 	self.baseURL = $SCRIPT_ROOT + '/photos/';
@@ -14,11 +17,12 @@ function PhotoViewModel(photo) {
 	self.newComment = ko.observable('');
 	self.tags = ko.observableArray(photo.tags);
 	self.groups = ko.observableArray(photo.groups);
+	self.noteModel = new NoteViewModel(photo.notes, photo.id, current_user);
 	self.isEditing = ko.observable(false);
 
 	self.favoriteNameList = function(markup) {
 		var maxNames = 4;  // Display up to this many user names before appending 'and x others'
-		var lineEnd = ' favorited this photo.'
+		var lineEnd = ' favorited this photo.';
 		var favCount = self.favorites().length;
 		var favNames = self.favorites().slice(0, maxNames).map(function(el){
 			return markup.replace('user_url', '"' + el.user_url + '"')
@@ -56,7 +60,7 @@ function PhotoViewModel(photo) {
 			}
 		);
 		return false;
-	}
+	};
 	
 	self.removeTag = function() {
 		var tag = this;
@@ -69,7 +73,7 @@ function PhotoViewModel(photo) {
 			}
 		);
 		return false;
-	}
+	};
 	
 	self.changeFavorite = function() {
 		var isFavorited = self.favorite();
@@ -82,7 +86,7 @@ function PhotoViewModel(photo) {
 			}
 		);
 		return false;
-	}
+	};
 
 	self.addComment = function() {
 		var comment = self.newComment();
@@ -110,7 +114,7 @@ function PhotoViewModel(photo) {
 
 	self.edit = function() {
 		self.isEditing(!self.isEditing());
-	}
+	};
 
 	self.saveEdit = function() {
 		var title = self.title(), desc = self.description();
@@ -125,11 +129,13 @@ function PhotoViewModel(photo) {
 			);
 		}
 		self.edit();
-	}
+	};
 
 	self.cancelEdit = function() {
 		self.title(self.photo.title);
 		self.description(self.photo.description);
 		self.edit();
-	}
-}
+	};
+};
+
+})();

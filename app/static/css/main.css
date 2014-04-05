@@ -67,8 +67,14 @@
   margin-top: 15px;
 }
 
- 
- /* Old stuff - mostly unnecessary */
+.clickable {
+  cursor: pointer;
+}
+
+.moveable {
+  cursor: move;
+}
+
 a {
   color: #086FA1;
   text-decoration: none;
@@ -97,10 +103,6 @@ h4 {
 h5 {
   font-size: 1em;
   font-weight: bold;
-}
-
-.clickable {
-  cursor: pointer;
 }
 
 .small {
@@ -227,13 +229,20 @@ h5 {
   left: 0px; top: 0px;
 }
 
+#note-eventer:hover #note-list {
+  display: block;
+}
+
 .note-box {
   position: absolute;
   border: 1px dashed #FFF;
 }
 
+.selected-note {
+  border: 2px solid white;
+}
+
 .note-text {
-  display: none;
   background: #ffffd3;
   border-radius: 4px;
   padding: 5px;
@@ -249,15 +258,11 @@ h5 {
 }
 
 .note-edit-text {
-  display: none;  
   background: #ffffd3;
   border-radius: 4px;
-  margin: 7px 3px 1px -2px;
+  padding: 5px;
+  margin: 6px 3px 1px -2px;
   border: 0px;
-}
-
-.note-buttons {
-  display: none;
 }
 
 .note-content {

@@ -7,3 +7,6 @@ def str_to_url(s):
 
 def now():
     return datetime.datetime.utcnow()
+    
+def roundFloat(f):  # In python < 3.0, round() still returns a float
+    return int(round(float(f)))

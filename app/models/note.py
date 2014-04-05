@@ -45,7 +45,9 @@ class Note(db.Model):
         return {
             'id': self.id,
             'user_id': self.user_id,
+            'user': self.user.to_json(),
             'photo_id': self.photo_id,
+            'comment': self.comment,
             'x': self.x,
             'y': self.y,
             'w': self.w,

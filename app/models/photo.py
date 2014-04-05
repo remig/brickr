@@ -232,6 +232,7 @@ class Photo(db.Model):
             'tags': [x.to_json() for x in self.tags],
             'comments': [x.to_json() for x in self.comments],
             'groups': [x.to_json() for x in self.groups],
+            'notes': [x.to_json() for x in self.getNotesInZOrder()],
             'prev_photo_id': prev_photo.id if prev_photo else None,
             'next_photo_id': next_photo.id if next_photo else None
         }

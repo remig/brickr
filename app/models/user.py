@@ -88,6 +88,20 @@ class User(db.Model):
             .limit(count)
         return photos
         
+    @property
+    def profile_url(self):
+        try:
+            return url_for('users.profile', user_url = self.url)
+        except RuntimeError as e:
+            return 'profile.html'
+
+    @property
+    def stream_url(self):
+        try:
+            return url_for('photos.stream', user_url = self.url)
+        except RuntimeError as e:
+            return 'photos.html'
+        
     @staticmethod
     def _create_placeholder(name, flickr_id):
         count = 1 + User.query.filter(User.placeholder).count()
@@ -108,13 +122,6 @@ class User(db.Model):
         return '<User %d, %s>' % (self.id or -1, self.name)
 
     def to_json(self):
-        try:
-            profile_url = url_for('users.profile', user_url = self.url)
-            stream_url = url_for('photos.stream', user_url = self.url)
-        except RuntimeError as e:
-            profile_url = 'profile.html'
-            stream_url = 'photos.html'
-            
         return {
             'id': self.id,
             'is_placeholder': bool(self.placeholder),
@@ -123,8 +130,8 @@ class User(db.Model):
             'email': self.email,
             'joined': str(self.creation_time),
             'url': self.url,
-            'profile_url': profile_url,
-            'stream_url': stream_url,
+            'profile_url': self.profile_url,
+            'stream_url': self.stream_url,
             'contacts': [x.to_json() for x in self.contacts],
             'favorites': [x.to_json() for x in self.favorites],
             'groups': [x.to_json() for x in self.user_groups]
