@@ -1,6 +1,6 @@
 import re, datetime, bleach
 
-bleach.ALLOWED_TAGS.append(u'img')
+bleach.ALLOWED_TAGS.extend([u'img', u'p', u'br'])
 bleach.ALLOWED_ATTRIBUTES[u'img'] = [u'src', u'title']
 
 def str_to_url(s):

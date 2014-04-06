@@ -1,6 +1,25 @@
 /*global $: false, ko: false, $SCRIPT_ROOT: false, PhotoViewModel: true, NoteViewModel: false */
 (function() {
 
+// Comments come back from the server in a flat array.  Each comment has an id
+// and an optional parentID.  If parentID is not null, this is a child comment.
+// Remove children comments from the flat list and insert them into the
+// 'children' list of the correct parent.
+function nestChildComments(comment_list) {
+	for (var i = 0; i < comment_list.length; i++) {
+		var comment = comment_list[i];
+		if (comment.parentID != null) {
+			var parent = comment_list.find(function(el){return el.id === comment.parentID;});
+			if (parent) {
+				parent.children = parent.children || [];
+				parent.children.push(comment);
+			}
+		}
+	}
+
+	return comment_list.filter(function(el){return el.parentID == null ? el : null});
+}
+
 PhotoViewModel = function (photo, current_user) {  // Global
 
 	var self = this;
@@ -13,7 +32,7 @@ PhotoViewModel = function (photo, current_user) {  // Global
 	self.description = ko.observable(photo.description);
 	self.favorite = ko.observable(photo.favorite);
 	self.favorites = ko.observableArray(photo.favorites);
-	self.comments = ko.observableArray(photo.comments);
+	self.comments = ko.observableArray(nestChildComments(photo.comments));
 	self.newComment = ko.observable('');
 	self.tags = ko.observableArray(photo.tags);
 	self.groups = ko.observableArray(photo.groups);
@@ -96,11 +115,13 @@ PhotoViewModel = function (photo, current_user) {  // Global
 
 	self.addComment = function() {
 		var comment = self.newComment();
+		comment = comment.replace(/\n/g, '<br />');  // replace raw newlines with HTML breaks, to preserve paragraph structure
 		$.post(self.baseURL + 'addComment',
 			{photoID: self.photo.id, comment: comment},
 			function(data) {
 				if (data.result && data.comment) {
 					self.comments.push(JSON.parse(data.comment));
+					self.newComment('');
 				}
 			}
 		);
@@ -116,6 +137,10 @@ PhotoViewModel = function (photo, current_user) {  // Global
 				}
 			}
 		);
+	};
+	
+	self.replyComment = function(args) {
+		console.log(this);
 	};
 
 	self.edit = function() {

@@ -28,5 +28,6 @@ class Comment(db.Model):
             'user_name': self.user.name,
             'user_url': self.user.stream_url,  # TODO: rename this to stream_url
             'comment': util.sanitizeHTML(self.comment),
+            'parentID': self.parentID,
             'time': str(self.creation_time)
         }
