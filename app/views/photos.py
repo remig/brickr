@@ -118,7 +118,7 @@ def addFavorite():
             favorite = Favorite(g.user, photo)
             db.session.add(favorite)
             db.session.commit()
-            return jsonify(result = True)
+            return jsonify(result = True, favorite = json.dumps(favorite.to_json()))
     return jsonify(result = False)
 
 @mod.route('/removeFavorite', methods = ['POST'])
@@ -127,11 +127,12 @@ def removeFavorite():
     if request.method == 'POST':
         photoID = request.form.get('photoID')
         photo = Photo.query.get(photoID)
-        fav = Favorite.query.filter_by(user_id = g.user.id, photo_id = photoID)
-        if photo and fav.count() > 0:
-            db.session.delete(fav.first())
+        favorite = Favorite.query.filter_by(user_id = g.user.id, photo_id = photoID)
+        if photo and favorite.count() > 0:
+            favorite = favorite.first()
+            db.session.delete(favorite)
             db.session.commit()
-            return jsonify(result = True)
+            return jsonify(result = True, favorite = json.dumps(favorite.to_json()))
     return jsonify(result = False)
 
 @mod.route('/addTags', methods = ['POST'])
@@ -229,7 +230,7 @@ def updateNote():
         else:
             db.session.add(note)
         db.session.commit()
-        return jsonify(result = True, noteID = note.id, user_name = g.user.name)
+        return jsonify(result = True, noteID = note.id)
     return jsonify(result = False)
 
 @mod.route('/delete/<photoID>/', methods = ['GET', 'POST'])

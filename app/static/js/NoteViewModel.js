@@ -132,7 +132,6 @@ var SingleNoteViewModel = function(note) {
 			function(data) {
 				if (data.result) {
 					self.id = data.noteID;  // Received a valid noteID from the server - store it.
-					self.user.name = data.user_name;//, stream_url: 'test_url'
 				} else {
 					alert('Add note failed because I suck');
 				}

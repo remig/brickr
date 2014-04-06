@@ -5,8 +5,8 @@ PhotoViewModel = function (photo, current_user) {  // Global
 
 	var self = this;
 	self.baseURL = $SCRIPT_ROOT + '/photos/';
-	photo.prev_photo_url = photo.prev_photo_id == null ? null : self.baseURL + photo.user_url + '/' + photo.prev_photo_id;
-	photo.next_photo_url = photo.next_photo_id == null ? null : self.baseURL + photo.user_url + '/' + photo.next_photo_id;
+	photo.prev_photo_url = photo.prev_photo_id == null ? null : self.baseURL + photo.user.url + '/' + photo.prev_photo_id;
+	photo.next_photo_url = photo.next_photo_id == null ? null : self.baseURL + photo.user.url + '/' + photo.next_photo_id;
 
 	self.photo = photo;
 	self.title = ko.observable(photo.title);
@@ -81,7 +81,13 @@ PhotoViewModel = function (photo, current_user) {  // Global
 			{photoID: self.photo.id},
 			function(data) {
 				if (data.result) {
+					var fav = JSON.parse(data.favorite);
 					self.favorite(!isFavorited);
+					if (!isFavorited) {
+						self.favorites.push(fav);
+					} else {
+						self.favorites.remove(self.favorites().find(function(el){return el.id === fav.id;}));
+					}
 				}
 			}
 		);

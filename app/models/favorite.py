@@ -24,10 +24,8 @@ class Favorite(db.Model):
     def to_json(self):
         try:
             photo_url = url_for('photos.photo', user_url = self.photo.user.url, photoID = self.photo.id)
-            user_url = url_for('photos.stream', user_url = self.user.url)
         except RuntimeError as e:
             photo_url = 'photo.html'
-            user_url = 'user.html'
         return {
             'id': self.id,
             'photo': {
@@ -37,5 +35,5 @@ class Favorite(db.Model):
                 'url': photo_url
             },
             'user_name': self.user.name,
-            'user_url': user_url
+            'user_url': self.user.stream_url
         }

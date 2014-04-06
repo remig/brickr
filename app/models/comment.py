@@ -23,14 +23,10 @@ class Comment(db.Model):
         return '<Comment %d, user: %d, photo: %d, text: %s>' % (self.id or -1, self.user_id, self.photo_id, self.comment)
 
     def to_json(self):
-        try:
-            url = url_for('photos.stream', user_url = self.user.url)
-        except RuntimeError as e:
-            url = 'photo.html'
         return {
             'id': self.id,
             'user_name': self.user.name,
-            'user_url': url,  # TODO: rename this to stream_url and use user.stream_url
+            'user_url': self.user.stream_url,  # TODO: rename this to stream_url
             'comment': util.sanitizeHTML(self.comment),
             'time': str(self.creation_time)
         }
