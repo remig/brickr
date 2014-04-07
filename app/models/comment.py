@@ -13,11 +13,12 @@ class Comment(db.Model):
     # user created by User.comments backref
     # photo created by Photo.comments backref
     
-    def __init__(self, user, photo, comment, timestamp = None):
+    def __init__(self, user, photo, comment, timestamp = None, parentID = None):
         self.user_id = user.id
         self.photo_id = photo.id
         self.comment = comment
         self.creation_time = timestamp or util.now()
+        self.parentID = parentID
         
     def __repr__(self):
         return '<Comment %d, user: %d, photo: %d, text: %s>' % (self.id or -1, self.user_id, self.photo_id, self.comment)

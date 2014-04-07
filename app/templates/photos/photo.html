@@ -24,7 +24,7 @@
   {% set isPhotoOwner = g.user and photo.user.id == g.user.id %}
   <div id="photo-header">
     {% if isPhotoOwner %}
-      <div id="photo-title" class="owner" data-bind="visible: !isEditing(), click: edit, text: title"></div>
+      <div id="photo-title" class="owner" data-bind="visible: !isEditing(), click: toggleEditMetaInfo, text: title"></div>
       <input id="photo-title-edit" type="text" data-bind="visible: isEditing(), value: title" />
     {% else %}
       <div id="photo-title" data-bind="text: photo.title"></div>
@@ -80,11 +80,11 @@
   <div id="single-photo-info">
     <div id="photo-description">
       {% if isPhotoOwner %}
-        <div id="photo-desc" class="owner" data-bind="visible: !isEditing(), click: edit, text: description"></div>
+        <div id="photo-desc" class="owner" data-bind="visible: !isEditing(), click: toggleEditMetaInfo, text: description"></div>
         <textarea id="photo-desc-edit" data-bind="visible: isEditing(), value: description"></textarea>
         <div class="photo-text-buttons" data-bind="visible: isEditing()">
-          <input type="button" class="save-button small-button" value="SAVE" data-bind="click: saveEdit"/>
-          <input type="button" class="cancel-button small-button" value="CANCEL" data-bind="click: cancelEdit"/>
+          <input type="button" class="save-button small-button" value="SAVE" data-bind="click: saveMetaInfoEdit"/>
+          <input type="button" class="cancel-button small-button" value="CANCEL" data-bind="click: cancelMetaInfoEdit"/>
         </div>
       {% else %}
         <div data-bind="text: photo.description"></div>
@@ -98,6 +98,15 @@
     </div>
     <!-- /ko -->
     
+    <!-- clicks on comment save & cancel button are handled by a jQuery delegate registered in PhotoViewModel.js -->
+    <script type="text/html" id="commentCreateUITemplate">
+      <div id="comments-add-ui">
+        <div><textarea class="comment-editbox" rows="4" placeholder="Add a comment" data-bind="value: $root.newComment"></textarea></div>
+        <input class="comment-save small-button" type="submit" value="Save">
+        <input class="comment-cancel small-button" type="submit" value="Cancel">
+      </div>
+    </script>
+    
     <script type="text/html" id="commentTemplate">
       <li>
         <div class="comments-avatar">
@@ -109,15 +118,17 @@
           <div class="comments-author">
             <a data-bind="text: user_name, attr: {href: user_url}"></a>
             <span class="small comments-date"><span data-bind="text: moment.utc(time).fromNow()"></span></span>
+            <!-- clicks on comment reply & delete are handled by a jQuery delegate registered in PhotoViewModel.js -->
             {% if g.user %}
-              <a class="comment-reply" href="" data-bind="click: $parent.replyComment">reply (NYI)</a>
+              <a class="comment-reply" href="">reply</a>
             {% endif %}
             {% if isPhotoOwner %}
-              <a class="comment-delete" href="" class="deleteComment" data-bind="click: $parent.deleteComment">delete</a>
+              <a class="comment-delete" href="">delete</a>
             {% endif %}
           </div>
           <div class="comment-text" data-bind="html: comment"></div>
         </div>
+        <!-- ko if: $data.isEditing --><div data-bind="template: {name: 'commentCreateUITemplate'}"></div> <!-- /ko -->
         <ul data-bind="template: {name: 'commentTemplate', foreach: $data.children}"></ul>
       </li>
     </script>
@@ -126,20 +137,12 @@
     <div id="photo-comments">
       <div class="hr"></div>
       <h4>Comments:</h4>
-      <ul data-bind="template: {name: 'commentTemplate', foreach: $data.comments}"></ul>
+      <ul data-bind="template: {name: 'commentTemplate', foreach: comments}"></ul>
     </div>
     <!-- /ko -->
 
-    <script type="text/html" id="commentCreateUITemplate">
-      <div id="comments-add-ui">
-        <textarea id="comment" name="comment" rows="6" placeholder="Add a comment" aria-label="Add a comment" data-bind="value: newComment"></textarea>
-        <input type="submit" value="Submit" class="button" data-bind="click: addComment">
-      </div>
-    </script>
-    
     {% if g.user %}
     <div id="photo-add-comment">
-      <div class="hr"></div>
       <h5>Add a Comment</h5>
       <!-- ko template: {name: 'commentCreateUITemplate'} --> <!-- /ko -->
     </div>

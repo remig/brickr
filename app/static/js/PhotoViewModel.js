@@ -1,23 +1,55 @@
 /*global $: false, ko: false, $SCRIPT_ROOT: false, PhotoViewModel: true, NoteViewModel: false */
 (function() {
 
+
+// TODO: outer most, permanent, comment add box has a 'Cancel' button
+
+function makeCommentObservable(comment) {
+	comment.children = ko.observableArray();
+	comment.isEditing = ko.observable(false);
+	return comment;
+}
+
 // Comments come back from the server in a flat array.  Each comment has an id
 // and an optional parentID.  If parentID is not null, this is a child comment.
 // Remove children comments from the flat list and insert them into the
 // 'children' list of the correct parent.
 function nestChildComments(comment_list) {
 	for (var i = 0; i < comment_list.length; i++) {
-		var comment = comment_list[i];
+		var comment = makeCommentObservable(comment_list[i]);
 		if (comment.parentID != null) {
 			var parent = comment_list.find(function(el){return el.id === comment.parentID;});
 			if (parent) {
-				parent.children = parent.children || [];
 				parent.children.push(comment);
 			}
 		}
 	}
 
 	return comment_list.filter(function(el){return el.parentID == null ? el : null});
+}
+
+function insertComment(comment, comment_list) {  // Insert the comment under the right parent
+	if (!comment.parentID) {
+		return comment_list.push(comment);
+	}
+
+	ko.utils.arrayForEach(comment_list(), function(item) {
+		if (item.id === comment.parentID) {
+			item.children.push(comment);
+		} else {
+			insertComment(comment, item.children);
+		}
+	});
+}
+
+function removeComment(comment, comment_list) {
+	if (comment_list.indexOf(comment) >= 0) {
+		comment_list.remove(comment);
+		return;
+	}
+	ko.utils.arrayForEach(comment_list(), function(item) {
+		return removeComment(comment, item.children);
+	});
 }
 
 PhotoViewModel = function (photo, current_user) {  // Global
@@ -113,60 +145,74 @@ PhotoViewModel = function (photo, current_user) {  // Global
 		return false;
 	};
 
-	self.addComment = function() {
-		var comment = self.newComment();
-		comment = comment.replace(/\n/g, '<br />');  // replace raw newlines with HTML breaks, to preserve paragraph structure
-		$.post(self.baseURL + 'addComment',
-			{photoID: self.photo.id, comment: comment},
-			function(data) {
-				if (data.result && data.comment) {
-					self.comments.push(JSON.parse(data.comment));
-					self.newComment('');
-				}
-			}
-		);
-	};
-
-	self.deleteComment = function() {
-		var comment = this;
-		$.post(self.baseURL + 'removeComment',
-			{photoID: self.photo.id, commentID: comment.id},
-			function(data) {
-				if (data.result) {
-					self.comments.remove(comment);
-				}
-			}
-		);
-	};
-	
-	self.replyComment = function(args) {
-		console.log(this);
-	};
-
-	self.edit = function() {
+	self.toggleEditMetaInfo = function() {
 		self.isEditing(!self.isEditing());
 	};
 
-	self.saveEdit = function() {
+	self.saveMetaInfoEdit = function() {
 		var title = self.title(), desc = self.description();
 		if (title !== self.photo.title || desc !== self.photo.description) {
 			$.post(self.baseURL + '_updatePhoto/',
 				{photoID: self.photo.id, title: title, desc: desc},
 				function(data) {
-					if (!data.result) {
-						alert('Failed to update photo title & description because of random fluctuations in the space time continuum.  Or something.');
+					if (data.result) {
+						self.photo.title = self.title();
+						self.photo.description = self.description();
 					}
 				}
 			);
 		}
-		self.edit();
+		self.toggleEditMetaInfo();
 	};
 
-	self.cancelEdit = function() {
+	self.cancelMetaInfoEdit = function() {
 		self.title(self.photo.title);
 		self.description(self.photo.description);
-		self.edit();
+		self.toggleEditMetaInfo();
 	};
+
+	$('#photo-comments').on('click', '.comment-reply', function() {
+		ko.contextFor(this).$data.isEditing(true);
+		return false;
+	});
+	
+	$('#photo-comments').on('click', '.comment-delete', function() {
+		var comment = ko.contextFor(this).$data;
+		$.post(self.baseURL + 'removeComment',
+			{photoID: self.photo.id, commentID: comment.id},
+			function(data) {
+				if (data.result) {
+					removeComment(comment, self.comments);
+				}
+			}
+		);
+		return false;
+	});
+
+	$('#single-photo-info').on('click', '.comment-save', function() {
+		var comment_text = self.newComment();
+		comment_text = comment_text.replace(/\n/g, '<br />');  // replace raw newlines with HTML breaks, to preserve paragraph structure
+		var parentID, context = ko.contextFor(this);
+		if (context.$data !== self) {
+			parentID = context.$data.id;
+			context.$data.isEditing(false);
+		}
+		$.post(self.baseURL + 'addComment',
+			{photoID: self.photo.id, comment: comment_text, parentID: parentID},
+			function(data) {
+				if (data.result && data.comment) {
+					var newComment = makeCommentObservable(JSON.parse(data.comment));
+					insertComment(newComment, self.comments);
+					self.newComment('');
+				}
+			}
+		);
+	});
+	
+	$('#single-photo-info').on('click', '.comment-cancel', function() {
+		ko.contextFor(this).$data.isEditing(false);
+		return false;
+	});	
 };
 
 })();
