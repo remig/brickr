@@ -315,9 +315,11 @@ def importFromFlickr():
             comment_rsp = flickr.photos_comments_getList(photo_id = photoID).find('comments')
             for comment in comment_rsp:
                 comments.append({
-                    'user_id': comment.attrib['author'],
-                    'screen_name': comment.attrib['authorname'],
-                    'timestamp': comment.attrib['datecreate'],
+                    'user_id': comment.attrib.get('author'),
+                    'screen_name': comment.attrib.get('authorname'),
+                    'timestamp': comment.attrib.get('datecreate'),
+                    'iconfarm': comment.attrib.get('iconfarm'),
+                    'iconserver': comment.attrib.get('iconserver'),
                     'text': comment.text
                 })
 
@@ -326,9 +328,11 @@ def importFromFlickr():
         favorite_rsp = flickr.photos_getFavorites(photo_id = photoID, per_page = '50').find('photo')
         for fav in favorite_rsp:
             favorites.append({
-                'user_id': fav.attrib['nsid'],
-                'screen_name': fav.attrib['username'],
-                'timestamp': fav.attrib['favedate']
+                'user_id': fav.attrib.get('nsid'),
+                'screen_name': fav.attrib.get('username'),
+                'timestamp': fav.attrib.get('favedate'),
+                'iconfarm': comment.attrib.get('iconfarm'),
+                'iconserver': comment.attrib.get('iconserver')
             })
 
         fav_page_count = int(favorite_rsp.attrib['pages'])
@@ -339,8 +343,10 @@ def importFromFlickr():
                 for fav in favorite_rsp:
                     favorites.append({
                         'user_id': fav.attrib['nsid'],
-                        'screen_name': fav.attrib['username'],
-                        'timestamp': fav.attrib['favedate']
+                        'screen_name': fav.attrib.get('username'),
+                        'timestamp': fav.attrib.get('favedate'),
+                        'iconfarm': comment.attrib.get('iconfarm'),
+                        'iconserver': comment.attrib.get('iconserver')
                     })
 
         # View count
@@ -362,6 +368,10 @@ def importFromFlickr():
         if not photo.save_file(fp):
             return jsonify(result = False, error = "Well shit. So, everything exported FROM Flickr just fine.  But we failed to save the exported photo file.  Send this message to Remi:\n\nPhoto: %s - Flickr Export - %s" % (photoID, photo_url))
 
+            
+        # Flickr buddy icon URL:
+        # http://farm{icon-farm}.staticflickr.com/{icon-server}/buddyicons/{nsid}.jpg
+        # http://farm4.staticflickr.com/3692/buddyicons/72635252@N00.jpg
         photo.views = views
         db.session.add(photo)
         db.session.commit()  # Shit, should do everything in one commit, but we need a photo ID before adding things to the photo...
