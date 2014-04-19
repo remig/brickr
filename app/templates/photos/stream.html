@@ -34,7 +34,7 @@
                 <ul>
                     <li>Member since <span class="convert-time">{{ user.creation_time }},LL</span></li>
                     <li>{{ user.photos.count() }} photos</li>
-                    <li><a href="{{ url_for('users.profile', user_url = user.url) }}">Profile</li>
+                    <li><a href="{{ url_for('users.profile', user_url = user.url) }}">Profile</a></li>
                 </ul>            
             </div>
         </div>
@@ -56,10 +56,10 @@
                 <p>This is just for fun &amp; testing.  Obviously you won't have to do this to import all your photos!  Try photos with a lot of comments / notes / favs - everything should be imported
                 {% endif %}
             {% else %}
-                <span id="remove_contact" style="visibility:{% if g.user.isUserInContactList(user) %}inline{% else %}hidden{% endif %};">
+                <span id="remove_contact" style="display:{% if g.user.isUserInContactList(user) %}inline{% else %}none{% endif %};">
                     {{ user.name }} is a Contact. <input class="button" type="submit" value="Remove" onclick="removeContact({{ user.id }}, '{{ user.name }}');" id="remove-contact" />
                 </span>
-                <span id="add_contact" style="visibility:{% if not g.user.isUserInContactList(user) %}inline{% else %}hidden{% endif %};">
+                <span id="add_contact" style="display:{% if not g.user.isUserInContactList(user) %}inline{% else %}none{% endif %};">
                     <input class="button" type="submit" onclick="addContact({{ user.id }}, '{{ user.name }}');" id="add-contact" value="Add {{ user.name }} as a Contact" />
                 </span>
             {% endif %}

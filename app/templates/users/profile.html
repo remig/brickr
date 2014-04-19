@@ -14,9 +14,15 @@
 {% endblock %}
 
 {% block content %}
-  <div id="profile-content">
-    <h3 data-bind="text: user.name + '\'s Profile'"></h3>
-    <div>
+  <div id="user-profile-content">
+
+    <div id="user-profile-avatar">
+      <img data-bind="attr: {src: user.avatar_url}" border="0" width="75" height="75">
+    </div>
+    
+    <h3 id="user-profile-name" data-bind="text: user.name + '\'s Profile'"></h3>
+
+    <div id="user-profile-info">
       <div>Name: <span data-bind="text: user.real_name || 'No Name Given'"></span></div>
       <div>Joined: <span data-bind="text: moment.utc(user.joined).format('LL')"></span></div>
       <div>Email: <a data-bind="text: user.email, attr: {href: 'mailto:' + user.email}"></a></div>

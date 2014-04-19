@@ -49,7 +49,7 @@ class Photo(db.Model):
             if c['PRODUCTION']:
                 self.__url = '/'.join([c['S3_LOCATION'], c['S3_BUCKET'], c['S3_UPLOAD_DIRECTORY'], 'img', self.url_path(), self.binary_url])
             else:
-                self.__url = '/'.join([c['IMG_PATH'], self.url_path(), self.binary_url])
+                self.__url = '/'.join([c['IMG_URL_PATH'], self.url_path(), self.binary_url])
         return self.__url
 
     def os_filename(self):
@@ -66,18 +66,18 @@ class Photo(db.Model):
         folder = 'thumb_%d' % (size)
         if c['PRODUCTION']:
             # If a thumbnail doesn't exist on S3, something went wrong earlier - fix it there, not here.  This will get called *a lot*.
-#            conn = boto.connect_s3(app.config["S3_KEY"], app.config["S3_SECRET"])
-#            bucket = conn.get_bucket(app.config["S3_BUCKET"])
-#            k = bucket.get_key("/".join([app.config["S3_UPLOAD_DIRECTORY"], folder, self.url_path(), self.binary_url]))
+#            s3 = boto.connect_s3(c["S3_KEY"], c["S3_SECRET"])
+#            bucket = s3.get_bucket(c["S3_BUCKET"])
+#            k = bucket.get_key("/".join([c["S3_UPLOAD_DIRECTORY"], folder, self.url_path(), self.binary_url]))
 #            if k is None:
 #                self.generate_thumb(self.os_filename(), size)
             path = '/'.join([c['S3_LOCATION'], c['S3_BUCKET'], c['S3_UPLOAD_DIRECTORY'], folder, self.url_path(), self.binary_url])
             return path
         else:
-            path = os.path.join(app.config['BINARY_PATH'], folder, self.os_path(), self.binary_url)
+            path = os.path.join(c['BINARY_PATH'], folder, self.os_path(), self.binary_url)
             if not os.path.exists(path):
                 self.generate_thumb(self.os_filename(), size)
-            return '/'.join(['/binaries', folder, self.url_path(), self.binary_url])
+            return '/'.join([c['BINARY_URL_PATH'], folder, self.url_path(), self.binary_url])
 
     def generate_thumb(self, source_file, size = 75, bucket = None):  # for now, all thumbnails are assumed squares of width & height = size
         try:

@@ -1,5 +1,6 @@
+import os, boto
 from flask import url_for
-from app import db, util, breakpoint
+from app import app, db, util, breakpoint
 from werkzeug import generate_password_hash
 from sqlalchemy import desc
 from sqlalchemy.ext.associationproxy import association_proxy
@@ -102,6 +103,26 @@ class User(db.Model):
         except RuntimeError as e:
             return 'photos.html'
         
+    @property
+    def avatar_url(self):
+        c = app.config
+        if c['PRODUCTION']:
+            # TODO: this will get called a lot.  Find a faster way of falling back to default avatar if none exists.
+            s3 = boto.connect_s3(c["S3_KEY"], c["S3_SECRET"])
+            bucket = s3.get_bucket(c["S3_BUCKET"])
+            k = bucket.get_key("/".join([c["S3_UPLOAD_DIRECTORY"], 'avatars', self.url + '.jpg']))
+            if k is None:
+                return url_for('static', filename = 'img/avatar.jpg')
+            return '/'.join([c['S3_LOCATION'], c['S3_BUCKET'], c['S3_UPLOAD_DIRECTORY'], 'avatars', self.url + '.jpg'])
+
+        path = os.path.join(c['BINARY_PATH'], 'avatars', self.url + '.jpg')
+        if os.path.exists(path):
+            return '/'.join([c['BINARY_URL_PATH'], 'avatars', self.url + '.jpg'])
+        try:
+            return url_for('static', filename = 'img/avatar.jpg')
+        except RuntimeError as e:
+            return '/static/img/avatar.jpg'
+
     @staticmethod
     def _create_placeholder(name, flickr_id):
         count = 1 + User.query.filter(User.placeholder).count()
@@ -132,6 +153,7 @@ class User(db.Model):
             'url': self.url,
             'profile_url': self.profile_url,
             'stream_url': self.stream_url,
+            'avatar_url': self.avatar_url,
             'contacts': [x.to_json() for x in self.contacts],
             'favorites': [x.to_json() for x in self.favorites],
             'groups': [x.to_json() for x in self.user_groups]
