@@ -6,9 +6,13 @@ app - Copy.db
 Desktop.ini
 *.py[co]
 *.hello
+*.bat
 .coverage
-.elasticbeanstalk
 htmlcov
 sqlite
 snippets
-logs.elasticbeanstalk/
+deploying.txt
+app/templates/photos/tags.html
+app/static/img/sprites_google.png
+logs
+.elasticbeanstalk/

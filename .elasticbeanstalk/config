@@ -1,7 +1,7 @@
 [global]
 ApplicationName=brickr
 ApplicationVersionName=git-b482629fb6943851347db7fe092adcfc1b75adef-1370812767263
-AwsCredentialFile=C:\Users\remi\.elasticbeanstalk\aws_credential_file
+AwsCredentialFile=C:\Users\remi\brickr\.elasticbeanstalk\cred.txt
 DevToolsEndpoint=git.elasticbeanstalk.us-west-1.amazonaws.com
 EnvironmentName=brickr-env
 InstanceProfileName=aws-elasticbeanstalk-ec2-role
@@ -12,4 +12,3 @@ RdsSourceSnapshotName=awseb-e-jxcb6cvwxq-stack-snapshot-awsebrdsdatabase-16jua7x
 Region=us-west-1
 ServiceEndpoint=https://elasticbeanstalk.us-west-1.amazonaws.com
 SolutionStack=32bit Amazon Linux running Python
-

@@ -16,6 +16,7 @@ if PRODUCTION:  # AWS production config
         sys.exit()
 
     SQLALCHEMY_DATABASE_URI = 'mysql://' + os.environ['RDS_USERNAME'] + ':' + os.environ['RDS_PASSWORD'] +'@' + os.environ['RDS_HOSTNAME']  + '/' + os.environ['RDS_DB_NAME']
+    SQLALCHEMY_MIGRATE_REPO = os.path.join(BASEDIR, 'db_repository')
 
     S3_LOCATION = 'http://s3-us-west-1.amazonaws.com'
     S3_BUCKET = 'elasticbeanstalk-us-west-1-001101967776'
@@ -35,13 +36,14 @@ else:  # Local config
     SQLALCHEMY_MIGRATE_REPO = os.path.join(BASEDIR, 'db_repository')
     DATABASE_CONNECT_OPTIONS = {}
 
-    IMG_PATH = '/binaries/img'
+    IMG_URL_PATH = '/binaries/img'
+    BINARY_URL_PATH = '/binaries'
     BINARY_PATH = os.path.join(BASEDIR, 'app', 'binaries')
 
     DEBUG = True
     TESTING = False
 
-# Settings common to all deployments    
+# Settings common to all deployments
 SECRET_KEY = os.environ['PARAM3']
 ADMINS = frozenset(['remigagne@gmail.com'])
 THREADS_PER_PAGE = 8
