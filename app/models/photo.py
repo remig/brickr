@@ -1,6 +1,4 @@
-import os, boto, mimetypes, shutil
-from PIL import Image
-from StringIO import StringIO
+import os, boto
 from uuid import uuid4
 from werkzeug import secure_filename, FileStorage
 from flask import url_for
@@ -9,8 +7,6 @@ from app import app, db, util, breakpoint
 from tag import tag_list
 from group import group_photo_list
 from app.models.note import Note
-
-mimetypes.init([])  # Don't use platform's mimetype mapping, which is broken on Windows (http://bugs.python.org/issue10551)
 
 class Photo(db.Model):
 
@@ -30,9 +26,9 @@ class Photo(db.Model):
     # user created by User.photos backref
 
     def __init__(self, filename, user, title = None, description = "Description text goes here"):
+        filename = secure_filename(filename)
         if title is None:
             title = filename
-        filename = secure_filename(filename)
         self.binary_url = uuid4().hex + os.path.splitext(filename)[1]
         self.user_id = user.id
         self.title = title
@@ -80,42 +76,14 @@ class Photo(db.Model):
             return '/'.join([c['BINARY_URL_PATH'], folder, self.url_path(), self.binary_url])
 
     def generate_thumb(self, source_file, size = 75, bucket = None):  # for now, all thumbnails are assumed squares of width & height = size
-        try:
-            source_file.seek(0)
-            if isinstance(source_file, FileStorage):
-                img = Image.open(StringIO(source_file.read()))
-            else:
-                img = Image.open(source_file)
-                
-            folder = 'thumb_%d' % (size)
-            i_w, i_h = img.size
-            if i_w < i_h:
-                offset = (i_h - i_w) // 2
-                img = img.crop((0, offset, i_w, i_h - offset))  # l, t, r, b
-            else:
-                offset = (i_w - i_h) // 2
-                img = img.crop((offset, 0, i_w - offset, i_h))  # l, t, r, b
-            img.thumbnail((size, size), Image.ANTIALIAS)
-            
-            if app.config['PRODUCTION']:
-                if bucket is None:
-                    return False  # gah - really?
-                content_type = mimetypes.guess_type(self.binary_url)
-                img_fh = StringIO()
-                img.save(img_fh, 'JPEG')
-                img_fh.seek(0)
-                sml = bucket.new_key("/".join([app.config["S3_UPLOAD_DIRECTORY"], folder, self.url_path(), self.binary_url]))
-                sml.set_contents_from_file(img_fh, headers = {'Content-Type': content_type})
-                sml.set_acl('public-read')
-            else:
-                path = os.path.join(app.config['BINARY_PATH'], folder, self.os_path())
-                if not os.path.exists(path):
-                    os.makedirs(path)
-                img.save(os.path.join(path, self.binary_url), 'JPEG')
-            return True
-        except:
-            return False
-            
+
+        if app.config['PRODUCTION']:
+            filename = "/".join(['thumb_%d' % (size), self.url_path(), self.binary_url])
+        else:
+            filename = os.path.join('thumb_%d' % (size), self.os_path(), self.binary_url)
+
+        return util.generate_thumb(source_file, filename, size, bucket)
+
     # source_file is an instance of werkzeug.FileStorage
     # return True if save successful, False otherwise
     # Saves to a local path in dev, to S3 in prod
@@ -123,13 +91,8 @@ class Photo(db.Model):
         try:
             if app.config['PRODUCTION']:  # Upload photo file to AWS S3
 
-                content_type = mimetypes.guess_type(self.binary_url)
-                conn = boto.connect_s3(app.config["S3_KEY"], app.config["S3_SECRET"])
-                bucket = conn.get_bucket(app.config["S3_BUCKET"])
-                key_name = '/'.join([app.config["S3_UPLOAD_DIRECTORY"], 'img', self.url_path(), self.binary_url])
-                k = bucket.new_key(key_name)
-                k.set_contents_from_file(source_file, headers = {'Content-Type': content_type})
-                k.set_acl('public-read')
+                path = '/'.join(['img', self.url_path(), self.binary_url])
+                key_name, bucket = util.save_to_s3(source_file, path)
 
                 if not self.generate_thumb(source_file, 75, bucket):
                     # So, we saved the photo to S3 just fine, but failed to generate 
@@ -139,13 +102,8 @@ class Photo(db.Model):
                     return False
 
             else:  # Running locally - store photo in local folder
-                path = os.path.join(app.config['BINARY_PATH'], 'img', self.os_path())
-                if not os.path.exists(path):
-                    os.makedirs(path)
-                fn = os.path.join(path, self.binary_url)
-                fh = file(fn, 'wb')
-                shutil.copyfileobj(source_file, fh)
-                
+                path = os.path.join('img', self.os_path(), self.binary_url)
+                util.save_locally(source_file, path);
                 return self.generate_thumb(source_file, 75)  # Don't care about leaving stray photos locally - delete them yerself
             return True
         except:  # need to log this, or something

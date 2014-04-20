@@ -1,5 +1,5 @@
 import os, boto
-from flask import url_for
+from flask import g, url_for
 from app import app, db, util, breakpoint
 from werkzeug import generate_password_hash
 from sqlalchemy import desc
@@ -123,6 +123,15 @@ class User(db.Model):
         except RuntimeError as e:
             return '/static/img/avatar.jpg'
 
+    def save_avatar(self, source_file):
+
+        if app.config['PRODUCTION']:
+            filename = "/".join(['avatars', self.url + '.jpg'])
+        else:
+            filename = os.path.join('avatars', self.url + '.jpg')
+
+        return util.generate_thumb(source_file, filename, 100)
+        
     @staticmethod
     def _create_placeholder(name, flickr_id):
         count = 1 + User.query.filter(User.placeholder).count()
@@ -154,6 +163,7 @@ class User(db.Model):
             'profile_url': self.profile_url,
             'stream_url': self.stream_url,
             'avatar_url': self.avatar_url,
+            'is_current': g.user and g.user == self,  # TODO: this is wrong: use the existing flask session cookie instead
             'contacts': [x.to_json() for x in self.contacts],
             'favorites': [x.to_json() for x in self.favorites],
             'groups': [x.to_json() for x in self.user_groups]

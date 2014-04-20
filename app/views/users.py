@@ -183,3 +183,15 @@ def updateDashboard():
             return jsonify(result = True)
     return jsonify(result = False)
 
+ALLOWED_EXTENSIONS = set(['.jpg', '.jpeg', '.gif', '.png'])
+def allowed_file(filename):
+    return os.path.splitext(filename)[1] in ALLOWED_EXTENSIONS
+    
+@mod.route('/updateAvatar', methods = ['POST'])
+@requires_login
+def updateAvatar():
+    if request.method == 'POST':
+        file = request.files['file']
+        if file and allowed_file(file.filename):
+            g.user.save_avatar(file)
+    return jsonify({'avatar_url': g.user.avatar_url})

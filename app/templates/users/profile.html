@@ -3,14 +3,56 @@
 {% block title %}{{user.name}}'s Profile{% endblock %}
 
 {% block script %}
-{% include "fix_time.html" %}
 <script type="text/javascript">
     var user = JSON.parse({{ userJSON | tojson | safe }});
 </script>
 {% endblock %}
 
 {% block script_onload %}
-    ko.applyBindings();
+
+  AvatarEditor = function () {
+    var self = this;
+    self.baseURL = $SCRIPT_ROOT + '/users/';
+    self.filename = ko.observable('');
+    self.isEditing = ko.observable(false);
+
+    self.update_filename = function(target, evt) {
+      var fn = evt.target.value;
+      var idx = Math.max(fn.lastIndexOf('\\'), fn.lastIndexOf('/'));
+      self.filename(fn.substring(idx + 1));
+    };
+    
+    self.open_file_dialog = function() {
+      $('#avatar-file-btn').click();
+    };
+    
+    self.submit_avatar = function() {
+      if (self.filename()) {
+        var formData = new FormData();
+        formData.append("file", document.getElementById('avatar-file-btn').files[0]);
+        $.ajax({
+          url: self.baseURL + 'updateAvatar',
+          type: 'POST',
+          data: formData,
+          cache: false, 
+          contentType: false, 
+          processData: false,
+          success: successHandler
+        });
+      }
+      self.isEditing(false);
+    };
+
+    function successHandler(data) {
+      if (data && data.avatar_url) {
+        var timestamp = new Date().getTime();
+        $('#user-profile-avatar img').attr('src', data.avatar_url + '?' + timestamp);
+      }
+    }
+  }
+
+  ko.applyBindings(new AvatarEditor);
+
 {% endblock %}
 
 {% block content %}
@@ -60,6 +102,25 @@
         </li>
       </ul>
     </div>
+    
+    <div id="edit-avatar" data-bind="visible: isEditing()">
+      <div>
+        <h4>Choose a new Avatar image</h4>
+        <h5>From your machine:<h6>
+        <form id="myForm" enctype="multipart/form-data" method="post" action=".">
+          <input id="avatar-file-btn" type="file" data-bind="event: {change: update_filename}" name="file">
+        </form>
+        <input class="med-button" type="submit" data-bind="click: open_file_dialog" value="Choose File" />
+        <span id="edit-avatar-filename" data-bind="text: filename"></span>
+        <input id="avatar-ok-button" class="med-button" type="submit" data-bind="click: submit_avatar" value="Ok" />
+        <input id="avatar-cancel-button" class="med-button" type="submit" data-bind="click: function(){ isEditing(false); }" value="Cancel" />
+      </div>
+    </div>
+    
+    <div data-bind="visible: user.is_current">
+      <input class="med-button" type="submit" data-bind="click: function(){ isEditing(true); }" value="Change Avatar" />
+    </div>
+    
   </div>
 
 {% endblock %}
