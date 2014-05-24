@@ -152,14 +152,13 @@ def addTags():
         if not tag_list:
             return jsonify(result = False)
 
-        for tag_text in tag_list:  # TODO: use Tag.get_or_create()
-            tag = Tag.query.filter_by(description = tag_text).first()
-            if tag is None:
-                tag = Tag(tag_text)
+        tag_resp = []
+        for tag_text in tag_list:
+            tag = Tag.get_or_create(tag_text)
             photo.tags.extend([tag])
-            db.session.add(tag)  # TODO: not necessary
+            tag_resp.append(tag.to_json())
         db.session.commit()
-        return jsonify(result = True, tags = tag_list)
+        return jsonify(result = True, tags = tag_resp)
     return jsonify(result = False)
 
 @mod.route('/removeTag', methods = ['POST'])

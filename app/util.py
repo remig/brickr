@@ -74,8 +74,7 @@ def generate_thumb(source_file, filename, size = 75, bucket = None):
             img_fh = StringIO()
             img.save(img_fh, 'JPEG')
             img_fh.seek(0)
-            
-            util.save_to_s3(img_fh, filename, bucket)
+            save_to_s3(img_fh, filename, bucket)
 
         else:
             full_filename = os.path.join(app.config['BINARY_PATH'], filename)

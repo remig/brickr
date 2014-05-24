@@ -139,6 +139,16 @@
   cursor: move;
 }
 
+input[type="checkbox"] {
+  margin: 0 0 0 5px;
+}
+
+.radio, .checkbox {
+  display: inline;
+  min-height: 0px;
+  margin-left: 10px;
+}
+
 .comment-text img {
   max-width: 100px;
   max-height: 100px;
@@ -420,6 +430,11 @@ h5 {
   background-color: #fefefe;
 }
 
+.comments-expand {
+  float: left;
+  color: #999;
+}
+
 .comments-avatar {
   float: left;
   padding: 4px 8px;
@@ -432,9 +447,12 @@ h5 {
 }
 
 .comments-body {
-  float: left;
   padding: 4px;
   width: 85%;
+}
+
+.comments-content-compressed {
+  padding-left: 23px;
 }
 
 .comments-body:hover  .comment-reply, .comments-body:hover  .comment-delete {
@@ -447,12 +465,18 @@ h5 {
 
 .comments-author {
   font-size: 1.2em;
-  padding: 2px 0px 4px 0px;
+  padding: 0px 0px 4px 0px;
 }
 
 .comments-date {
   color: #BBB;
-  font-size: .9em;
+  font-size: 0.9em;
+  padding-left: 12px;
+}
+
+.comments-children {
+  color: #BBB;
+  font-size: 0.7em;
   padding-left: 12px;
 }
 
@@ -707,8 +731,8 @@ textarea {
   height: 40px;
 }
 
-.form_field {
-  display: inline
+.form-field   {
+  margin-bottom: 15px;
 }
 
 .flickr-form-field {

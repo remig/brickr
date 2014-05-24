@@ -109,27 +109,38 @@
     
     <script type="text/html" id="commentTemplate">
       <li>
-        <div class="comments-avatar">
-          <a data-bind="attr: {href: user_url}">
-            <img data-bind="attr: {src: user_avatar_url}">
-          </a>
-        </div>
-        <div class="comments-body">
+        <!-- clicks on expand / contract comment buttons are handled by a jQuery delegate registered in PhotoViewModel.js -->
+        <div class="comments-expand clickable" data-bind="text: isExpanded() ? '[-]' : '[+]'"></div>
+        <div class="comments-content-compressed" data-bind="visible: !isExpanded()">
           <div class="comments-author">
             <a data-bind="text: user_name, attr: {href: user_url}"></a>
             <span class="small comments-date"><span data-bind="text: moment.utc(time).fromNow()"></span></span>
-            <!-- clicks on comment reply & delete are handled by a jQuery delegate registered in PhotoViewModel.js -->
-            {% if g.user %}
-              <a class="comment-reply" href="">reply</a>
-            {% endif %}
-            {% if isPhotoOwner %}
-              <a class="comment-delete" href="">delete</a>
-            {% endif %}
+            <span class="small comments-children" data-bind="text: '(' + children().length + ' children)'"></span>
           </div>
-          <div class="comment-text" data-bind="html: comment"></div>
         </div>
-        <!-- ko if: $data.isEditing --><div data-bind="template: {name: 'commentCreateUITemplate'}"></div> <!-- /ko -->
-        <ul data-bind="template: {name: 'commentTemplate', foreach: $data.children}"></ul>
+        <div class="comments-content" data-bind="visible: isExpanded()">
+          <div class="comments-avatar">
+            <a data-bind="attr: {href: user_url}">
+              <img data-bind="attr: {src: user_avatar_url}">
+            </a>
+          </div>
+          <div class="comments-body">
+            <div class="comments-author">
+              <a data-bind="text: user_name, attr: {href: user_url}"></a>
+              <span class="small comments-date"><span data-bind="text: moment.utc(time).fromNow()"></span></span>
+              <!-- clicks on comment reply & delete are handled by a jQuery delegate registered in PhotoViewModel.js -->
+              {% if g.user %}
+                <a class="comment-reply" href="">reply</a>
+              {% endif %}
+              {% if isPhotoOwner %}
+                <a class="comment-delete" href="">delete</a>
+              {% endif %}
+            </div>
+            <div class="comment-text" data-bind="html: comment"></div>
+          </div>
+          <!-- ko if: $data.isEditing --><div data-bind="template: {name: 'commentCreateUITemplate'}"></div> <!-- /ko -->
+          <ul data-bind="template: {name: 'commentTemplate', foreach: $data.children}"></ul>
+        </div>
       </li>
     </script>
 
@@ -195,7 +206,7 @@
       </h3>
       <ul id="tags" data-bind="foreach: tags">
         <li><div>
-          <a data-bind="text: desc, attr: {href: '/photos/' + photo.user_url + '/tags/' + url + '/'}"></a>
+          <a data-bind="text: desc, attr: {href: '/photos/' + photo.user.url + '/tags/' + url + '/'}"></a>
           {% if isPhotoOwner %} <a href="#" data-bind="click: $parent.removeTag">x</a> {% endif %}
         </div></li>
       </ul>

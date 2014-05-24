@@ -7,6 +7,7 @@
 function makeCommentObservable(comment) {
 	comment.children = ko.observableArray();
 	comment.isEditing = ko.observable(false);
+	comment.isExpanded = ko.observable(true);
 	return comment;
 }
 
@@ -104,7 +105,7 @@ PhotoViewModel = function (photo, current_user) {  // Global
 			function(data) {
 				if (data.result && data.tags) {
 					for (var i = 0; i < data.tags.length; i++) {
-						self.tags.push({desc: data.tags[i]});
+						self.tags.push(data.tags[i]);
 					}
 					event.target.value = '';
 				}
@@ -188,6 +189,11 @@ PhotoViewModel = function (photo, current_user) {  // Global
 		);
 		return false;
 	});
+	
+	$('#photo-comments').on('click', '.comments-expand', function() {
+		var comment = ko.contextFor(this).$data;
+		comment.isExpanded(!comment.isExpanded());
+	});
 
 	$('#single-photo-info').on('click', '.comment-save', function() {
 		var comment_text = self.newComment();
@@ -212,7 +218,7 @@ PhotoViewModel = function (photo, current_user) {  // Global
 	$('#single-photo-info').on('click', '.comment-cancel', function() {
 		ko.contextFor(this).$data.isEditing(false);
 		return false;
-	});	
+	});
 };
 
 })();
