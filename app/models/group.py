@@ -57,11 +57,18 @@ class Group(db.Model):
             url = url_for('groups.group', groupURL = self.url_name)
         except RuntimeError as e:
             url = 'group.html'
+
+        last_photo = self.photos.first()
+        last_photo_url = last_photo.url() if last_photo else ''
+
         return {
             'id': self.id,
             'name': self.name,
             'description': self.description,
             'rules': self.rules,
             'creation_time': str(self.creation_time),
-            'url': url
+            'url': url,
+            'photo_count': self.photos.count(),
+            'last_photo_url': last_photo_url,
+            'discussion_count': self.discussions.count()
         }

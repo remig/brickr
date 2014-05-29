@@ -5,7 +5,7 @@ WidgetList.group_list = function() {
 	function ready() {
 		var self = this;
 
-		$.get('/api/u/1/groups/')
+		$.get('/api/u/-1/groups/')
 			.done(function(data) {
 				var el = document.getElementById('group_list');
 				ko.applyBindings(data, el);

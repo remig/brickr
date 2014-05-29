@@ -804,5 +804,5 @@ textarea {
 
 .widget {
   position: absolute;
-  overflow: auto;
+  overflow: hidden;
 }

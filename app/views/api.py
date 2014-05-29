@@ -25,7 +25,10 @@ def get_photo(photoID):
     
 @mod.route('/u/<userID>/photos/')
 def get_user_photos(userID):
-    user = User.query.get(userID)
+    if (userID == '-1' and g.user):
+        user = g.user
+    else:
+        user = User.query.get(userID)
     if user is None or user.placeholder:
         abort(404)
 
@@ -37,11 +40,14 @@ def get_user_photos(userID):
 
 @mod.route('/u/<userID>/groups/')
 def get_user_groups(userID):
-    user = User.query.get(userID)
+    if (userID == '-1' and g.user):
+        user = g.user
+    else:
+        user = User.query.get(userID)
     if user is None or user.placeholder:
         abort(404)
         
-    return jsonify({'userID': userID, 'username': user.name, 'groups': [g.to_json() for g in user.user_groups]})
+    return jsonify({'userID': user.id, 'username': user.name, 'groups': [group.to_json() for group in user.user_groups]})
 
 @mod.route('/<groupURL>/')
 def group(groupURL):

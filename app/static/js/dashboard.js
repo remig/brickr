@@ -3,7 +3,7 @@
 
 WidgetList = {};  // Global list used by each widget to register itself
 
-var available_widget_names = [  // Official list of all avaialble widgets
+var available_widget_names = [  // Official list of all available widgets
 	'explore',
 	'photo_stream',
 	'group_list'
@@ -23,9 +23,6 @@ WidgetViewModel = function(widget, id, layout, html) {  // Global
 
 	var self = this;
 	$.extend(self, widget);
-	self.id = id;
-	self.htmlTemplate = html;
-	self.isConfigurable = widget.hasOwnProperty('config');
 	
 	self.config_click = function() {
 		var widget = this;
@@ -45,18 +42,26 @@ WidgetViewModel = function(widget, id, layout, html) {  // Global
 		var max_h = h - ((h % snapSize) || 0);
 		pos.x = minMax(0, max_w, pos.x);
 		pos.y = minMax(0, max_h, pos.y);
-		if (self.size) {
+		if (self.size) {  // 'size' set by widget author
 			var r = self.size;
 			pos.w = minMax(r.minWidth || 0, r.maxWidth || Infinity, pos.w);
 			pos.h = minMax(r.minHeight || 0, r.maxHeight || Infinity, pos.h);
 		}
 	};
 	
+	function pct(frac, value) {
+		return (frac / value * 100).toFixed(4) + '%'
+	}
+	
+	function px(pct, value) {
+		return parseFloat(pct) * value / 100;
+	}
+	
 	self.updateCSS = function() {
-		self.x(self.pos.x + 'px');
-		self.y(self.pos.y + 'px');
-		self.w(self.pos.w + 'px');
-		self.h(self.pos.h + 'px');
+		self.x(pct(self.pos.x, dashboard_width));
+		self.y(pct(self.pos.y, dashboard_height));
+		self.w(pct(self.pos.w, dashboard_width));
+		self.h(pct(self.pos.h, dashboard_height));
 	};
 	
 	// Change the position of the widget's edge by dt pixels.
@@ -92,18 +97,29 @@ WidgetViewModel = function(widget, id, layout, html) {  // Global
 		}
 	};
 	
+	self.id = id;
+	self.htmlTemplate = html;
+	self.isConfigurable = widget.hasOwnProperty('config');
+	
 	layout = layout || {x: 0, y: 0, w: 100, h: 100};
-	self.pos = {x : layout.x, y: layout.y, w: layout.w, h: layout.h};
+	self.pos = {
+		x : px(layout.x, dashboard_width),
+		y: px(layout.y, dashboard_height),
+		w: px(layout.w, dashboard_width),
+		h: px(layout.h, dashboard_height)
+	};
 	self.deltas = {x: 0, y: 0, w: 0, h: 0};  // Track distance between user mouse drag & nearest gridline
-	self.boundCheck();
 
-	self.x = ko.observable(self.pos.x + 'px');  // observed by CSS styles
-	self.y = ko.observable(self.pos.y + 'px');
-	self.w = ko.observable(self.pos.w + 'px');
-	self.h = ko.observable(self.pos.h + 'px');
+	self.x = ko.observable();  // observed by CSS styles
+	self.y = ko.observable();
+	self.w = ko.observable();
+	self.h = ko.observable();
+	
+	self.boundCheck();
+	self.updateCSS();
 };
 
-DashboardViewModel = function (user_widgets) {  // Global
+DashboardViewModel = function(user_widgets) {  // Global
 
 	if (user_widgets == null) {  // If user has not initialized their dashboard yet, use these as defaults.
 		user_widgets = {
@@ -142,7 +158,7 @@ DashboardViewModel = function (user_widgets) {  // Global
 	function save_widgets() {
 		var new_layout = {};
 		ko.utils.arrayForEach(self.user_widget_list(), function(el) {
-			new_layout[el.id] = el.pos;
+			new_layout[el.id] = {x: el.x(), y: el.y(), w: el.w(), h: el.h()};
 		});
 		$.post($SCRIPT_ROOT + '/users/updateDashboard',
 			{dashboard: JSON.stringify(new_layout)},

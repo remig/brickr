@@ -39,7 +39,7 @@ def create_group():
             return render_template('groups/create_group.html', name = name, url_name = url_name, description = desc, rules = rules)
 
         group = Group(name, url_name, desc, rules)
-        group.members.append(g.user)
+        GroupMemberList(g.user, group)
         db.session.commit()
         return redirect(url_for('groups.group', groupURL = url_name))
     return render_template('groups/create_group.html')
