@@ -1,7 +1,5 @@
 WidgetList.group_list = function() {
 
-	var viewModel = {bar: "SCORE!!!"};
-
 	function ready() {
 		var self = this;
 
@@ -19,6 +17,13 @@ WidgetList.group_list = function() {
 		size: {
 			minWidth: 200,
 			minHeight: 50
+		},
+		config: {
+			'Thumb Size': {
+				'Small': function() {console.log('small');},
+				'Medium': function() {console.log('med');},
+				'Large': function() {console.log('large');}
+			}
 		}
 	};
 };

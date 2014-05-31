@@ -24,11 +24,6 @@ WidgetViewModel = function(widget, id, layout, html) {  // Global
 	var self = this;
 	$.extend(self, widget);
 	
-	self.config_click = function() {
-		var widget = this;
-		console.log('Configuring this widget is NYI: ' + widget);
-	};
-	
 	function minMax(min, max, v) {
 		return Math.min(max, Math.max(min, v));
 	}
@@ -99,7 +94,35 @@ WidgetViewModel = function(widget, id, layout, html) {  // Global
 	
 	self.id = id;
 	self.htmlTemplate = html;
+	
+	function configToArray(config) {
+		var newConfig = [];
+		for (var k in config) {
+			if (config.hasOwnProperty(k)) {
+				if (typeof config[k] === 'function') {
+					newConfig.push({name: k, callback: config[k]});
+				} else {
+					newConfig.push({
+						name: k, 
+						callback: function(){},  // Necessary to keep window.click from hiding menu
+						children: configToArray(config[k])
+					});
+				}
+			}
+		}
+		return newConfig;
+	}
+	
+	self.isConfiguring = ko.observable(false);  // Track if user has clicked config button
 	self.isConfigurable = widget.hasOwnProperty('config');
+	if (self.isConfigurable) {
+		var config = configToArray(widget.config);
+		self.configMenu = ko.observable(config);
+	}
+	
+	self.config_click = function(model, evt) {
+		self.isConfiguring(!self.isConfiguring());
+	};
 	
 	layout = layout || {x: 0, y: 0, w: 100, h: 100};
 	self.pos = {
@@ -303,9 +326,16 @@ DashboardViewModel = function(user_widgets) {  // Global
 			el.deltas = {x: 0, y: 0, w: 0, h: 0};
 		});
 	}
-	
+
 	eventer.addEventListener('mouseup', endInteraction);
 	eventer.addEventListener('mouseout', endInteraction);
+	
+	function endWidgetConfig(evt) {
+		ko.utils.arrayForEach(self.user_widget_list(), function(el) {
+			el.isConfiguring(false);
+		});
+	}
+	window.addEventListener('click', endWidgetConfig);	
 };
 
 })();

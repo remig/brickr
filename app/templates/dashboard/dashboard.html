@@ -21,18 +21,36 @@
 {% endblock %}
 
 {% block script_onload %}
-  var dashboardLayout = JSON.parse({{ g.user.dashboard | tojson | safe}});
+  dashboardLayout = JSON.parse({{ g.user.dashboard | tojson | safe}});
   ko.applyBindings(new DashboardViewModel(dashboardLayout));
 {% endblock %}
 
 {% block content %}
-  <div style="position: relative; height: 1000px;">
-    <div id="dashboard_container" data-bind="" style="outline: 1px solid black; height: 1000px;">
+
+  <script type="text/html" id="popupMenuTemplate">
+    <li class="dashboard_config_entry" data-bind="click: callback, clickBubble: false">
+      <span data-bind="text: name"></span>
+      <!-- ko if: $data.hasOwnProperty('children') -->
+      <span>&gt;</span>
+      <div class="dashboard_config_submenu">
+        <ul data-bind="template: {name: 'popupMenuTemplate', foreach: children}"></ul>
+      </div>
+      <!-- /ko -->
+    </li>
+  </script>
+
+  <div style="position: relative; height: 100%;">
+    <div id="dashboard_container" style="outline: 1px solid black; height: 1000px;">
       <div id="widget_container" data-bind="foreach: user_widget_list">
         <div class="widget" data-bind="style: {left: x, top: y, width: w, height: h, outline: $parent.configureEnabled() ? '3px solid grey' : ''}">
           <div data-bind="html: htmlTemplate, attr: {id: 'widget_' + id}"></div>
-          <div class="dashboard_btn delete" data-bind="click: $parent.delete_click, visible: $parent.configureEnabled()"></div>
-          <div class="dashboard_btn config" data-bind="click: config_click, visible: $parent.configureEnabled() && isConfigurable"></div>
+        </div>
+        <div class="widget_ui" data-bind="style: {left: x, top: y, width: w, height: h}">
+          <div class="dashboard_btn delete" data-bind="click: $parent.delete_click, clickBubble: false, visible: $parent.configureEnabled()"></div>
+          <div class="dashboard_btn config" data-bind="click: config_click, clickBubble: false, visible: $parent.configureEnabled() && isConfigurable"></div>
+          <div class="dashboard_config_menu">
+            <ul data-bind="visible: isConfiguring, template: {name: 'popupMenuTemplate', foreach: configMenu}"></ul>
+          </div>
         </div>
       </div>
     </div>
