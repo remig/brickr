@@ -8,7 +8,7 @@ from test.base import BaseTestCase, assert_obj_subset
 class CommentModelTestCase(BaseTestCase):
 
     def create_comment(self):
-        user = self.create_user()
+        user = self.create_user('Remi')
         photo = self.add(Photo('new_photo.jpg', user))
         comment = self.add(Comment(user, photo, 'Comment Text'))
         return user, photo, comment

@@ -8,7 +8,7 @@ from test.base import BaseTestCase, assert_obj_subset
 class FavoriteModelTestCase(BaseTestCase):
 
     def create_favorite(self):
-        user = self.create_user()
+        user = self.create_user('Remi')
         photo = self.add(Photo('new_photo.jpg', user))
         fav = self.add(Favorite(user, photo))
         return user, photo, fav

@@ -80,6 +80,7 @@ def upload():
             flash(u'This type of file cannot be uploaded.')
     return render_template('photos/upload.html')
 
+# TODO: move all JSON only AJAXey routes out of here and into API
 @mod.route('/addComment', methods = ['POST'])
 @requires_login
 def addComment():

@@ -54,7 +54,7 @@ def group(groupURL):
     group = Group.query.filter_by(url_name = groupURL).first()
     groupJSON = group.to_json()
     groupJSON['members'] = [x.to_json() for x in group.members]
-    groupJSON['photos'] = [x.to_json() for x in group.photos]
+    groupJSON['photos'] = [x.photo.to_json() for x in group.photo_groups]
     return render_template('groups/group.html', group = group, groupJSON = json.dumps(groupJSON))
     
 pattern = re.compile('[^A-Za-z0-9_]+')
@@ -94,10 +94,11 @@ def add_photos(groupURL):
     if request.method == 'POST' and group:
         doAdd = request.form.get('action') == 'add'
         for photo in [Photo.query.get(p) for p in request.form.keys() if p != 'action']:
-            if photo and doAdd and photo not in group.photos:
-                group.photos.append(photo)
-            elif not doAdd and photo in group.photos:
-                group.photos.remove(photo)
+            photo_group = photo.getGroupAssoc(group)
+            if photo and doAdd and photo_group is None:
+                GroupPhotoList(photo, group)
+            elif not doAdd and photo_group:
+                db.session.delete(photo_group)
         db.session.commit()
         return redirect(url_for('groups.group', groupURL = groupURL))
     return render_template('groups/add_photo.html', group = group)
@@ -113,7 +114,7 @@ def leaveOrJoinGroup():
             if action == 'join':
                 GroupMemberList(user, group)
             elif action == 'leave' and user in group.members:
-                group.members.remove(user)
+                group.members.remove(user)  # TODO: fix this!!
             db.session.commit()
         return jsonify(result = True)
     return jsonify(result = False)

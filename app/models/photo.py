@@ -5,7 +5,6 @@ from flask import url_for
 
 from app import app, db, util, breakpoint
 from tag import tag_list
-from group import group_photo_list
 from app.models.note import Note
 
 class Photo(db.Model):
@@ -22,8 +21,8 @@ class Photo(db.Model):
     favorites = db.relationship('Favorite', backref = 'photo', lazy = 'dynamic', cascade = "all, delete, delete-orphan")
     notes = db.relationship('Note', backref = 'photo', lazy = 'dynamic', cascade = "all, delete, delete-orphan")
     tags = db.relationship('Tag', secondary = tag_list, lazy = 'dynamic', backref = db.backref('photos', lazy = 'dynamic'))
-    groups = db.relationship('Group', secondary = group_photo_list, backref = db.backref('photos', lazy = 'dynamic'))
     # user created by User.photos backref
+    # photo_groups created by GroupMemberList backref
 
     def __init__(self, filename, user, title = None, description = "Description text goes here"):
         filename = secure_filename(filename)
@@ -172,15 +171,27 @@ class Photo(db.Model):
     def getNotesInZOrder(self):
         return sorted(self.notes.all(), key = Note.area, reverse = True)
 
+    def isInGroup(self, group):
+        return group in [pg.group for pg in self.photo_groups]
+        
+    def getGroupAssoc(self, group):
+        res = [pg for pg in self.photo_groups if pg.group == group]
+        return res[0] if res else None
+
     def to_json(self, active_user = None):
         prev_photo = self.prevPhoto()
         next_photo = self.nextPhoto()
+        try:
+            url = url_for('photos.photo', user_url = self.user.url, photoID = self.id)
+        except RuntimeError as e:
+            url = None
+            
         return {
             'id': self.id,
             'title': self.title,
             'description': self.description,
             'url': self.url(),
-            'photo_page_url': url_for('photos.photo', user_url = self.user.url, photoID = self.id),
+            'photo_page_url': url,
             'user': self.user.to_json(),
             'views': self.views,
             'creation_time': str(self.creation_time),
@@ -188,7 +199,7 @@ class Photo(db.Model):
             'favorites': [x.to_json() for x in self.favorites],
             'tags': [x.to_json() for x in self.tags],
             'comments': [x.to_json() for x in self.comments],
-            'groups': [x.to_json() for x in self.groups],
+            'groups': [x.to_json() for x in self.photo_groups],
             'notes': [x.to_json() for x in self.getNotesInZOrder()],
             'prev_photo_id': prev_photo.id if prev_photo else None,
             'next_photo_id': next_photo.id if next_photo else None

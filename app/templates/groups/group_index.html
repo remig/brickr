@@ -15,7 +15,7 @@
     <h3>All available groups:</h3>
     <ul>
         {% for group in groups.query.all() %}
-            <li><a href="{{ url_for('groups.group', groupURL = group.url_name) }}">{{ group.name }}</a> - <span>{{ group.members | count }} members | {{ group.photos.count() }} photos | {{ group.discussions.count() }} Discussions | created <span class="convert-time">{{ group.creation_time }},LL</span></span></li>
+            <li><a href="{{ url_for('groups.group', groupURL = group.url_name) }}">{{ group.name }}</a> - <span>{{ group.members | count }} members | {{ group.photo_groups | count }} photos | {{ group.discussions.count() }} Discussions | created <span class="convert-time">{{ group.creation_time }},LL</span></span></li>
         {% endfor %}
     </ul>
     <br />

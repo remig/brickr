@@ -16,7 +16,8 @@ def group(groupURL):
     group = Group.query.filter_by(url_name = groupURL).first()
     groupJSON = group.to_json()
     groupJSON['members'] = [x.to_json() for x in group.members]
-    groupJSON['photos'] = [x.to_json() for x in group.photos]
+    photo_list = group.getPhotosInAddOrder()
+    groupJSON['photos'] = [p.to_json() for p in photo_list]
     return render_template('groups/group.html', group = group, groupJSON = json.dumps(groupJSON))
     
 pattern = re.compile('[^A-Za-z0-9_]+')
@@ -49,6 +50,7 @@ def create_group():
 def delete_group(groupURL):  # NYI
     return redirect(url_for('groups.group', groupURL = groupURL))
 
+# TODO: Remove all this, use API instead
 @mod.route('/<groupURL>/add_photos/', methods = ['GET', 'POST'])
 @requires_login
 def add_photos(groupURL):
@@ -56,10 +58,11 @@ def add_photos(groupURL):
     if request.method == 'POST' and group:
         doAdd = request.form.get('action') == 'add'
         for photo in [Photo.query.get(p) for p in request.form.keys() if p != 'action']:
-            if photo and doAdd and photo not in group.photos:
-                group.photos.append(photo)
-            elif not doAdd and photo in group.photos:
-                group.photos.remove(photo)
+            photo_group = photo.getGroupAssoc(group)
+            if photo and doAdd and photo_group is None:
+                GroupPhotoList(photo, group)
+            elif not doAdd and photo_group:
+                db.session.delete(photo_group)
         db.session.commit()
         return redirect(url_for('groups.group', groupURL = groupURL))
     return render_template('groups/add_photo.html', group = group)

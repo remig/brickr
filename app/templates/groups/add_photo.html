@@ -13,7 +13,7 @@
     <form method="POST" action="" class="form" id="add_photos_form">
         <ul id="photo-stream">
         {% for photo in g.user.photos %}
-            {% if photo not in group.photos %}
+            {% if not photo.isInGroup(group) %}
                 <li>
                     <div class="thumb"><a href="{{ url_for('photos.photo', user_url = g.user.url, photoID = photo.id) }}">
                         <img width="200" src="{{ photo.url_thumb(75) }}" alt="{{ photo.title }}" title="{{ photo.title }}">
@@ -32,7 +32,7 @@
     <form method="POST" action="" class="form" id="remove_photos_form">
         <ul id="photo-stream">
         {% for photo in g.user.photos %}
-            {% if photo in group.photos %}
+            {% if photo.isInGroup(group) %}
                 <li>
                     <div class="thumb"><a href="{{ url_for('photos.photo', user_url = g.user.url, photoID = photo.id) }}">
                         <img width="200" src="{{ photo.url_thumb(75) }}" alt="{{ photo.title }}" title="{{ photo.title }}">

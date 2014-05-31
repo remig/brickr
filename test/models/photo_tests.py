@@ -49,6 +49,22 @@ class PhotoModelTestCase(BaseTestCase):
         db.session.commit()
         eq_(Photo.query.count(), 0)
         eq_(user.photos.count(), 0)
+        
+    def test_group_assoc_methods(self):
+        photo = self.create_photo();
+        group = self.add(Group('G', 'g', 'desc', 'rules'))
+        group2 = self.add(Group('Gg', 'gg', 'desc', 'rules'))
+        
+        pg = GroupPhotoList(photo, group)
+        db.session.commit()
+        
+        ok_(photo.isInGroup(group))
+        ok_(not photo.isInGroup(None))
+        ok_(not photo.isInGroup(group2))
+        
+        eq_(photo.getGroupAssoc(None), None)
+        eq_(photo.getGroupAssoc(group), pg)
+        eq_(photo.getGroupAssoc(group2), None)
 
     def test_to_json(self):
         user = self.create_user('Remi', 'remigagne@gmail.com', 'abc')
@@ -56,14 +72,17 @@ class PhotoModelTestCase(BaseTestCase):
             'id': 1,
             'title': 'photo title',
             'description': 'desc',
-            'user_url': user.url,
+            'photo_page_url': None,
             'views': 0,
             'creation_time': str(util.now()),
             'favorite': False,
             'favorites': [],
             'tags': [],
             'comments': [],
-            'groups': []
+            'groups': [],
+            'notes': [],
+            'prev_photo_id': None,
+            'next_photo_id': None
         }
         
         photo = Photo('new_photo.jpg', user, 'photo title', 'desc')

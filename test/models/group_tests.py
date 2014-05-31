@@ -1,3 +1,4 @@
+import datetime
 from nose import *
 from nose.tools import *
 from sqlalchemy.exc import IntegrityError
@@ -60,7 +61,58 @@ class GroupModelTestCase(BaseTestCase):
 
         #user2 = self.create_user()
         
-    # TODO: test photos in groups
+    def test_photo_group_assoc(self):
+        photo = self.create_photo();
+        group = self.add(Group('Test Group', 'test_group', 'description text', 'rules text'))
+        
+        eq_(len(group.photo_groups), 0)
+        eq_(len(photo.photo_groups), 0)
+        
+        group_assoc = GroupPhotoList(photo, group)
+        db.session.commit()
+        
+        eq_(len(group.photo_groups), 1)
+        eq_(group.photo_groups[0].photo, photo)
+        
+        eq_(len(photo.photo_groups), 1)
+        eq_(photo.photo_groups[0].group, group)
+        
+        eq_(group_assoc.add_time, util.now())
+        
+        photo_json = photo.to_json()
+        eq_(len(photo_json['groups']), 1)
+        eq_(photo_json['groups'][0], group_assoc.to_json())
+        
+        # Test second assoc
+        photo2 = self.create_photo()
+        group_assoc2 = GroupPhotoList(photo2, group)
+        
+        eq_(len(photo.photo_groups), 1)
+        eq_(len(photo2.photo_groups), 1)
+        eq_(len(group.photo_groups), 2)
+        
+        # Test group's convenience API
+        photo.creation_time = datetime.datetime.now()
+        db.session.commit()
+        eq_(group.getNewestPhoto(), photo)
+        assert_list_equal(group.getPhotosInAddOrder(), [photo, photo2])
+        
+        # Two ways to delete an assoc:
+        db.session.delete(group_assoc)
+        db.session.commit()
+        eq_(len(photo.photo_groups), 0)
+        eq_(len(group.photo_groups), 1)
+        
+        eq_(group.getNewestPhoto(), photo2)
+        assert_list_equal(group.getPhotosInAddOrder(), [photo2])
+        
+        group.photo_groups.remove(group_assoc2)
+        db.session.commit()
+        eq_(len(photo2.photo_groups), 0)
+        eq_(len(group.photo_groups), 0)
+        
+        eq_(group.getNewestPhoto(), None)
+        assert_list_equal(group.getPhotosInAddOrder(), [])
         
     def test_to_json(self):
         expected = {
@@ -74,13 +126,16 @@ class GroupModelTestCase(BaseTestCase):
         group = self.add(Group('Test Group', 'test_group', 'description text', 'rules text'))
         assert_dict_contains_subset(expected, group.to_json())
 
-    def test_group_assoc_to_json(self):
+    def test_user_group_assoc_to_json(self):
         expected = {
             'id': 1,
             'name': 'Test Group',
             'description': 'description text',
             'rules': 'rules text',
             'creation_time': str(util.now()),
+            'photo_count': 0,
+            'last_photo_url': '',
+            'discussion_count': 0,
             'join_time': str(util.now())
         }
         
@@ -90,3 +145,24 @@ class GroupModelTestCase(BaseTestCase):
         db.session.commit()
         assert_dict_contains_subset(expected, group_assoc.to_json())
         eq_(user.to_json()['groups'], [group_assoc.to_json()])
+
+    def test_photo_group_assoc_to_json(self):
+        photo = self.create_photo()
+        group = self.add(Group('Test Group', 'test_group', 'description text', 'rules text'))
+        group_assoc = GroupPhotoList(photo, group)
+        db.session.commit()
+        
+        expected = {
+            'id': 1,
+            'name': 'Test Group',
+            'description': 'description text',
+            'rules': 'rules text',
+            'creation_time': str(util.now()),
+            'photo_count': 1,
+            'last_photo_url': photo.url(),
+            'discussion_count': 0,
+            'add_time': str(util.now())
+        }
+        
+        assert_dict_contains_subset(expected, group_assoc.to_json())
+        eq_(photo.to_json()['groups'], [group_assoc.to_json()])

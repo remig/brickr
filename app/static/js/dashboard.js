@@ -352,11 +352,19 @@ DashboardViewModel = function(user_widgets) {  // Global
 	eventer.addEventListener('mouseout', endInteraction);
 	
 	function endWidgetConfig(evt) {
+		console.log('click');
 		ko.utils.arrayForEach(self.user_widget_list(), function(el) {
 			el.isConfiguring(false);
 		});
 	}
-	window.addEventListener('click', endWidgetConfig);	
+	
+	window.addEventListener('click', endWidgetConfig);
+	
+	$(window).on('beforeunload', function() {
+		if (self.configureEnabled()) {
+			return 'Do you want to leave with unsaved Dashboard changes?';
+		}
+	});
 };
 
 })();

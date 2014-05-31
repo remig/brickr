@@ -163,7 +163,7 @@ class User(db.Model):
             'profile_url': self.profile_url,
             'stream_url': self.stream_url,
             'avatar_url': self.avatar_url,
-            'is_current': g.user and g.user == self,  # TODO: this is wrong: use the existing flask session cookie instead
+            'is_current': g and g.user and g.user == self,  # TODO: this is wrong: use the existing flask session cookie instead
             'contacts': [x.to_json() for x in self.contacts],
             'favorites': [x.to_json() for x in self.favorites],
             'groups': [x.to_json() for x in self.user_groups]

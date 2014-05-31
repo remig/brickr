@@ -37,7 +37,7 @@
     <div>
         <h4>Photos</h4>
         <ul id="photo-stream">
-        {% for photo in group.photos %}
+        {% for photo in group.getPhotosInAddOrder() %}
             <li>
                 <div class="thumb"><a href="{{ url_for('photos.photo', user_url = photo.user.url, photoID = photo.id) }}">
                     <img width="200" src="{{ photo.url_thumb(75) }}" alt="{{ photo.title }}" title="{{ photo.title }}">

@@ -1,10 +1,12 @@
 import os, unittest, datetime
 from nose.tools import *
 from app import app, db, util, breakpoint
-from app.models import User
+from app.models import User, Photo
 
 class BaseTestCase(unittest.TestCase):
 
+    user_count = 0
+    
     def setUp(self):
     
         def mock_now():
@@ -36,11 +38,16 @@ class BaseTestCase(unittest.TestCase):
             context = self.app
         return context.get('users/logout/', follow_redirects = True)
         
-    def create_user(self, name = 'Remi', email = 'r@abc.com', password = 'abc'):
-        u = User(name, email, password = password)
-        db.session.add(u)
-        db.session.commit()
+    def create_user(self, name = None, email = None, password = 'abc'):
+        name = name or 'Remi_' + str(BaseTestCase.user_count)
+        email = email or name + '@abc.com'
+        BaseTestCase.user_count += 1
+        u = self.add(User(name, email, password = password))
         return u
+        
+    def create_photo(self, title = 'new_photo.jpg', user = None):
+        user = user or self.create_user()
+        return self.add(Photo(title, user))
         
     def add(self, t):
         db.session.add(t)

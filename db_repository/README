@@ -9,7 +9,7 @@ To migrate a db:
 
 - Run db_migrate.py to generate a migration script in app/db_repository/versions.
 
-- Verify the migration script is correct.
+- Verify the migration script (last entry in db_repository/versions) is correct.
 
 - Run db_upgrade.py to actually update the db.  db_update.py does the 'right thing' 
   for local & production dbs, based on app.config.
