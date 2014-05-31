@@ -100,7 +100,7 @@ WidgetViewModel = function(widget, id, layout, html) {  // Global
 		for (var k in config) {
 			if (config.hasOwnProperty(k)) {
 				if (typeof config[k] === 'function') {
-					newConfig.push({name: k, callback: config[k]});
+					newConfig.push({name: k, callback: config[k].bind(self)});
 				} else {
 					newConfig.push({
 						name: k, 
@@ -114,9 +114,9 @@ WidgetViewModel = function(widget, id, layout, html) {  // Global
 	}
 	
 	self.isConfiguring = ko.observable(false);  // Track if user has clicked config button
-	self.isConfigurable = widget.hasOwnProperty('config');
+	self.isConfigurable = widget.hasOwnProperty('configMenu');
 	if (self.isConfigurable) {
-		var config = configToArray(widget.config);
+		var config = configToArray(widget.configMenu);
 		self.configMenu = ko.observable(config);
 	}
 	
@@ -124,7 +124,7 @@ WidgetViewModel = function(widget, id, layout, html) {  // Global
 		self.isConfiguring(!self.isConfiguring());
 	};
 	
-	layout = layout || {x: 0, y: 0, w: 100, h: 100};
+	layout = layout || {x: 0, y: 0, w: 30, h: 30};
 	self.pos = {
 		x : px(layout.x, dashboard_width),
 		y: px(layout.y, dashboard_height),
@@ -133,6 +133,10 @@ WidgetViewModel = function(widget, id, layout, html) {  // Global
 	};
 	self.deltas = {x: 0, y: 0, w: 0, h: 0};  // Track distance between user mouse drag & nearest gridline
 
+	if (layout.hasOwnProperty('config')) {
+		self.config = layout.config;
+	}
+	
 	self.x = ko.observable();  // observed by CSS styles
 	self.y = ko.observable();
 	self.w = ko.observable();
@@ -146,8 +150,8 @@ DashboardViewModel = function(user_widgets) {  // Global
 
 	if (user_widgets == null) {  // If user has not initialized their dashboard yet, use these as defaults.
 		user_widgets = {
-			photo_stream: {x: 50, y: 50, w: 500, h: 700},
-			group_list: {x: 600, y: 50, w: 350, h: 200}
+			photo_stream: {x: 10, y: 10, w: 50, h: 50},
+			group_list: {x: 60, y: 10, w: 30, h: 20}
 		}
 	}
 
@@ -182,6 +186,9 @@ DashboardViewModel = function(user_widgets) {  // Global
 		var new_layout = {};
 		ko.utils.arrayForEach(self.user_widget_list(), function(el) {
 			new_layout[el.id] = {x: el.x(), y: el.y(), w: el.w(), h: el.h()};
+			if (el.hasOwnProperty('config')) {
+				new_layout[el.id].config = el.config;
+			}
 		});
 		$.post($SCRIPT_ROOT + '/users/updateDashboard',
 			{dashboard: JSON.stringify(new_layout)},
@@ -199,7 +206,7 @@ DashboardViewModel = function(user_widgets) {  // Global
 
 	self.add_widget_to_dashboard = function(widget) {
 		self.user_widget_list.push(widget);
-		widget.ready();  // Trigger widget's initialization callback
+		widget.ready(widget.config);  // Trigger widget's initialization callback
 	};
 	
 	function create_widget(widget, id, html) {
@@ -216,6 +223,13 @@ DashboardViewModel = function(user_widgets) {  // Global
 	
 		var widget_name = available_widget_names[i];
 
+		$('<link/>', {
+			rel: 'stylesheet/less',
+			type: 'text/css',
+			type: 'text/css',
+			href: path + widget_name + '.less',
+		}).prependTo('head');
+		
 		$.getScript(path + widget_name + '.js')  // Load each widget's JS
 			.done((function() {
 				var id = this;
@@ -229,6 +243,13 @@ DashboardViewModel = function(user_widgets) {  // Global
 					console.log('  !! Syntax Error in JS code for Widget "{0}" ({1})'.format(this, e.message));
 				}
 			}).bind(widget_name));
+			
+		$.getScript('/static/js/less-1.7.0.js')
+			.fail(function(xhr, settings, e) {
+				if (e instanceof SyntaxError) {
+					console.log('  !! Syntax Error in JS code for Widget "{0}" ({1})'.format(this, e.message));
+				}
+			});
 	}
 	
 	// Build list of widget edges and widgets that the mouse is currently over

@@ -45,10 +45,10 @@
         <div class="widget" data-bind="style: {left: x, top: y, width: w, height: h, outline: $parent.configureEnabled() ? '3px solid grey' : ''}">
           <div data-bind="html: htmlTemplate, attr: {id: 'widget_' + id}"></div>
         </div>
-        <div class="widget_ui" data-bind="style: {left: x, top: y, width: w, height: h}">
-          <div class="dashboard_btn delete" data-bind="click: $parent.delete_click, clickBubble: false, visible: $parent.configureEnabled()"></div>
-          <div class="dashboard_btn config" data-bind="click: config_click, clickBubble: false, visible: $parent.configureEnabled() && isConfigurable"></div>
-          <div class="dashboard_config_menu">
+        <div class="widget_ui" data-bind="visible: $parent.configureEnabled(), style: {left: x, top: y, width: w, height: h}">
+          <div class="dashboard_btn delete" data-bind="click: $parent.delete_click, clickBubble: false"></div>
+          <div class="dashboard_btn config" data-bind="click: config_click, clickBubble: false, visible: isConfigurable"></div>
+          <div class="dashboard_config_menu" data-bind="if: isConfigurable">
             <ul data-bind="visible: isConfiguring, template: {name: 'popupMenuTemplate', foreach: configMenu}"></ul>
           </div>
         </div>

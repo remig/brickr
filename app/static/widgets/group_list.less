@@ -1,0 +1,107 @@
+.group_list_header {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.group_list {
+  list-style: none;
+  padding: 0;
+}
+
+.group_list_item {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  margin-bottom: 10px;
+  background-color: black;
+}
+
+.group_list_item img {
+  width: 100%;
+  margin-left: -50px;
+  margin-top: -40%;
+}
+
+.group_list a {
+  color: white;
+}
+
+.group_list a:hover {
+  color: #FF8900;
+}
+
+.group_list_name {
+  font-size: 16px;
+  font-weight: bold;
+  
+  position: absolute;
+  left: 5px;
+  bottom: 0;
+}
+
+.group_list_info {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  padding: 5px 10px;
+  background-color: black;
+}
+
+.group_list_info a div:first-child {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.group_list_info div:last-child {
+  font-size: 10px;
+  margin-bottom: 9px;
+}
+
+.group_list_container_large {
+  padding: 5px;
+  overflow: hidden;
+
+  .group_list_header {
+    font-size: 20px;
+  }
+
+  .group_list_item {
+    height: 100px;
+  }
+
+  .group_list_info {
+    width: 100px;
+    height: 100px;
+  }
+
+  .group_list_info a div:first-child {
+    display: inline-block;
+  }
+
+  .group_list_info div:last-child {
+    margin-bottom: 9px;
+  }
+}
+
+.group_list_container_small {
+  padding: 5px;
+  overflow: hidden;
+
+  .group_list_item {
+    height: 60px;
+  }
+
+  .group_list_info {
+    width: 115px;
+    height: 60px;
+  }
+  
+  .group_list_info div {
+    display: inline;
+  }
+
+  .group_list_info a:first-child:after {
+    content: "\A";
+    white-space: pre;
+  }
+}
