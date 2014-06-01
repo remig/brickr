@@ -9,7 +9,7 @@ var available_widget_names = [  // Official list of all available widgets
 	'group_list'
 ];
 
-var snapSize = 50;
+var snapSize = 0;
 var dashboard_width, dashboard_height;
 
 // data-bind="stopBinding: true" 
@@ -19,59 +19,153 @@ ko.bindingHandlers.stopBinding = {
 	}
 };
 
+function minMax(min, max, v) {
+	return Math.min(max, Math.max(min, v));
+}
+	
+function pct(frac, value) {
+	return (frac / value * 100).toFixed(4) + '%'
+}
+
+function px(pct, value) {
+	return Math.round(parseFloat(pct) * value / 100);
+}
+	
+function intersectRect(r1, r2) {
+	return !(r2.l > (dashboard_width - r1.r) || (dashboard_width - r2.r) < r1.l || r2.t > (dashboard_height - r1.b) || (dashboard_height - r2.b) < r1.t);
+}
+
+// Convert a widget config object (as defined by widget author) into an observable array	
+function configToArray(config) {
+	var newConfig = [];
+	for (var k in config) {
+		if (config.hasOwnProperty(k)) {
+			if (typeof config[k] === 'function') {
+				newConfig.push({name: k, callback: config[k].bind(self)});
+			} else {
+				newConfig.push({
+					name: k, 
+					callback: function(){},  // Necessary to keep window.click from hiding menu
+					children: configToArray(config[k])
+				});
+			}
+		}
+	}
+	return newConfig;
+}
+	
 WidgetViewModel = function(widget, id, layout, html) {  // Global
 
 	var self = this;
 	$.extend(self, widget);
+	self.id = id;
+	self.htmlTemplate = html;
 	
-	function minMax(min, max, v) {
-		return Math.min(max, Math.max(min, v));
+	self.deltas = {x: 0, y: 0, w: 0, h: 0};  // Track distance between user mouse drag & nearest gridline
+	layout = layout || {l: 0, t: 0, r: 30, b: 30};  // TODO: position newly added widgets so they overlap nothing
+	self.pos = {
+		l : px(layout.l, dashboard_width),
+		t: px(layout.t, dashboard_height),
+		r: px(layout.r, dashboard_width),
+		b: px(layout.b, dashboard_height)
+	};
+
+	self.isConfiguring = ko.observable(false);  // Track if user has clicked config button
+	self.isConfigurable = widget.hasOwnProperty('configMenu');  // Track if widget is configurable
+	if (self.isConfigurable) {
+		self.configMenu = ko.observable(configToArray(widget.configMenu));
 	}
 	
-	// Ensure widget remains entirely inside the page, and respects its min & max sizing
-	self.boundCheck = function() {
-		var pos = self.pos;
-		var w = dashboard_width - pos.w;
-		var h = dashboard_height - pos.h;
-		var max_w = w - ((w % snapSize) || 0);
-		var max_h = h - ((h % snapSize) || 0);
-		pos.x = minMax(0, max_w, pos.x);
-		pos.y = minMax(0, max_h, pos.y);
-		if (self.size) {  // 'size' set by widget author
+	self.config_click = function() {
+		self.isConfiguring(!self.isConfiguring());
+	};
+	
+	if (layout.hasOwnProperty('config')) {
+		self.config = layout.config;
+	}
+	
+	self.l = ko.observable();  // observed by CSS styles
+	self.t = ko.observable();
+	self.r = ko.observable();
+	self.b = ko.observable();
+
+	self.updateCSS = function() {  // Push internally stored pixel position out to CSS values as percentages
+		self.l(pct(self.pos.l, dashboard_width));
+		self.t(pct(self.pos.t, dashboard_height));
+		self.r(pct(self.pos.r, dashboard_width));
+		self.b(pct(self.pos.b, dashboard_height));
+	};
+	
+	self.updatePosOnResize = function() {  // Recalculate internal pixel position after a resize event
+		self.pos = {
+			l : px(self.l(), dashboard_width),
+			t: px(self.t(), dashboard_height),
+			r: px(self.r(), dashboard_width),
+			b: px(self.b(), dashboard_height)
+		};
+	}
+	
+	// Ensure widget does not overlap any other widget
+	self.overlapCheck = function(new_pos, widget_list) {
+		for (var i = 0; i < widget_list.length; i++) {
+			if (widget_list[i] !== self && intersectRect(new_pos, widget_list[i].pos)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	// Ensure widget remains entirely inside the page and respects its min & max sizing
+	self.outOfBoundCheck = function(new_pos) {
+		
+		if (new_pos.l < 0 || new_pos.t < 0 || new_pos.r < 0 || new_pos.b < 0) {
+			return true;
+		}
+		
+		if (self.size) {
 			var r = self.size;
-			pos.w = minMax(r.minWidth || 0, r.maxWidth || Infinity, pos.w);
-			pos.h = minMax(r.minHeight || 0, r.maxHeight || Infinity, pos.h);
+			var w = (dashboard_width - new_pos.r) - new_pos.l;
+			var h = (dashboard_height - new_pos.b) - new_pos.t;
+			if ((w < (r.minWidth || 0)) || (w > (r.maxWidth || Infinity))) {
+				return true;
+			}
+			if ((h < (r.minHeight || 0)) || (h > (r.maxHeight || Infinity))) {
+				return true;
+			}
 		}
-	};
-	
-	function pct(frac, value) {
-		return (frac / value * 100).toFixed(4) + '%'
+		return false;
 	}
-	
-	function px(pct, value) {
-		return parseFloat(pct) * value / 100;
-	}
-	
-	self.updateCSS = function() {
-		self.x(pct(self.pos.x, dashboard_width));
-		self.y(pct(self.pos.y, dashboard_height));
-		self.w(pct(self.pos.w, dashboard_width));
-		self.h(pct(self.pos.h, dashboard_height));
-	};
-	
-	// Change the position of the widget's edge by dt pixels.
-	// 'edge' is one of 'x', 'y', 'w', 'h'.
-	self.moveEdge = function(edge, dt) {
 
-		if (dt === 0) {
-			return;
+	// Change the position of widget's edge by dx pixels.
+	// 'edge' is one of 'l', 't', 'r', 'b', 'move'.
+	// returns true if move is acceptable, false otherwise
+	self.moveEdge = function(widget_list, edge, dx, dy) {
+
+		if (dx === 0 && dy === 0) {
+			return true;
 		}
 
+		var new_pos;
+		if (edge === 'move') {
+			new_pos = {l: self.pos.l + dx, t: self.pos.t + dy, r: self.pos.r - dx, b: self.pos.b - dy};
+		} else {
+			new_pos = {l: self.pos.l, t: self.pos.t, r: self.pos.r, b: self.pos.b};
+			new_pos[edge] += dx;
+		}
+		
+		if (self.overlapCheck(new_pos, widget_list)) {
+			return false;  // This move overlaps something - ignore it
+		}
+		
+		if (self.outOfBoundCheck(new_pos)) {
+			return false;  // Move is out of bounds, or exceeds widget min/max size - ignore it.
+		}
+				
 		var need_update = false;
 		var v = self.pos[edge];
 
-		if (snapSize !== 0) {
-			self.deltas[edge] += dt;
+		if (snapSize !== 0) {  // TODO: snap is broken
+			self.deltas[edge] += dx;
 			if (self.deltas[edge] >= snapSize) {
 				need_update = true;
 				self.pos[edge] = v + snapSize;
@@ -83,66 +177,15 @@ WidgetViewModel = function(widget, id, layout, html) {  // Global
 			}
 		} else {
 			need_update = true;
-			self.pos[edge] = v + dt;
+			self.pos = new_pos;
 		}
 
 		if (need_update) {
-			self.boundCheck();
 			self.updateCSS();
 		}
+		return true;
 	};
 	
-	self.id = id;
-	self.htmlTemplate = html;
-	
-	function configToArray(config) {
-		var newConfig = [];
-		for (var k in config) {
-			if (config.hasOwnProperty(k)) {
-				if (typeof config[k] === 'function') {
-					newConfig.push({name: k, callback: config[k].bind(self)});
-				} else {
-					newConfig.push({
-						name: k, 
-						callback: function(){},  // Necessary to keep window.click from hiding menu
-						children: configToArray(config[k])
-					});
-				}
-			}
-		}
-		return newConfig;
-	}
-	
-	self.isConfiguring = ko.observable(false);  // Track if user has clicked config button
-	self.isConfigurable = widget.hasOwnProperty('configMenu');
-	if (self.isConfigurable) {
-		var config = configToArray(widget.configMenu);
-		self.configMenu = ko.observable(config);
-	}
-	
-	self.config_click = function(model, evt) {
-		self.isConfiguring(!self.isConfiguring());
-	};
-	
-	layout = layout || {x: 0, y: 0, w: 30, h: 30};
-	self.pos = {
-		x : px(layout.x, dashboard_width),
-		y: px(layout.y, dashboard_height),
-		w: px(layout.w, dashboard_width),
-		h: px(layout.h, dashboard_height)
-	};
-	self.deltas = {x: 0, y: 0, w: 0, h: 0};  // Track distance between user mouse drag & nearest gridline
-
-	if (layout.hasOwnProperty('config')) {
-		self.config = layout.config;
-	}
-	
-	self.x = ko.observable();  // observed by CSS styles
-	self.y = ko.observable();
-	self.w = ko.observable();
-	self.h = ko.observable();
-	
-	self.boundCheck();
 	self.updateCSS();
 };
 
@@ -150,8 +193,8 @@ DashboardViewModel = function(user_widgets) {  // Global
 
 	if (user_widgets == null) {  // If user has not initialized their dashboard yet, use these as defaults.
 		user_widgets = {
-			photo_stream: {x: 10, y: 10, w: 50, h: 50},
-			group_list: {x: 60, y: 10, w: 30, h: 20}
+			photo_stream: {l: 10, t: 10, r: 50, b: 50},
+			group_list: {l: 60, t: 10, r: 30, b: 20}
 		}
 	}
 
@@ -169,6 +212,9 @@ DashboardViewModel = function(user_widgets) {  // Global
 	function on_resize() {
 		dashboard_width = dashboard_div.clientWidth;
 		dashboard_height = dashboard_div.clientHeight;
+		ko.utils.arrayForEach(self.user_widget_list(), function(el) {
+			el.updatePosOnResize();
+		});
 	}
 	$(window).ready(on_resize);
 	$(window).resize(on_resize);
@@ -185,7 +231,7 @@ DashboardViewModel = function(user_widgets) {  // Global
 	function save_widgets() {
 		var new_layout = {};
 		ko.utils.arrayForEach(self.user_widget_list(), function(el) {
-			new_layout[el.id] = {x: el.x(), y: el.y(), w: el.w(), h: el.h()};
+			new_layout[el.id] = {l: el.l(), t: el.t(), r: el.r(), b: el.b()};
 			if (el.hasOwnProperty('config')) {
 				new_layout[el.id].config = el.config;
 			}
@@ -257,31 +303,33 @@ DashboardViewModel = function(user_widgets) {  // Global
 		evt.target.style.cursor = 'default';
 		var mx = evt.offsetX, my = evt.offsetY;
 		var edges = [];
-		for (var i = 0; i < self.user_widget_list().length; i++) {
-			var widget = self.user_widget_list()[i];
+		var wl = self.user_widget_list();
+		for (var i = 0; i < wl.length; i++) {
+			var widget = wl[i];
 			var pos = widget.pos;
-			var x = pos.x, y = pos.y;
-			var w = pos.w, h = pos.h;
+			var l = pos.l, t = pos.t;
+			var r = dashboard_width - pos.r, b = dashboard_height - pos.b;
+//			console.log('l: ' + l + ', r: ' + r + ', t: ' + t + ', b: ' + b + ', mx: ' + mx + ', my: ' + my);
 
-			if (my >= y && my <= y + h) {
-				if (Math.abs(mx - x) < 5) {  // left
+			if (my >= t && my <= b) {
+				if (Math.abs(mx - l) < 5) {  // left
 					evt.target.style.cursor = 'e-resize';
-					edges.push({side: 'left', widget: widget});
-				} else if (Math.abs(mx - x - w) < 5) {  // right
+					edges.push({side: 'l', widget: widget});
+				} else if (Math.abs(mx - r) < 5) {  // right
 					evt.target.style.cursor = 'e-resize';
-					edges.push({side: 'right', widget: widget});
-				} else if (mx >= x && mx <= x + w) {
+					edges.push({side: 'r', widget: widget});
+				} else if (mx >= l && mx <= r) {
 					evt.target.style.cursor = 'move';
 					return [{side: 'move', widget: widget}];  //  Can move only one widget at a time
 				}
 			}
-			if (mx >= x && mx <= x + w) {
-				if (Math.abs(my - y) < 5) {  // top
+			if (mx >= l && mx <= r) {
+				if (Math.abs(my - t) < 5) {  // top
 					evt.target.style.cursor = 'n-resize';
-					edges.push({side: 'top', widget: widget});
-				} else if (Math.abs(my - y - h) < 5) {  // bottom
+					edges.push({side: 't', widget: widget});
+				} else if (Math.abs(my - b) < 5) {  // bottom
 					evt.target.style.cursor = 'n-resize';
-					edges.push({side: 'bottom', widget: widget});
+					edges.push({side: 'b', widget: widget});
 				}
 			}
 		}
@@ -289,26 +337,24 @@ DashboardViewModel = function(user_widgets) {  // Global
 	}
 	
 	function drag(hoveredEdges, dx, dy) {
+		var wl = self.user_widget_list();
 		for (var i = 0; i < hoveredEdges.length; i++) {
 			var widget = hoveredEdges[i].widget;
 			switch (hoveredEdges[i].side) {
-				case 'left':
-					widget.moveEdge('x', dx);
-					widget.moveEdge('w', -dx);
+				case 'l':
+					widget.moveEdge(wl, 'l', dx, 0);
 					break;
-				case 'right':
-					widget.moveEdge('w', dx);
+				case 'r':
+					widget.moveEdge(wl, 'r', -dx, 0);
 					break;
-				case 'top':
-					widget.moveEdge('y', dy);
-					widget.moveEdge('h', -dy);
+				case 't':
+					widget.moveEdge(wl, 't', dy, 0);
 					break;
-				case 'bottom':
-					widget.moveEdge('h', dy);
+				case 'b':
+					widget.moveEdge(wl, 'b', -dy, 0);
 					break;
 				case 'move':
-					widget.moveEdge('x', dx);
-					widget.moveEdge('y', dy);
+					widget.moveEdge(wl, 'move', dx, dy);
 					break;
 			}
 		}

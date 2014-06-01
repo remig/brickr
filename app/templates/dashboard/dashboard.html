@@ -42,10 +42,10 @@
   <div style="position: relative; height: 100%;">
     <div id="dashboard_container" style="outline: 1px solid black; height: 1000px;">
       <div id="widget_container" data-bind="foreach: user_widget_list">
-        <div class="widget" data-bind="style: {left: x, top: y, width: w, height: h, outline: $parent.configureEnabled() ? '3px solid grey' : ''}">
+        <div class="widget" data-bind="style: {left: l, top: t, right: r, bottom: b, outline: $parent.configureEnabled() ? '3px solid grey' : ''}">
           <div data-bind="html: htmlTemplate, attr: {id: 'widget_' + id}"></div>
         </div>
-        <div class="widget_ui" data-bind="visible: $parent.configureEnabled(), style: {left: x, top: y, width: w, height: h}">
+        <div class="widget_ui" data-bind="visible: $parent.configureEnabled(), style: {left: l, top: t, right: r, bottom: b}">
           <div class="dashboard_btn delete" data-bind="click: $parent.delete_click, clickBubble: false"></div>
           <div class="dashboard_btn config" data-bind="click: config_click, clickBubble: false, visible: isConfigurable"></div>
           <div class="dashboard_config_menu" data-bind="if: isConfigurable">
