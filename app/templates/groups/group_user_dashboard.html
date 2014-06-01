@@ -1,0 +1,35 @@
+{% extends "nav.html" %}
+
+{% block title %}Your Groups{% endblock %}
+
+{% block script %}
+{% include "fix_time.html" %}
+{% endblock %}
+
+{% block content %}
+    <h3>Groups you administer:</h3>
+    <ul>
+        {% for group_assoc in g.user.user_groups if group_assoc.role == 'admin' %}
+            <li><a href="{{ url_for('groups.group', groupURL = group_assoc.group.url_name) }}">{{ group_assoc.group.name }}</a> - <span>{{ group_assoc.group.members | count }} members | {{ group_assoc.group.photo_groups | count }} photos | {{ group_assoc.group.discussions.count() }} Discussions | created <span class="convert-time">{{ group_assoc.group.creation_time }},LL</span></span></li>
+        {% endfor %}
+    </ul>
+    <h3>Groups you moderate:</h3>
+    <ul>
+        {% for group_assoc in g.user.user_groups if group_assoc.role == 'mod' %}
+            <li><a href="{{ url_for('groups.group', groupURL = group_assoc.group.url_name) }}">{{ group_assoc.group.name }}</a> - <span>{{ group_assoc.group.members | count }} members | {{ group_assoc.group.photo_groups | count }} photos | {{ group_assoc.group.discussions.count() }} Discussions | created <span class="convert-time">{{ group_assoc.group.creation_time }},LL</span></span></li>
+        {% endfor %}
+    </ul>
+    <h3>Groups you belong to:</h3>
+    <ul>
+        {% for group_assoc in g.user.user_groups if group_assoc.role == 'member' %}
+            <li><a href="{{ url_for('groups.group', groupURL = group_assoc.group.url_name) }}">{{ group_assoc.group.name }}</a> - <span>{{ group_assoc.group.members | count }} members | {{ group_assoc.group.photo_groups | count }} photos | {{ group_assoc.group.discussions.count() }} Discussions | created <span class="convert-time">{{ group_assoc.group.creation_time }},LL</span></span></li>
+        {% endfor %}
+    </ul>
+    <h3>All available groups:</h3>
+    <ul>
+        {% for group in groups.query.all() %}
+            <li><a href="{{ url_for('groups.group', groupURL = group.url_name) }}">{{ group.name }}</a> - <span>{{ group.members | count }} members | {{ group.photo_groups | count }} photos | {{ group.discussions.count() }} Discussions | created <span class="convert-time">{{ group.creation_time }},LL</span></span></li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('groups.create_group') }}"><input type="submit" value="Create new Group" class="button green" /></a>
+{% endblock %}

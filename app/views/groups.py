@@ -9,6 +9,8 @@ mod = Blueprint('groups', __name__, url_prefix = '/groups')
 
 @mod.route('/')
 def root():
+    if g.user:
+        return render_template('groups/group_user_dashboard.html', groups = Group)
     return render_template('groups/group_index.html', groups = Group)
 
 @mod.route('/<groupURL>/')

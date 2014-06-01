@@ -10,14 +10,17 @@ class GroupMemberList(db.Model):
     user_id = db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key = True)
     group_id = db.Column('group_id', db.Integer, db.ForeignKey('group_tbl.id'), primary_key = True)
     join_time = db.Column('join_time', db.DateTime)
+    role = db.Column('role', db.String(20), default = 'member')
+    roles = ['admin', 'mod', 'member']
     
     user = db.relationship(User, backref = db.backref("user_groups", cascade = "all, delete-orphan"))
     group = db.relationship("Group", backref = db.backref("user_groups", cascade = "all, delete-orphan"))
     
-    def __init__(self, user, group):
+    def __init__(self, user, group, role = 'member'):
         self.user = user
         self.group = group
         self.join_time = util.now()
+        self.role = role
 
     def to_json(self):
         groupJSON = self.group.to_json()

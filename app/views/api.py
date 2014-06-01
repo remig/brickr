@@ -11,10 +11,6 @@ mod = Blueprint('api', __name__, url_prefix = '/api')
 #def not_found(error):
 #   return make_response(jsonify( { 'error': 'Not found' } ), 404)
 
-@mod.route('/')
-def root():
-    return render_template('groups/group_index.html', groups = Group)
-
 @mod.route('/p/<photoID>/')
 def get_photo(photoID):
     photo = Photo.query.get(photoID)

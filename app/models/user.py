@@ -66,9 +66,6 @@ class User(db.Model):
     def getStatus(self):
         return STATUS[self.status]
         
-    def getRole(self):
-        return ROLE[self.role]
-
     def isUserInContactList(self, user):
         count = self.contacts.filter_by(target_user_id = user.id).count()
         return count > 0
