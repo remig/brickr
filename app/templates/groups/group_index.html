@@ -1,6 +1,6 @@
 {% extends "nav.html" %}
 
-{% block title %}Groups | brickr{% endblock %}
+{% block title %}<title>Groups</title>{% endblock %}
 
 {% block script %}
 {% include "fix_time.html" %}
@@ -10,6 +10,9 @@
     {% if g.user %}
     <h3>Groups you belong to:</h3>
     <ul>
+        {% for group_assoc in g.user.user_groups %}
+            <li><a href="{{ url_for('groups.group', groupURL = group_assoc.group.url_name) }}">{{ group_assoc.group.name }}</a> - <span>{{ group_assoc.group.members | count }} members | {{ group_assoc.group.photo_groups | count }} photos | {{ group_assoc.group.discussions.count() }} Discussions | created <span class="convert-time">{{ group_assoc.group.creation_time }},LL</span></span></li>
+        {% endfor %}
     </ul>
     {% endif %}
     <h3>All available groups:</h3>
