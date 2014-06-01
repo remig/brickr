@@ -22,6 +22,21 @@ def group(groupURL):
     groupJSON['photos'] = [p.to_json() for p in photo_list]
     return render_template('groups/group.html', group = group, groupJSON = json.dumps(groupJSON))
     
+@mod.route('/<groupURL>/members/')
+def member_list(groupURL):
+    group = Group.query.filter_by(url_name = groupURL).first()
+    return render_template('groups/member_list.html', group = group)
+
+@mod.route('/<groupURL>/discussions/')
+def discussion_list(groupURL):
+    group = Group.query.filter_by(url_name = groupURL).first()
+    return render_template('groups/discussion_list.html', group = group)
+    
+@mod.route('/<groupURL>/photos/')
+def photo_list(groupURL):
+    group = Group.query.filter_by(url_name = groupURL).first()
+    return render_template('groups/photo_list.html', group = group)
+    
 pattern = re.compile('[^A-Za-z0-9_]+')
 @mod.route('/create_group/', methods = ['GET', 'POST'])
 @requires_login

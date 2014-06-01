@@ -1,0 +1,16 @@
+{% extends "nav.html" %}
+
+{% block title %}Groups{% endblock %}
+
+{% block script %}
+{% include "fix_time.html" %}
+{% endblock %}
+
+{% block content %}
+    <h3>Group Discussion threads:</h3>
+    <ul>
+        {% for discussion in group.discussions %}
+            <li>{{ discussion.title }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

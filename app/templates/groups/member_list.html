@@ -1,0 +1,16 @@
+{% extends "nav.html" %}
+
+{% block title %}Groups{% endblock %}
+
+{% block script %}
+{% include "fix_time.html" %}
+{% endblock %}
+
+{% block content %}
+    <h3>Group Members:</h3>
+    <ul>
+        {% for group_assoc in group.user_groups %}
+            <li>{{ group_assoc.user.name }}</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "nav.html" %}
+
+{% block title %}Groups{% endblock %}
+
+{% block script %}
+{% include "fix_time.html" %}
+{% endblock %}
+
+{% block content %}
+    <h3>Photo Pool:</h3>
+    <ul>
+        {% for group_assoc in group.photo_groups %}
+            <li><a href="{{ url_for('photos.photo', photoID = group_assoc.photo.id, user_url = group_assoc.photo.user.url) }}">{{ group_assoc.photo.title }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}
