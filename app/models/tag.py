@@ -7,7 +7,6 @@ tag_list = db.Table('tag_list',
     
 class Tag(db.Model):
 
-    __tablename__ = 'tag'
     id = db.Column(db.Integer, primary_key = True)
     description = db.Column(db.String(120), unique = True, nullable = False)
     url = db.Column(db.String(120))

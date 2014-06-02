@@ -9,7 +9,6 @@ from app.models.note import Note
 
 class Photo(db.Model):
 
-    __tablename = 'photo'
     id = db.Column(db.Integer, primary_key = True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     title = db.Column(db.String(120))

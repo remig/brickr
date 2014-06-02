@@ -2,7 +2,6 @@ from app import db, util
 
 class Discussion(db.Model):
 
-    __tablename__ = 'discussion'
     id = db.Column(db.Integer, primary_key = True)
     group_id = db.Column(db.Integer, db.ForeignKey('group_tbl.id'))
     title = db.Column(db.String(120), nullable = False)

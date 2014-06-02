@@ -3,7 +3,6 @@ from app import db, util
 
 class Comment(db.Model):
     
-    __tablename = 'comment'
     id = db.Column(db.Integer, primary_key = True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     photo_id = db.Column(db.Integer, db.ForeignKey('photo.id'))

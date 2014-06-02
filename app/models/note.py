@@ -5,7 +5,6 @@ def bound(v, lMin = 0, lMax = 100):
 
 class Note(db.Model):
 
-    __tablename = 'note'
     id = db.Column(db.Integer, primary_key = True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     photo_id = db.Column(db.Integer, db.ForeignKey('photo.id'))

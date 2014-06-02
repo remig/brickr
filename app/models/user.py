@@ -27,7 +27,6 @@ STATUS = {
 
 class User(db.Model):
 
-    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key = True)
     openid = db.Column(db.String(200), unique = True)
     name = db.Column(db.String(50), unique = True)  # user name, screen name, same thing

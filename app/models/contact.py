@@ -15,7 +15,6 @@ PERMISSION = {
 
 class Contact(db.Model):
     
-    __tablename = 'contact'
     id = db.Column(db.Integer, primary_key = True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     target_user_id = db.Column(db.Integer)
