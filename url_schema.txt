@@ -1,0 +1,63 @@
+Things in [ ] are named lookups, not literals.  x_id are numeric IDs, x_name are string names.
+
+Any 'stream' implies a paginated grid layout, medium images, with image meta data below.
+All stream views should have 'small', 'med', 'large' UI buttons to customize view.  User's preferred view size is stored in the backend.
+
+'interesting' implies some kind of 'intelligent' algorithm that chooses an appropriate subset of the overall set
+
+---------------------------------------------------------------------------------
+
+/ - Welcome to the site landing page.
+  - logged in: user's dashboard.
+
+---------------------------------------------------------------------------------
+  
+/builders/ - List of builders who've recently joined.  List of interesting builders.
+           - logged in: list of your contacts, with search and sort and recent activity 
+
+/builders/[builder_name]/
+
+/builders/[builder_name]/favorites
+
+/builders/[builder_name]/tags
+
+/mail/ - logged in: view of your private messages.  Not logged in: redirect to log in.
+
+/photos/ - logged in: view of recent photos from your contacts.
+
+/photos/[builder_name]/ - User's photo stream.
+
+/photos/[builder_name]/[photo_id] - Single photo view page.
+
+/photos/tags/[tag_name] - stream of all photos matching tag_name.
+
+/photos/upload/ - Upload photo UI.
+
+---------------------------------------------------------------------------------
+
+/groups/ - overview of what groups are, how they work.  List of recently created groups.  List of interesting groups.  Search in groups UI.
+         - logged in: overview of all subscribed groups, ordered by role (admin, mod, member).  UI to sort group list by a-z or recent activity. UI to create a new group.  Search in groups UI.
+
+/groups/[group_name] - overview of one group and all its available info: creation time, # members # threads # photos, overview of recent threads & photos.  Recent activity list. UI to join / leave group. UI to admin / mod group, if appropriate role.
+
+/groups/[group_name]/members - list of all group's members; avatar, join time, # replies, # photos in group.  Organized by role.
+
+/groups/[group_name]/members/map - geo map of all members in group?
+
+/groups/[group_name]/discussion/ - list of all threads, paginated; main thread body, creator avatar, # replies, creation time
+
+/groups/[group_name]/discussion/[discussion_id] - entire content of a single discussion thread.  Thread title; main thread topic; creation time; UI to reply.
+
+/groups/[group_name]/photos/ - stream of all photos in group.  UI to sort stream by date, creator, interestingness.
+
+---------------------------------------------------------------------------------
+
+/contests/
+
+---------------------------------------------------------------------------------
+
+/help/
+
+/help/groups
+
+---------------------------------------------------------------------------------
