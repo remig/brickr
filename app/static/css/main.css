@@ -27,6 +27,14 @@
   text-decoration: underline;
 }
 
+.navbar-form-control {
+  height: 28px;
+}
+
+.navbar-form-btn {
+  padding: 3px 8px;
+}
+
 #photo-title {
   display: inline-block;
   margin-top: 2px;
