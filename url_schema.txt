@@ -3,7 +3,7 @@ Things in [ ] are named lookups, not literals.  x_id are numeric IDs, x_name are
 Any 'stream' implies a paginated grid layout, medium images, with image meta data below.
 All stream views should have 'small', 'med', 'large' UI buttons to customize view.  User's preferred view size is stored in the backend.
 
-'interesting' implies some kind of 'intelligent' algorithm that chooses an appropriate subset of the overall set
+'interesting' implies some kind of intelligent algorithm that chooses an appropriate subset of the overall set
 
 ---------------------------------------------------------------------------------
 
@@ -22,6 +22,8 @@ All stream views should have 'small', 'med', 'large' UI buttons to customize vie
 /builders/[builder_name]/tags
 
 /mail/ - logged in: view of your private messages.  Not logged in: redirect to log in.
+
+---------------------------------------------------------------------------------
 
 /photos/ - logged in: view of recent photos from your contacts.
 

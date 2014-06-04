@@ -71,6 +71,9 @@ app.register_blueprint(mailModule)
 from app.views.groups import mod as groupModule
 app.register_blueprint(groupModule)
 
+from app.views.contests import mod as contestModule
+app.register_blueprint(contestModule)
+
 from app.views.api import mod as apiModule
 app.register_blueprint(apiModule)
 

@@ -8,7 +8,7 @@ from app.views.userForms import RegisterForm, LoginForm
 from app.models import *
 from app.decorators import requires_login
 
-mod = Blueprint('users', __name__, url_prefix = '/users')
+mod = Blueprint('users', __name__, url_prefix = '/builders')
 
 @mod.route('/')
 def root():
